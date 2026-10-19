@@ -1,0 +1,16 @@
+---
+# cPanel > Git Version Control > Manage > "Pull or Deploy" > "Deploy HEAD Commit"
+# copies the website from the repository folder into the live web folder.
+#
+# DEPLOYPATH is the folder the domain serves. For the main domain that is public_html.
+# If the site lives in a sub-folder or on a subdomain, change it (keep the slash at the end),
+# for example:  export DEPLOYPATH=$HOME/school.example.com/
+#
+# Files only on the server (includes/config.local.php, photos uploaded from the admin panel)
+# are left as they are: this copies files over, it never deletes anything.
+deployment:
+  tasks:
+    - export DEPLOYPATH=$HOME/public_html/
+    - /bin/mkdir -p $DEPLOYPATH
+    - /bin/cp -R AdminCP css database images includes js uploads $DEPLOYPATH
+    - /bin/cp *.php *.html favicon.ico .htaccess $DEPLOYPATH

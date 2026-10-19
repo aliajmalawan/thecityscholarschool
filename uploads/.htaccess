@@ -1,0 +1,5 @@
+# Files in this folder are only ever served, never executed
+<FilesMatch "\.(php|phtml|php3|php4|php5|php7|phps|phar|pl|py|cgi|sh|exe|htaccess)$">
+    Require all denied
+</FilesMatch>
+Options -ExecCGI -Indexes

@@ -1,0 +1,18 @@
+# Database dumps hold admin password hashes and visitor/admission data
+*.sql
+
+# PHP / server logs
+error_log
+*.log
+
+# Local editor/assistant settings
+.claude/
+
+# ...but keep schema upgrade scripts
+!database/*.sql
+
+# Gallery thumbnails are generated automatically on the server
+uploads/**/thumbs/
+
+# Live server database settings (created on the server from config.local.example.php)
+includes/config.local.php
