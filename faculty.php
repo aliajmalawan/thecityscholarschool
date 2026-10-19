@@ -27,7 +27,7 @@ $meta_description = content('seo_faculty_description');
                         echo '<div style="width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; color: white; font-size: 50px; box-shadow: var(--shadow-sm);"><i class="fas fa-user"></i></div>';
                     }
                     echo '<h3>' . htmlspecialchars($teacher['name']) . '</h3>';
-                    echo '<p style="color: var(--accent-color); font-weight: 600; margin-bottom: 15px;">' . htmlspecialchars($teacher['designation']) . '</p>';
+                    echo '<p style="color: var(--accent-ink); font-weight: 600; margin-bottom: 15px;">' . htmlspecialchars($teacher['designation']) . '</p>';
                     if (!empty($teacher['subjects'])) {
                         echo '<p style="margin-bottom: 10px;"><strong>Subjects:</strong> ' . htmlspecialchars($teacher['subjects']) . '</p>';
                     }
@@ -104,7 +104,7 @@ $meta_description = content('seo_faculty_description');
                     echo '<div class="card" style="text-align: center;">';
                     echo '<div style="width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; color: white; font-size: 50px; box-shadow: var(--shadow-sm);"><i class="fas fa-chalkboard-teacher"></i></div>';
                     echo '<h3>' . htmlspecialchars($teacher['name']) . '</h3>';
-                    echo '<p style="color: var(--accent-color); font-weight: 600; margin-bottom: 15px;">' . htmlspecialchars($teacher['designation']) . '</p>';
+                    echo '<p style="color: var(--accent-ink); font-weight: 600; margin-bottom: 15px;">' . htmlspecialchars($teacher['designation']) . '</p>';
                     echo '<p style="margin-bottom: 10px;"><strong>Subjects:</strong> ' . htmlspecialchars($teacher['subjects']) . '</p>';
                     echo '<p style="margin-bottom: 10px;"><strong>Qualification:</strong> ' . htmlspecialchars($teacher['qualification']) . '</p>';
                     echo '<p><strong>Experience:</strong> ' . htmlspecialchars($teacher['experience']) . ' years</p>';

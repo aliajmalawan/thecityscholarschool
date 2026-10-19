@@ -10,6 +10,6 @@
  * config.local.php is never uploaded to GitHub and deploying new code never replaces it.
  */
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'cpaneluser_dbname');      // full name as shown in cPanel, e.g. tameer_school
+define('DB_NAME', 'cpaneluser_dbname');      // full name as shown in cPanel, e.g. cpaneluser_cityscholars
 define('DB_USER', 'cpaneluser_dbuser');      // the database user added to that database
 define('DB_PASS', 'the-database-password');

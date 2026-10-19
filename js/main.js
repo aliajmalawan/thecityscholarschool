@@ -1,4 +1,4 @@
-// Tameer-e-Nau Public School - Main JavaScript
+// The City Scholars School - Main JavaScript
 
 // Sticky header shadow on scroll
 document.addEventListener('DOMContentLoaded', function() {

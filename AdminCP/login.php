@@ -113,15 +113,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet">
-    <title>Admin Login - Tameer-e-Nau Public School</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <title>Admin Login - <?php echo htmlspecialchars(getSiteName()); ?></title>
     <meta name="robots" content="noindex, nofollow">
     <link rel="icon" type="image/png" href="../<?php echo htmlspecialchars(getLogoPath()); ?>">
     <link rel="stylesheet" href="../css/style.css?v=<?php echo assetVersion('css/style.css'); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #5F6D3D 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, #082B50 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -164,7 +164,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         .logo-icon {
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, var(--primary-color), #5F6D3D);
+            background: linear-gradient(135deg, var(--primary-color), #082B50);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -209,7 +209,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <body>
     <div class="login-container">
         <div class="login-header">
-            <img src="../<?php echo htmlspecialchars(getLogoSmallPath()); ?>" alt="Tameer-e-Nau Public School Logo" class="login-logo">
+            <img src="../<?php echo htmlspecialchars(getLogoSmallPath()); ?>" alt="<?php echo htmlspecialchars(getSiteName()); ?> crest" class="login-logo">
             <h1>Admin Login</h1>
             <p><?php echo htmlspecialchars(getSiteName()); ?><br><small><?php echo htmlspecialchars(trim((string) strtok(getSiteAddress(), "\n"))); ?></small></p>
         </div>

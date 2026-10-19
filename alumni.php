@@ -259,7 +259,7 @@ $meta_description = content('seo_alumni_description');
 
                     <div style="margin-bottom: 20px;">
                         <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: var(--text-dark);">Your Review/Feedback * (Compulsory)</label>
-                        <textarea name="review" required rows="5" placeholder="Share your experience with Tameer-e-Nau Public School..." style="width: 100%; padding: 13px 16px; border: 2px solid var(--border-color); border-radius: var(--radius-sm);"><?php echo old('review'); ?></textarea>
+                        <textarea name="review" required rows="5" placeholder="Share your experience with <?php echo htmlspecialchars(getSiteName()); ?>..." style="width: 100%; padding: 13px 16px; border: 2px solid var(--border-color); border-radius: var(--radius-sm);"><?php echo old('review'); ?></textarea>
                     </div>
 
                     <button type="submit" name="submit_alumni" class="btn btn-primary" style="width: 100%; padding: 15px; font-size: 1.1rem;">

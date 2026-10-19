@@ -245,7 +245,7 @@ $leaders_result = mysqli_query($conn, $leaders_query);
         }
 
         .admin-header h1 {
-            color: #78864F;
+            color: #123F73;
             font-size: 28px;
         }
 
@@ -255,7 +255,7 @@ $leaders_result = mysqli_query($conn, $leaders_query);
 
         .btn-primary {
             padding: 12px 25px;
-            background: #78864F;
+            background: #123F73;
             color: white;
             border: none;
             border-radius: 8px;
@@ -333,7 +333,7 @@ $leaders_result = mysqli_query($conn, $leaders_query);
             transition: all 0.3s ease;
         }
         .btn-edit {
-            background: #78864F;
+            background: #123F73;
             color: white;
         }
         .btn-edit:hover {
@@ -423,7 +423,7 @@ $leaders_result = mysqli_query($conn, $leaders_query);
         .btn-submit {
             flex: 1;
             padding: 12px;
-            background: #78864F;
+            background: #123F73;
             color: white;
             border: none;
             border-radius: 5px;

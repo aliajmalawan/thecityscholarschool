@@ -94,8 +94,8 @@ function getPageName($url) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet">
-    <title>Website Analytics - <?php echo SITE_NAME; ?></title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <title>Website Analytics - <?php echo htmlspecialchars(getSiteName()); ?></title>
     <link rel="stylesheet" href="../css/style.css?v=<?php echo assetVersion('css/style.css'); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="assets/admin.css?v=<?php echo assetVersion('AdminCP/assets/admin.css'); ?>">
@@ -122,7 +122,7 @@ function getPageName($url) {
         }
 
         .welcome-text h1 {
-            color: #78864F;
+            color: #123F73;
             font-size: 28px;
             margin-bottom: 5px;
         }
@@ -152,11 +152,11 @@ function getPageName($url) {
 
         .date-filter a:hover {
             background: white;
-            color: #78864F;
+            color: #123F73;
         }
 
         .date-filter a.active {
-            background: #78864F;
+            background: #123F73;
             color: white;
         }
 
@@ -198,7 +198,7 @@ function getPageName($url) {
             font-size: 24px;
         }
 
-        .stat-card-icon.blue { background: rgba(120, 134, 79, 0.1); color: #78864F; }
+        .stat-card-icon.blue { background: rgba(18, 63, 115, 0.1); color: #123F73; }
         .stat-card-icon.green { background: rgba(76, 175, 80, 0.1); color: #4CAF50; }
         .stat-card-icon.orange { background: rgba(255, 152, 0, 0.1); color: #FF9800; }
         .stat-card-icon.red { background: rgba(244, 67, 54, 0.1); color: #f44336; }
@@ -211,7 +211,7 @@ function getPageName($url) {
         }
 
         .stat-card .value {
-            color: #78864F;
+            color: #123F73;
             font-size: 32px;
             font-weight: bold;
         }
@@ -226,7 +226,7 @@ function getPageName($url) {
         }
 
         .chart-container h3 {
-            color: #78864F;
+            color: #123F73;
             margin-bottom: 20px;
             font-size: 18px;
         }
@@ -284,12 +284,12 @@ function getPageName($url) {
         }
 
         .page-name {
-            color: #78864F;
+            color: #123F73;
             font-weight: 500;
         }
 
         .views-badge {
-            background: #78864F;
+            background: #123F73;
             color: white;
             padding: 4px 12px;
             border-radius: 20px;
@@ -308,7 +308,7 @@ function getPageName($url) {
 
         .progress-fill {
             height: 100%;
-            background: #78864F;
+            background: #123F73;
             border-radius: 10px;
             transition: width 0.3s ease;
         }
@@ -334,7 +334,7 @@ function getPageName($url) {
         }
 
         .device-count, .source-count {
-            color: #78864F;
+            color: #123F73;
             font-weight: 600;
         }
 
@@ -574,8 +574,8 @@ function getPageName($url) {
                 datasets: [{
                     label: 'Daily Visits',
                     data: <?php echo json_encode($daily_data); ?>,
-                    backgroundColor: 'rgba(120, 134, 79, 0.1)',
-                    borderColor: '#78864F',
+                    backgroundColor: 'rgba(18, 63, 115, 0.1)',
+                    borderColor: '#123F73',
                     borderWidth: 2,
                     fill: true,
                     tension: 0.4
@@ -610,7 +610,7 @@ function getPageName($url) {
                 datasets: [{
                     label: 'Hourly Visits',
                     data: <?php echo json_encode($hourly_data); ?>,
-                    backgroundColor: '#78864F',
+                    backgroundColor: '#123F73',
                     borderRadius: 5
                 }]
             },
@@ -640,7 +640,7 @@ function getPageName($url) {
         $device_data = [];
         $device_colors = [
             'Mobile' => '#4CAF50',
-            'Desktop' => '#78864F',
+            'Desktop' => '#123F73',
             'Tablet' => '#FF9800',
             'Unknown' => '#999999'
         ];

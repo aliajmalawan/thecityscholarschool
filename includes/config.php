@@ -49,9 +49,9 @@ if (!$conn) {
     $on_this_computer = in_array($_SERVER['REMOTE_ADDR'] ?? '', ['127.0.0.1', '::1'], true);
     echo '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
         . '<meta name="robots" content="noindex"><title>Temporarily unavailable</title>'
-        . '<style>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#F8F7F0;color:#252823;font-family:Segoe UI,Arial,sans-serif;text-align:center;padding:24px}'
-        . '.box{max-width:520px}h1{color:#5F6D3D;font-size:28px;margin:0 0 12px}p{line-height:1.7;color:#565c4d;margin:0 0 12px}'
-        . '.hint{background:#EEF1DF;border:1px solid #DDE2CB;border-radius:10px;padding:14px 16px;font-size:14.5px;color:#252823}</style></head><body><div class="box">'
+        . '<style>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#F2F5F9;color:#253449;font-family:Segoe UI,Arial,sans-serif;text-align:center;padding:24px}'
+        . '.box{max-width:520px}h1{color:#123F73;font-size:28px;margin:0 0 12px}p{line-height:1.7;color:#4E5D72;margin:0 0 12px}'
+        . '.hint{background:#E6EDF6;border:1px solid #D8E0EA;border-radius:10px;padding:14px 16px;font-size:14.5px;color:#253449}</style></head><body><div class="box">'
         . '<h1>We will be right back</h1>'
         . '<p>The website is temporarily unavailable. Please try again in a few minutes.</p>'
         . ($on_this_computer ? '<p class="hint"><strong>For the site owner:</strong> the MySQL database is not running. Open the XAMPP Control Panel, press <strong>Start</strong> next to MySQL, then refresh this page.</p>' : '')
@@ -63,8 +63,8 @@ if (!$conn) {
 mysqli_set_charset($conn, "utf8mb4");
 
 // Site Configuration
-define('SITE_NAME', 'Tameer-e-Nau Public School');
-define('SITE_URL', 'http://localhost/tameer-e-noe/');
+define('SITE_NAME', 'The City Scholars School');
+define('SITE_URL', 'http://localhost/thecityscholarschool/');
 define('ADMIN_EMAIL', 'aliajmalawan@gmail.com');
 
 // Start session if not already started

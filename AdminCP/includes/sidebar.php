@@ -38,7 +38,7 @@ $admin_nav_links = [
     <div class="sidebar-header">
         <img src="../<?php echo htmlspecialchars(getLogoSmallPath()); ?>" alt="" class="sidebar-logo">
         <div>
-            <h2><?php echo SITE_NAME; ?></h2>
+            <h2><?php echo htmlspecialchars(getSiteName()); ?></h2>
             <p>Admin Panel</p>
         </div>
         <button type="button" class="sidebar-close" id="sidebarClose" aria-label="Close menu">&times;</button>

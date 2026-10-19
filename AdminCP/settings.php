@@ -169,7 +169,7 @@ loadSettings();
 
                 <div class="form-group">
                     <label>Site Name *</label>
-                    <input type="text" name="site_name" required value="<?php echo htmlspecialchars(getSetting('site_name', 'Tameer-e-Nau Public School')); ?>">
+                    <input type="text" name="site_name" required value="<?php echo htmlspecialchars(getSetting('site_name', 'The City Scholars School')); ?>">
                 </div>
 
                 <div class="form-row">
@@ -186,7 +186,7 @@ loadSettings();
 
                 <div class="form-group">
                     <label>Site Address *</label>
-                    <textarea name="site_address" required rows="3"><?php echo htmlspecialchars(getSetting('site_address', 'Canal View, Hasilpur, Pakistan')); ?></textarea>
+                    <textarea name="site_address" required rows="3"><?php echo htmlspecialchars(getSetting('site_address', 'Pakistan')); ?></textarea>
                 </div>
 
                 <div class="form-group">
@@ -284,7 +284,7 @@ loadSettings();
 
                 <div class="form-group">
                     <label>About Us Description</label>
-                    <textarea name="about_description" rows="4" placeholder="Main description on About page"><?php echo htmlspecialchars(getSetting('about_description', 'Tameer-e-Nau Public School is committed to academic excellence and character building.')); ?></textarea>
+                    <textarea name="about_description" rows="4" placeholder="Main description on About page"><?php echo htmlspecialchars(getSetting('about_description', 'The City Scholars School is committed to academic excellence and character building.')); ?></textarea>
                 </div>
 
                 <div class="form-group">
@@ -308,22 +308,6 @@ loadSettings();
                 </div>
             </div>
 
-            <div class="settings-section">
-                <h3><i class="fas fa-fire"></i> "The Candle" Symbol Section (About Page)</h3>
-
-                <div class="form-group">
-                    <label>Paragraph 1</label>
-                    <textarea name="candle_paragraph_1" rows="2"><?php echo htmlspecialchars(getSetting('candle_paragraph_1')); ?></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Paragraph 2</label>
-                    <textarea name="candle_paragraph_2" rows="2"><?php echo htmlspecialchars(getSetting('candle_paragraph_2')); ?></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Paragraph 3</label>
-                    <textarea name="candle_paragraph_3" rows="2"><?php echo htmlspecialchars(getSetting('candle_paragraph_3')); ?></textarea>
-                </div>
-            </div>
 
             <!-- Principal's Message (About Page) -->
             <div class="settings-section">
@@ -375,12 +359,12 @@ loadSettings();
 
                 <div class="form-group">
                     <label>Footer About Text</label>
-                    <textarea name="footer_about_text" rows="3" placeholder="Short description in footer"><?php echo htmlspecialchars(getSetting('footer_about_text', 'Tameer-e-Nau Public School is dedicated to providing quality education and nurturing the potential of every student.')); ?></textarea>
+                    <textarea name="footer_about_text" rows="3" placeholder="Short description in footer"><?php echo htmlspecialchars(getSetting('footer_about_text', 'The City Scholars School is dedicated to providing quality education and nurturing the potential of every student.')); ?></textarea>
                 </div>
 
                 <div class="form-group">
                     <label>Copyright Text</label>
-                    <input type="text" name="copyright_text" value="<?php echo htmlspecialchars(getSetting('copyright_text', 'Tameer-e-Nau Public School. All Rights Reserved.')); ?>" placeholder="Copyright text in footer">
+                    <input type="text" name="copyright_text" value="<?php echo htmlspecialchars(getSetting('copyright_text', 'The City Scholars School. All Rights Reserved.')); ?>" placeholder="Copyright text in footer">
                 </div>
             </div>
 

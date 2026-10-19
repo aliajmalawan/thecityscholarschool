@@ -2,7 +2,7 @@
 $site_name = getSiteName();
 $seo_location = content('seo_title_suffix');
 $is_home = basename($_SERVER['SCRIPT_NAME']) === 'index.php';
-// Home: "Tameer-e-Nau Public School | Canal View Hasilpur"; inner pages: "About Us | Tameer-e-Nau Public School"
+// Home: "The City Scholars School | Excellence in Education"; inner pages: "About Us | The City Scholars School"
 $full_title = $is_home ? $site_name . ' | ' . $seo_location : ((!empty($page_title) ? $page_title . ' | ' : '') . $site_name);
 $meta_description = $meta_description ?? $site_name . ' in ' . $seo_location . ' provides quality education with caring teachers and a focus on character building.';
 $site_scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
@@ -17,11 +17,11 @@ $current_url = $site_base_url . '/' . ($page_slug === 'index' ? '' : $page_slug)
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#5F6D3D">
+    <meta name="theme-color" content="#082B50">
     <?php if (basename($_SERVER['SCRIPT_NAME']) === '404.php'): ?><base href="<?php echo htmlspecialchars($site_base_url); ?>/"><?php // the 404 page can be shown for any nested address, so resolve its links from the site root ?><?php endif; ?>
     <title><?php echo htmlspecialchars($full_title); ?></title>
     <meta name="description" content="<?php echo htmlspecialchars($meta_description); ?>">
-    <meta name="keywords" content="Tameer-e-Nau Public School, school in Hasilpur, Canal View Hasilpur school, quality education in Hasilpur, Tameer-e-Nau School">
+    <meta name="keywords" content="<?php echo htmlspecialchars($site_name); ?>, City Scholars School, City Scholars, private school, quality education, admissions open">
     <meta name="author" content="<?php echo htmlspecialchars($site_name); ?>">
     <?php if (!empty($noindex)): ?><meta name="robots" content="noindex, follow"><?php endif; ?>
     <link rel="canonical" href="<?php echo htmlspecialchars($current_url); ?>">
@@ -33,8 +33,8 @@ $current_url = $site_base_url . '/' . ($page_slug === 'index' ? '' : $page_slug)
     <meta property="og:description" content="<?php echo htmlspecialchars($meta_description); ?>">
     <meta property="og:url" content="<?php echo htmlspecialchars($current_url); ?>">
     <meta property="og:image" content="<?php echo htmlspecialchars($site_base_url . '/' . getLogoPath()); ?>">
-    <meta property="og:image:width" content="635">
-    <meta property="og:image:height" content="639">
+    <meta property="og:image:width" content="640">
+    <meta property="og:image:height" content="595">
     <meta property="og:image:alt" content="<?php echo htmlspecialchars($site_name); ?> logo">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="<?php echo htmlspecialchars($full_title); ?>">
@@ -46,8 +46,8 @@ $current_url = $site_base_url . '/' . ($page_slug === 'index' ? '' : $page_slug)
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <!-- Web fonts (text shows in the fallback font until they arrive): loaded without blocking the first paint -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap"></noscript>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap"></noscript>
 
     <!-- Structured Data (helps Google show rich results / knowledge panel) -->
     <script type="application/ld+json">
@@ -117,7 +117,7 @@ $current_url = $site_base_url . '/' . ($page_slug === 'index' ? '' : $page_slug)
         <div class="edu-topbar">
             <div class="container edu-topbar-inner">
                 <a class="brand" href="./" aria-label="<?php echo htmlspecialchars(getSiteName()); ?> - Home">
-                    <img src="<?php echo getLogoSmallPath(); ?>" alt="" class="brand-logo" width="56" height="56" onerror="this.style.display='none'">
+                    <img src="<?php echo getLogoSmallPath(); ?>" alt="" class="brand-logo" width="60" height="56" onerror="this.style.display='none'">
                     <span class="brand-text">
                         <strong><?php echo htmlspecialchars(getSiteName()); ?></strong>
                         <small><?php echo htmlspecialchars(content('site_tagline')); ?></small>

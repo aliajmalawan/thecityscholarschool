@@ -23,10 +23,10 @@ function getActiveTheme() {
     // Default theme if none active
     return [
         'theme_name' => 'Default Theme',
-        'primary_color' => '#78864F',
+        'primary_color' => '#123F73',
         'secondary_color' => '#FFFFFF',
-        'accent_color' => '#B3262D',
-        'logo_path' => 'images/tameer-e-nau-logo.png'
+        'accent_color' => '#F8B923',
+        'logo_path' => 'images/city-scholars-crest.png'
     ];
 }
 
@@ -80,14 +80,14 @@ function getThemeCSS() {
 // Get logo path
 function getLogoPath() {
     $theme = getActiveTheme();
-    return $theme['logo_path'] ?? 'images/tameer-e-nau-logo.png';
+    return $theme['logo_path'] ?? 'images/city-scholars-crest.png';
 }
 
-// Small logo for header/footer/admin (the 160px copy of the default logo); any custom logo is used as is
+// Small logo for header/footer/admin (the 200px copy of the default crest); any custom logo is used as is
 function getLogoSmallPath() {
     $logo = getLogoPath();
-    $small = 'images/tameer-e-nau-logo-sm.png';
-    if ($logo === 'images/tameer-e-nau-logo.png' && file_exists(__DIR__ . '/../' . $small)) {
+    $small = 'images/city-scholars-crest-sm.png';
+    if ($logo === 'images/city-scholars-crest.png' && file_exists(__DIR__ . '/../' . $small)) {
         return $small;
     }
     return $logo;
@@ -127,7 +127,7 @@ function createTheme($theme_name, $primary_color, $secondary_color, $accent_colo
     $primary_color = mysqli_real_escape_string($conn, $primary_color);
     $secondary_color = mysqli_real_escape_string($conn, $secondary_color);
     $accent_color = mysqli_real_escape_string($conn, $accent_color);
-    $logo_path = $logo_path ? mysqli_real_escape_string($conn, $logo_path) : 'images/tameer-e-nau-logo.png';
+    $logo_path = $logo_path ? mysqli_real_escape_string($conn, $logo_path) : 'images/city-scholars-crest.png';
 
     $query = "INSERT INTO themes (theme_name, primary_color, secondary_color, accent_color, logo_path, is_active)
               VALUES ('$theme_name', '$primary_color', '$secondary_color', '$accent_color', '$logo_path', 0)";

@@ -52,8 +52,8 @@ if ($needs_token) {
     if (!hash_equals($_SESSION['admin_csrf'], $sent)) {
         http_response_code(403);
         echo '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Request blocked</title>'
-            . '<style>body{font-family:Segoe UI,Arial,sans-serif;background:#F8F7F0;color:#252823;display:flex;min-height:100vh;align-items:center;justify-content:center;margin:0;padding:24px;text-align:center}'
-            . '.box{max-width:460px}h1{color:#5F6D3D;font-size:24px}a{color:#5F6D3D;font-weight:600}</style></head><body><div class="box">'
+            . '<style>body{font-family:Segoe UI,Arial,sans-serif;background:#F2F5F9;color:#253449;display:flex;min-height:100vh;align-items:center;justify-content:center;margin:0;padding:24px;text-align:center}'
+            . '.box{max-width:460px}h1{color:#082B50;font-size:24px}a{color:#082B50;font-weight:600}</style></head><body><div class="box">'
             . '<h1>This action was blocked</h1><p>For your safety the change was not made, because the request did not come from an admin page opened in this session (or the page was open too long).</p>'
             . '<p><a href="' . htmlspecialchars(basename($_SERVER['SCRIPT_NAME'])) . '">Reload the page</a> and try again.</p></div></body></html>';
         exit;

@@ -49,7 +49,7 @@ function getSetting($key, $default = '') {
  * Get site name
  */
 function getSiteName() {
-    return getSetting('site_name', 'Tameer-e-Nau Public School');
+    return getSetting('site_name', 'The City Scholars School');
 }
 
 /**
@@ -70,7 +70,7 @@ function getSitePhone() {
  * Get site address
  */
 function getSiteAddress() {
-    return getSetting('site_address', 'Canal View, Hasilpur, Pakistan');
+    return getSetting('site_address', 'Pakistan');
 }
 
 /**
@@ -111,7 +111,7 @@ function hasSiteEmail() {
 function getHeroContent() {
     return [
         'title' => getSetting('hero_title', 'Building Strong Foundations for a Brighter Future'),
-        'description' => getSetting('hero_description', 'At Tameer-e-Nau Public School, we are committed to providing quality education, character development and a nurturing environment where every student can learn, grow and succeed.'),
+        'description' => getSetting('hero_description', 'At The City Scholars School, we are committed to providing quality education, character development and a nurturing environment where every student can learn, grow and succeed.'),
         'button_text' => getSetting('hero_button_text', 'Apply Now'),
         'button_link' => getSetting('hero_button_link', 'admission'),
         'image' => content('hero_image')
@@ -148,7 +148,7 @@ function getStatistics() {
  */
 function getAboutContent() {
     return [
-        'description' => getSetting('about_description', 'Tameer-e-Nau Public School is a leading educational institution committed to excellence in education...'),
+        'description' => getSetting('about_description', 'The City Scholars School is a leading educational institution committed to excellence in education.'),
         'mission' => getSetting('mission_statement', 'To provide quality education and empower students to achieve their full potential.'),
         'vision' => getSetting('vision_statement', 'To be a center of educational excellence that nurtures future leaders and innovators.')
     ];
@@ -159,8 +159,8 @@ function getAboutContent() {
  */
 function getFooterContent() {
     return [
-        'about_text' => getSetting('footer_about_text', 'Tameer-e-Nau Public School is dedicated to providing quality education and nurturing the potential of every student.'),
-        'copyright' => getSetting('copyright_text', 'Tameer-e-Nau Public School. All rights reserved.')
+        'about_text' => getSetting('footer_about_text', 'The City Scholars School is dedicated to providing quality education and nurturing the potential of every student.'),
+        'copyright' => getSetting('copyright_text', 'The City Scholars School. All rights reserved.')
     ];
 }
 

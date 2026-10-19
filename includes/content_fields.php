@@ -29,15 +29,15 @@ function pageFields($slug, $eyebrow, $title, $subtitle, $seoTitle, $seoDesc) {
 
 $registry = [
     'global' => ['label' => 'Site-wide', 'icon' => 'fa-globe', 'fields' => [
-        cf('site_logo', 'School logo', 'logo', 'images/tameer-e-nau-logo.png', 'Square or round logo (PNG/JPG/WebP, up to 8 MB; resized and compressed automatically). Used in the header, footer, favicon area and share previews.'),
-        cf('site_tagline', 'Tagline under the school name', 'text', 'Canal View, Hasilpur', 'Small line below the name in the header and footer.'),
-        cf('seo_title_suffix', 'Home page title suffix', 'text', 'Canal View Hasilpur', 'Home page browser title becomes "School name | this text".'),
+        cf('site_logo', 'School logo', 'logo', 'images/city-scholars-crest.png', 'Square, round or crest logo (PNG/JPG/WebP, up to 8 MB; resized and compressed automatically). Used in the header, footer, favicon area and share previews.'),
+        cf('site_tagline', 'Tagline under the school name', 'text', 'Excellence in Education', 'Small line below the name in the header and footer.'),
+        cf('seo_title_suffix', 'Home page title suffix', 'text', 'Excellence in Education', 'Home page browser title becomes "School name | this text".'),
         cf('apply_button_label', 'Header "Apply" button text', 'text', 'Apply Online'),
-        cf('seo_home_description', 'Home page Google description', 'textarea', '{site_name} in Canal View, Hasilpur offers quality education with caring teachers, a disciplined environment and a focus on character.'),
+        cf('seo_home_description', 'Home page Google description', 'textarea', '{site_name} offers quality education with dedicated teachers, a safe and disciplined campus and a strong focus on character and academic excellence.'),
     ]],
 
     'home_hero' => ['label' => 'Home: Hero & About', 'icon' => 'fa-house', 'fields' => [
-        cf('home_hero_eyebrow', 'Hero small label', 'text', 'Canal View, Hasilpur'),
+        cf('home_hero_eyebrow', 'Hero small label', 'text', 'Knowledge · Character · Excellence'),
         cf('hero_title', 'Hero headline', 'text', 'Building Strong Foundations for a Brighter Future'),
         cf('hero_description', 'Hero text', 'textarea', 'At {site_name}, we are committed to providing quality education, character development and a nurturing environment where every student can learn, grow and succeed.'),
         cf('hero_image', 'Fallback hero photo', 'image', '', 'Only used when there are no active slides. The home slider itself is managed under Home Slider in the sidebar.'),
@@ -47,7 +47,7 @@ $registry = [
         cf('home_hero_btn2_link', 'Hero button 2 link', 'url', 'contact'),
         cf('home_about_eyebrow', 'About section small label', 'text', 'About Us'),
         cf('home_about_heading', 'About section heading', 'text', 'Welcome to {site_name}'),
-        cf('home_about_text', 'About section introduction', 'textarea', 'Located in Canal View, Hasilpur, our school is built on the belief that every child deserves a strong start. We combine a disciplined, supportive academic environment with caring teachers, so students grow in knowledge, confidence and character and are ready to contribute positively to their community.'),
+        cf('home_about_text', 'About section introduction', 'textarea', '{site_name} is built on the belief that every child deserves a strong start. We combine a disciplined, supportive academic environment with caring teachers, so students grow in knowledge, confidence and character and are ready to contribute positively to their community.'),
         cf('home_about_image', 'About section photo', 'image', 'images/site/about-home.jpg', 'Portrait photo (4:5) looks best.'),
         cf('home_about_btn_label', 'About section button text', 'text', 'Learn More'),
         cf('stats_label_students', 'Statistics label: students', 'text', 'Students', 'Numbers are edited in Settings -> Statistics.'),
@@ -97,7 +97,7 @@ $registry = [
         cf('home_digital_heading', 'Digital campus: heading', 'text', 'Complete Digital School Management System'),
         cf('home_digital_subtitle', 'Digital campus: subtitle', 'text', '{site_name} is fully digitized — experience modern education management with cutting-edge technology.'),
         cf('home_why_eyebrow', 'Why choose us: small label', 'text', 'Why Choose Us'),
-        cf('home_why_heading', 'Why choose us: heading', 'text', 'Why Choose Tameer-e-Nau?'),
+        cf('home_why_heading', 'Why choose us: heading', 'text', 'Why Choose {site_name}?'),
         cf('home_why_subtitle', 'Why choose us: subtitle', 'text', 'Quality education, strong values and a caring environment for every student'),
         cf('home_life_eyebrow', 'Campus life: small label', 'text', 'Campus Life', 'The photo cards come from Gallery categories automatically.'),
         cf('home_life_heading', 'Campus life: heading', 'text', 'Life at {site_name}'),
@@ -131,7 +131,7 @@ $registry = [
     ]],
 
     'about' => ['label' => 'About page', 'icon' => 'fa-circle-info', 'fields' => array_merge(
-        pageFields('about', 'About Us', 'About {site_name}', 'Learn about our mission, vision, and commitment to educational excellence', 'About Us', 'Learn about {site_name} in Hasilpur: our mission, vision and core values, and our commitment to quality education and student development.'),
+        pageFields('about', 'About Us', 'About {site_name}', 'Learn about our mission, vision, and commitment to educational excellence', 'About Us', 'Learn about {site_name}: our mission, vision and core values, and our commitment to quality education and student development.'),
         [
             cf('about_story_eyebrow', 'Story: small label', 'text', 'Who We Are'),
             cf('about_story_heading', 'Story: heading', 'text', 'Our Story'),
@@ -149,7 +149,7 @@ $registry = [
     )],
 
     'courses' => ['label' => 'Courses page', 'icon' => 'fa-book', 'fields' => array_merge(
-        pageFields('courses', 'Academics', 'Our Courses', 'A complete path of study from Early Years to Matric', 'Courses & Academics', 'Explore the courses at {site_name}, Canal View Hasilpur: Early Years, Primary, Middle School and Matric (Science, Computer Science and Arts groups).'),
+        pageFields('courses', 'Academics', 'Our Courses', 'A complete path of study from Early Years to Matric', 'Courses & Academics', 'Explore the courses at {site_name}: Early Years, Primary, Middle School and Matric (Science, Computer Science and Arts groups).'),
         [
             cf('courses_path_eyebrow', 'Overview: small label', 'text', 'Academic Path', 'The courses themselves are added and edited under Courses in the sidebar.'),
             cf('courses_path_heading', 'Overview: heading', 'text', 'From Early Years to Matric'),
@@ -170,17 +170,17 @@ $registry = [
             cf('courses_cta_text', 'Bottom banner: text', 'text', 'Start your learning journey with {site_name} today'),
         ]
     )],
-    'admission' => ['label' => 'Admission page', 'icon' => 'fa-file-pen', 'fields' => pageFields('admission', 'Join Us', 'Admission Application', 'Start your educational journey with {site_name}', 'Admissions', 'Apply online to {site_name}, Canal View Hasilpur. See the admission process, the documents you need and how to reach our admissions office.')],
-    'faculty' => ['label' => 'Faculty page', 'icon' => 'fa-chalkboard-user', 'fields' => pageFields('faculty', 'Our Team', 'Our Expert Faculty', 'Meet our dedicated and experienced teachers committed to your success', 'Our Faculty', 'Meet the teachers of {site_name} in Hasilpur, dedicated to helping every student learn, grow and succeed.')],
-    'campuses' => ['label' => 'Campus page', 'icon' => 'fa-school', 'fields' => pageFields('campuses', 'Our Network', 'Our Campuses', 'Beyond our main campus, {site_name} operates specialized institutes for focused learning', 'Our Campuses', 'Explore the campuses of {site_name}: our main school at Canal View, Hasilpur and our specialised institutes for computer studies and sports training.')],
-    'gallery' => ['label' => 'Gallery page', 'icon' => 'fa-images', 'fields' => pageFields('gallery', 'Campus Life', 'Photo Gallery', 'Explore moments captured at {site_name}', 'Photo Gallery', 'Photos and videos of classroom activities, school events and celebrations at {site_name}, Canal View Hasilpur. See everyday campus life for yourself.')],
-    'events' => ['label' => 'News & Events page', 'icon' => 'fa-calendar-days', 'fields' => pageFields('events', "What's Happening", 'Events & News', 'Stay updated with latest happenings at {site_name}', 'News & Events', 'Latest news, announcements and upcoming events from {site_name} in Canal View, Hasilpur: admissions updates, results, competitions and celebrations.')],
-    'examination' => ['label' => 'Examination page', 'icon' => 'fa-file-lines', 'fields' => pageFields('examination', 'Academics', 'Examination', 'Datesheets & Board Results', 'Examination', 'Exam datesheets, schedules and board results for Matric and other classes at {site_name}, Canal View Hasilpur. Check upcoming exams and past results.')],
-    'alumni' => ['label' => 'Alumni page', 'icon' => 'fa-user-graduate', 'fields' => array_merge(pageFields('alumni', 'Alumni Network', 'Our Alumni', 'Join our alumni community and share your success story', 'Alumni', 'Meet the alumni of {site_name} in Hasilpur, read where our former students are today, share your own experience and join the alumni network.'), [cf('alumni_default_photo', 'Default alumni photo', 'image', 'images/site/alumni-default.png', 'Shown for every alumnus who has no photo of their own. A square picture works best. Each alumnus\'s own photo is changed under Alumni in the sidebar.')])],
-    'downloads' => ['label' => 'Downloads page', 'icon' => 'fa-download', 'fields' => pageFields('downloads', 'Resources', 'Downloads', 'Important documents and files for students', 'Downloads', 'Download admission forms, school notices, syllabus and study material from {site_name}, Canal View Hasilpur, all in one place for students and parents.')],
+    'admission' => ['label' => 'Admission page', 'icon' => 'fa-file-pen', 'fields' => pageFields('admission', 'Join Us', 'Admission Application', 'Start your educational journey with {site_name}', 'Admissions', 'Apply online to {site_name}. See the admission process, the documents you need and how to reach our admissions office.')],
+    'faculty' => ['label' => 'Faculty page', 'icon' => 'fa-chalkboard-user', 'fields' => pageFields('faculty', 'Our Team', 'Our Expert Faculty', 'Meet our dedicated and experienced teachers committed to your success', 'Our Faculty', 'Meet the teachers of {site_name}, dedicated to helping every student learn, grow and succeed.')],
+    'campuses' => ['label' => 'Campus page', 'icon' => 'fa-school', 'fields' => pageFields('campuses', 'Our Network', 'Our Campuses', 'Beyond our main campus, {site_name} operates specialized institutes for focused learning', 'Our Campuses', 'Explore the campuses of {site_name}: our main campus and our specialised institutes for computer studies and sports training.')],
+    'gallery' => ['label' => 'Gallery page', 'icon' => 'fa-images', 'fields' => pageFields('gallery', 'Campus Life', 'Photo Gallery', 'Explore moments captured at {site_name}', 'Photo Gallery', 'Photos and videos of classroom activities, school events and celebrations at {site_name}. See everyday campus life for yourself.')],
+    'events' => ['label' => 'News & Events page', 'icon' => 'fa-calendar-days', 'fields' => pageFields('events', "What's Happening", 'Events & News', 'Stay updated with latest happenings at {site_name}', 'News & Events', 'Latest news, announcements and upcoming events from {site_name}: admissions updates, results, competitions and celebrations.')],
+    'examination' => ['label' => 'Examination page', 'icon' => 'fa-file-lines', 'fields' => pageFields('examination', 'Academics', 'Examination', 'Datesheets & Board Results', 'Examination', 'Exam datesheets, schedules and board results for Matric and other classes at {site_name}. Check upcoming exams and past results.')],
+    'alumni' => ['label' => 'Alumni page', 'icon' => 'fa-user-graduate', 'fields' => array_merge(pageFields('alumni', 'Alumni Network', 'Our Alumni', 'Join our alumni community and share your success story', 'Alumni', 'Meet the alumni of {site_name}, read where our former students are today, share your own experience and join the alumni network.'), [cf('alumni_default_photo', 'Default alumni photo', 'image', 'images/site/alumni-default.png', 'Shown for every alumnus who has no photo of their own. A square picture works best. Each alumnus\'s own photo is changed under Alumni in the sidebar.')])],
+    'downloads' => ['label' => 'Downloads page', 'icon' => 'fa-download', 'fields' => pageFields('downloads', 'Resources', 'Downloads', 'Important documents and files for students', 'Downloads', 'Download admission forms, school notices, syllabus and study material from {site_name}, all in one place for students and parents.')],
     'contact' => ['label' => 'Contact page', 'icon' => 'fa-envelope', 'fields' => array_merge(
-        pageFields('contact', 'Get In Touch', 'Contact Us', "Get in touch with us — we're here to help!", 'Contact Us', 'Contact {site_name} at Canal View, Hasilpur. Find our address, office hours and location map, or send us a message.'),
-        [cf('contact_map_query', 'Map location', 'text', 'Tameer-e-Nau Public School Canal View Hasilpur', 'Text searched on Google Maps for the embedded map (school name + area works well).')]
+        pageFields('contact', 'Get In Touch', 'Contact Us', "Get in touch with us — we're here to help!", 'Contact Us', 'Contact {site_name}. Find our address, office hours and location map, or send us a message.'),
+        [cf('contact_map_query', 'Map location', 'text', 'The City Scholars School', 'Text searched on Google Maps for the embedded map (school name + area works well).')]
     )],
 ];
 

@@ -1,6 +1,6 @@
 # ---------------------------------------------------------------------------
 # Clean URLs: /about serves about.php. Works the same in a sub-folder
-# (localhost/tameer-e-noe/about) and at a domain root (example.com/about).
+# (localhost/thecityscholarschool/about) and at a domain root (example.com/about).
 # ---------------------------------------------------------------------------
 <IfModule mod_rewrite.c>
     RewriteEngine On

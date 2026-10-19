@@ -10,14 +10,14 @@
  */
 
 // Brand palette (same values as the tokens in css/style.css)
-const EMAIL_OLIVE = '#5F6D3D';
-const EMAIL_OLIVE_LIGHT = '#78864F';
-const EMAIL_MAROON = '#B3262D';
-const EMAIL_CREAM = '#F8F7F0';
-const EMAIL_SAGE = '#EEF1DF';
-const EMAIL_BORDER = '#DDE2CB';
-const EMAIL_TEXT = '#252823';
-const EMAIL_MUTED = '#565C4D';
+const EMAIL_OLIVE = '#123F73';      // navy: header band, headings
+const EMAIL_OLIVE_LIGHT = '#123F73';
+const EMAIL_MAROON = '#F8B923';     // gold accent line / action notes
+const EMAIL_CREAM = '#F2F5F9';
+const EMAIL_SAGE = '#E6EDF6';
+const EMAIL_BORDER = '#D8E0EA';
+const EMAIL_TEXT = '#253449';
+const EMAIL_MUTED = '#4E5D72';
 const EMAIL_FONT = "'Segoe UI', Helvetica, Arial, sans-serif";
 
 /** Absolute URL of the site root, e.g. https://example.com (emails can't use relative links). */
@@ -44,7 +44,7 @@ function brandEmail($heading, $content_html) {
 
     $contact_bits = [];
     if ($phone !== '') { $contact_bits[] = $phone; }
-    if (hasSiteEmail()) { $contact_bits[] = '<a href="mailto:' . $email . '" style="color:#C9D3A3;text-decoration:none;">' . $email . '</a>'; }
+    if (hasSiteEmail()) { $contact_bits[] = '<a href="mailto:' . $email . '" style="color:#F8B923;text-decoration:none;">' . $email . '</a>'; }
     $contact_line = implode(' &nbsp;&middot;&nbsp; ', $contact_bits);
 
     return '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>' . $heading . '</title></head>'
@@ -54,11 +54,11 @@ function brandEmail($heading, $content_html) {
         // Header: logo + school name
         . '<tr><td style="background:' . EMAIL_OLIVE . ';padding:22px 28px;">'
         . '<table role="presentation" cellpadding="0" cellspacing="0"><tr>'
-        . '<td style="padding-right:14px;vertical-align:middle;"><img src="' . $logo . '" width="52" height="52" alt="' . $site . ' logo" style="display:block;border-radius:50%;background:#FFFFFF;"></td>'
+        . '<td style="padding-right:14px;vertical-align:middle;"><img src="' . $logo . '" width="52" height="52" alt="' . $site . ' logo" style="display:block;object-fit:contain;"></td>'
         . '<td style="vertical-align:middle;"><div style="font-size:18px;font-weight:700;color:#FFFFFF;line-height:1.3;">' . $site . '</div>'
-        . '<div style="font-size:13px;color:#DCE3C4;">' . htmlspecialchars(trim((string) strtok(getSiteAddress(), "\n"))) .'</div></td>'
+        . '<div style="font-size:13px;color:#C9D6E8;">' . htmlspecialchars(trim((string) strtok(getSiteAddress(), "\n"))) .'</div></td>'
         . '</tr></table></td></tr>'
-        // Maroon accent line
+        // Gold accent line
         . '<tr><td style="height:4px;background:' . EMAIL_MAROON . ';font-size:0;line-height:0;">&nbsp;</td></tr>'
         // Body
         . '<tr><td style="padding:30px 28px 26px;font-size:15px;line-height:1.65;color:' . EMAIL_TEXT . ';">'
@@ -66,12 +66,12 @@ function brandEmail($heading, $content_html) {
         . $content_html
         . '</td></tr>'
         // Footer
-        . '<tr><td style="background:' . EMAIL_TEXT . ';padding:20px 28px;font-size:12.5px;line-height:1.7;color:#C8CCC0;text-align:center;">'
+        . '<tr><td style="background:#082B50;padding:20px 28px;font-size:12.5px;line-height:1.7;color:#B7C3D3;text-align:center;">'
         . '<div style="font-weight:700;color:#FFFFFF;font-size:14px;">' . $site . '</div>'
         . '<div>' . $address . '</div>'
         . ($contact_line !== '' ? '<div>' . $contact_line . '</div>' : '')
         . ($hours !== '' ? '<div>Office hours: ' . $hours . '</div>' : '')
-        . '<div style="margin-top:8px;"><a href="' . htmlspecialchars($base) . '/" style="color:#C9D3A3;text-decoration:none;">' . htmlspecialchars(preg_replace('#^https?://#', '', $base)) . '</a> &nbsp;&middot;&nbsp; &copy; ' . $year . '</div>'
+        . '<div style="margin-top:8px;"><a href="' . htmlspecialchars($base) . '/" style="color:#F8B923;text-decoration:none;">' . htmlspecialchars(preg_replace('#^https?://#', '', $base)) . '</a> &nbsp;&middot;&nbsp; &copy; ' . $year . '</div>'
         . '</td></tr>'
         . '</table></td></tr></table></body></html>';
 }
@@ -88,10 +88,10 @@ function emailInfoTable(array $rows) {
     return $html . '</table>';
 }
 
-/** Highlighted note. $tone: 'success' (olive) or 'action' (maroon). $html is already-escaped HTML. */
+/** Highlighted note. $tone: 'success' (navy) or 'action' (gold). $html is already-escaped HTML. */
 function emailNote($html, $tone = 'success') {
     $bar = $tone === 'action' ? EMAIL_MAROON : EMAIL_OLIVE_LIGHT;
-    $bg = $tone === 'action' ? '#FBF1F1' : EMAIL_SAGE;
+    $bg = $tone === 'action' ? '#FEF6E1' : EMAIL_SAGE;
     return '<div style="margin:18px 0;padding:14px 16px;background:' . $bg . ';border-left:4px solid ' . $bar . ';border-radius:6px;font-size:14.5px;">' . $html . '</div>';
 }
 

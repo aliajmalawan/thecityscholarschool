@@ -110,7 +110,7 @@ $meta_description = content('seo_events_description');
                 echo '<div style="text-align: center; padding: 80px 20px; background: white; border-radius: 15px; box-shadow: var(--shadow);">';
                 echo '<i class="fas fa-newspaper" style="font-size: 100px; color: var(--text-light); margin-bottom: 30px; opacity: 0.3;"></i>';
                 echo '<h3 style="color: var(--text-dark); margin-bottom: 15px; font-size: 28px;">No News Available</h3>';
-                echo '<p style="color: var(--text-light); font-size: 18px; max-width: 500px; margin: 0 auto;">Check back soon for latest updates and announcements from Tameer-e-Nau Public School!</p>';
+                echo '<p style="color: var(--text-light); font-size: 18px; max-width: 500px; margin: 0 auto;">Check back soon for latest updates and announcements from ' . htmlspecialchars(getSiteName()) . '!</p>';
                 echo '</div>';
             }
             ?>

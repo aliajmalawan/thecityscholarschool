@@ -73,8 +73,8 @@ $recent_contacts = mysqli_query($conn, "SELECT * FROM contacts ORDER BY created_
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet">
-    <title>Admin Dashboard - Tameer-e-Nau Public School</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <title>Admin Dashboard - <?php echo htmlspecialchars(getSiteName()); ?></title>
     <link rel="icon" type="image/png" href="../<?php echo htmlspecialchars(getLogoPath()); ?>">
     <link rel="stylesheet" href="../css/style.css?v=<?php echo assetVersion('css/style.css'); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -101,7 +101,7 @@ $recent_contacts = mysqli_query($conn, "SELECT * FROM contacts ORDER BY created_
         }
 
         .welcome-text h1 {
-            color: #78864F;
+            color: #123F73;
             font-size: 28px;
             margin-bottom: 5px;
         }
@@ -132,7 +132,7 @@ $recent_contacts = mysqli_query($conn, "SELECT * FROM contacts ORDER BY created_
         }
 
         .notification-btn:hover {
-            background: #78864F;
+            background: #123F73;
             color: white;
         }
 
@@ -251,7 +251,7 @@ $recent_contacts = mysqli_query($conn, "SELECT * FROM contacts ORDER BY created_
         }
 
         .view-all-btn {
-            color: #78864F;
+            color: #123F73;
             text-decoration: none;
             font-size: 13px;
             font-weight: 500;
@@ -259,7 +259,7 @@ $recent_contacts = mysqli_query($conn, "SELECT * FROM contacts ORDER BY created_
         }
 
         .view-all-btn:hover {
-            color: #B3262D;
+            color: var(--accent-ink, #8A5D00);
         }
 
         /* Table */
@@ -320,7 +320,7 @@ $recent_contacts = mysqli_query($conn, "SELECT * FROM contacts ORDER BY created_
 
         .btn-view {
             padding: 6px 16px;
-            background: #78864F;
+            background: #123F73;
             color: white;
             text-decoration: none;
             border-radius: 6px;
@@ -330,7 +330,7 @@ $recent_contacts = mysqli_query($conn, "SELECT * FROM contacts ORDER BY created_
         }
 
         .btn-view:hover {
-            background: #5F6D3D;
+            background: #082B50;
         }
 
         /* Quick Actions */
@@ -354,12 +354,12 @@ $recent_contacts = mysqli_query($conn, "SELECT * FROM contacts ORDER BY created_
         .action-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            border-color: #78864F;
+            border-color: #123F73;
         }
 
         .action-card i {
             font-size: 40px;
-            color: #78864F;
+            color: #123F73;
             margin-bottom: 15px;
         }
 

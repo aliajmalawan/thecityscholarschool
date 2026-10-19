@@ -4,7 +4,7 @@
             <div class="footer-content">
                 <div class="footer-section footer-brand">
                     <a href="./" class="footer-logo">
-                        <img src="<?php echo getLogoSmallPath(); ?>" alt="<?php echo htmlspecialchars(getSiteName()); ?> Logo" width="64" height="64" onerror="this.style.display='none'">
+                        <img src="<?php echo getLogoSmallPath(); ?>" alt="<?php echo htmlspecialchars(getSiteName()); ?> Logo" width="69" height="64" onerror="this.style.display='none'">
                         <span>
                             <strong><?php echo htmlspecialchars(getSiteName()); ?></strong>
                             <small><?php echo htmlspecialchars(content('site_tagline')); ?></small>
@@ -56,7 +56,7 @@
 
                 <div class="footer-section footer-contact">
                     <h2 class="footer-heading">Contact Info</h2>
-                    <?php // The address is saved on several lines in Settings; the footer shows it on one: "Canal View, Hasilpur, Pakistan" ?>
+                    <?php // The address is saved on several lines in Settings; the footer shows it on one: "Street, City, Pakistan" ?>
                     <p><i class="fas fa-map-marker-alt"></i> <span><?php echo htmlspecialchars(implode(', ', array_filter(array_map(fn($line) => trim($line, " \t,"), preg_split('/\r\n|\r|\n/', getSiteAddress()))))); ?></span></p>
                     <?php foreach (array_filter(array_map('trim', explode(',', getSitePhone()))) as $number): ?>
                         <p><i class="fas fa-phone"></i> <a href="tel:<?php echo htmlspecialchars(preg_replace('/[^0-9+]/', '', $number)); ?>"><?php echo htmlspecialchars($number); ?></a></p>

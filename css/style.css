@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Tameer-e-Nau Public School - Stylesheet
+   The City Scholars School - Stylesheet
 
    Contents (search for the banner text):
      1. Design tokens            6. Homepage sections (about, academics, ...)
@@ -16,25 +16,28 @@
    the active theme row in the database, so the admin theme still wins.
    ========================================================================== */
 :root {
-    /* Brand palette */
-    --primary: #78864F;          /* olive: dominant brand colour */
-    --primary-dark: #5F6D3D;     /* dark olive: text-safe buttons, dark sections */
-    --primary-darker: #4B5630;   /* hover state of olive buttons */
-    --secondary: #B5C27B;        /* sage: supporting accents, icons on dark */
-    --accent: #B3262D;           /* maroon: CTAs and small highlights only */
-    --accent-dark: #8E1D24;      /* maroon hover */
-    --cream: #F8F7F0;            /* warm section background */
-    --text: #252823;             /* charcoal */
-    --soft-sage: #EEF1DF;        /* soft backgrounds, chips */
-    --border: #DDE2CB;
+    /* Brand palette (The City Scholars School crest) */
+    --primary: #123F73;          /* navy: dominant brand colour */
+    --primary-dark: #082B50;     /* deep navy: text-safe buttons, dark sections */
+    --primary-darker: #061F3A;   /* hover state of navy buttons, footer */
+    --secondary: #F8B923;        /* gold: highlights and icons on navy */
+    --accent: #F8B923;           /* gold: CTAs and small highlights (always with navy text) */
+    --accent-dark: #E0A00C;      /* gold hover */
+    --on-accent: #082B50;        /* text on gold (8.1:1) */
+    --accent-ink: #8A5D00;       /* gold-toned text/icons on light backgrounds (5.3:1) */
+    --cream: #F2F5F9;            /* light section background */
+    --text: #253449;             /* main text */
+    --soft-sage: #E6EDF6;        /* soft navy tint: backgrounds, chips */
+    --border: #D8E0EA;
     --white: #FFFFFF;
 
     /* Supporting neutrals and RGB triplets (for translucent overlays) */
-    --text-light: #565c4d;
-    --muted: #7a806d;
-    --ink-rgb: 37, 40, 35;
-    --overlay-rgb: 47, 56, 28;   /* dark olive used over photos */
-    --primary-line: rgba(120, 134, 79, 0.35);
+    --text-light: #4E5D72;
+    --muted: #5B6A80;
+    --ink-rgb: 37, 52, 73;
+    --overlay-rgb: 8, 43, 80;    /* deep navy used over photos */
+    --accent-rgb: 248, 185, 35;
+    --primary-line: rgba(18, 63, 115, 0.35);
 
     /* Feedback colours (form alerts) */
     --success: #1e7e4d;
@@ -59,8 +62,8 @@
     --surface: var(--white);
 
     /* Typography */
-    --font-display: 'Plus Jakarta Sans', 'Poppins', 'Segoe UI', sans-serif;
-    --font-body: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --font-display: 'Poppins', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --font-body: 'Inter', 'Segoe UI', system-ui, -apple-system, Roboto, Arial, sans-serif;
 
     /* Radii */
     --radius-sm: 10px;
@@ -144,7 +147,7 @@ p {
 /* ========================================
    Header & Navigation
    Two tiers: a white top bar (brand, contact, Apply Online) and a dark
-   olive navbar with centred uppercase links, dropdowns and a coloured
+   navy navbar with centred uppercase links, dropdowns and a coloured
    top-line on hover / current page. Sticky as one unit on every page.
    ======================================== */
 .site-header {
@@ -185,7 +188,7 @@ p {
 
 .brand-logo {
     height: 56px;
-    width: 56px;
+    width: 60px;
     object-fit: contain;
     flex-shrink: 0;
 }
@@ -244,6 +247,7 @@ p {
 
 .edu-topbar-info:hover .edu-topbar-info-icon {
     background: var(--accent);
+    color: var(--on-accent);
 }
 
 .edu-topbar-info small {
@@ -286,6 +290,7 @@ p {
 
 .edu-topbar-social a:hover {
     background: var(--accent);
+    color: var(--on-accent);
     transform: translateY(-2px);
 }
 
@@ -295,19 +300,19 @@ p {
     gap: 8px;
     white-space: nowrap;
     background: var(--accent);
-    color: var(--white);
+    color: var(--on-accent);
     font-weight: 700;
     font-size: 13px;
     padding: 9px 20px;
     border-radius: var(--radius-pill);
-    box-shadow: 0 6px 16px rgba(179, 38, 45, 0.28);
+    box-shadow: 0 6px 16px rgba(var(--accent-rgb), 0.35);
     transition: transform var(--transition), box-shadow var(--transition), background var(--transition);
 }
 
 .edu-apply-btn:hover {
     background: var(--accent-dark);
     transform: translateY(-2px);
-    box-shadow: 0 10px 24px rgba(179, 38, 45, 0.38);
+    box-shadow: 0 10px 24px rgba(var(--accent-rgb), 0.45);
 }
 
 /* ---- Tier 2: dark navbar ---- */
@@ -576,7 +581,7 @@ p {
 @media (max-width: 600px) {
     .edu-apply-btn,
     .edu-topbar-social { display: none; }
-    .brand-logo { height: 42px; width: 42px; }
+    .brand-logo { height: 44px; width: 47px; }
     .brand-text small { display: none; }
     .edu-topbar-inner { padding-block: 6px; }
 }
@@ -664,7 +669,7 @@ p {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Inner-page hero: left-aligned text over a photo that fades to dark olive on the left.
+/* Inner-page hero: left-aligned text over a photo that fades to deep navy on the left.
    Breadcrumb, label, title, accent line and subtitle rise in one after another on load,
    and the photo drifts in slowly. Visitors who ask for reduced motion get it static. */
 .page-hero {
@@ -824,7 +829,7 @@ p {
       news & events, admissions, closing call to action
    ========================================================================== */
 
-/* Homepage hero: single full-width image with a dark-olive overlay */
+/* Homepage hero: single full-width image with a deep-navy overlay */
 .hero-main {
     position: relative;
     display: flex;
@@ -883,7 +888,7 @@ p {
 
 /* Home slider: full-width photo slides (1920x800 artwork) with a caption on top.
    The slide artwork already has a calm dark panel on the left for the text, so no extra
-   overlay is needed on desktop; on narrow screens an olive tint keeps the text readable. */
+   overlay is needed on desktop; on narrow screens an navy tint keeps the text readable. */
 .hero-slider {
     --hero-interval: 5000ms;
     min-height: clamp(540px, 42vw, 740px);
@@ -1015,6 +1020,7 @@ p {
 .hero-arrow:hover {
     background: var(--accent);
     border-color: var(--accent);
+    color: var(--on-accent);
     transform: scale(1.06);
 }
 
@@ -1231,7 +1237,7 @@ p {
 }
 
 .about-values li i {
-    color: var(--accent-color);
+    color: var(--accent-ink);
     font-size: 13px;
 }
 
@@ -1362,7 +1368,7 @@ p {
 
 .level-link:hover,
 .level-card:hover .level-link {
-    color: var(--accent-color);
+    color: var(--accent-ink);
     gap: 12px;
 }
 
@@ -1693,7 +1699,7 @@ p {
 }
 
 .update-category.is-news { background: var(--primary-soft); color: var(--primary-dark); }
-.update-category.is-event { background: var(--accent-color); color: var(--white); }
+.update-category.is-event { background: var(--accent-color); color: var(--on-accent); }
 
 .update-date {
     font-size: 13px;
@@ -1735,7 +1741,7 @@ p {
     scroll-margin-top: 150px;
 }
 
-/* Closing call to action: full-width dark olive band with a maroon rule */
+/* Closing call to action: full-width deep navy band with a gold rule */
 .cta-band {
     background: var(--primary-dark);
     border-top: 5px solid var(--accent-color);
@@ -1892,7 +1898,7 @@ p {
     height: 30px;
     border-radius: 50%;
     background: var(--accent);
-    color: var(--white);
+    color: var(--on-accent);
     font-weight: 700;
     font-size: 14px;
     display: flex;
@@ -2054,7 +2060,7 @@ p {
 }
 
 .course-apply:hover {
-    color: var(--accent);
+    color: var(--accent-ink);
     gap: 14px;
 }
 
@@ -2192,7 +2198,7 @@ p {
     outline-offset: 2px;
 }
 
-/* Primary: olive (dark olive keeps white text above 4.5:1 contrast) */
+/* Primary: navy (deep navy keeps white text above 4.5:1 contrast) */
 .btn-primary {
     background: var(--primary-dark);
     color: var(--white);
@@ -2205,20 +2211,21 @@ p {
     box-shadow: var(--shadow-md);
 }
 
-/* Secondary: maroon, for conversion actions such as Apply Now */
+/* Secondary: gold, for conversion actions such as Apply Now */
 .btn-secondary {
     background: var(--accent-color);
-    color: var(--white);
+    color: var(--on-accent);
     box-shadow: var(--shadow-sm);
 }
 
 .btn-secondary:hover {
     background: var(--accent-dark);
+    color: var(--on-accent);
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
 }
 
-/* Outline on light backgrounds: olive border */
+/* Outline on light backgrounds: navy border */
 .btn-outline-dark {
     background: transparent;
     color: var(--primary-dark);
@@ -2233,7 +2240,7 @@ p {
     box-shadow: var(--shadow-sm);
 }
 
-/* Outline on dark olive sections: white border (an olive border would disappear) */
+/* Outline on deep navy sections: white border (an navy border would disappear) */
 .btn-outline {
     background: transparent;
     color: var(--white);
@@ -2248,7 +2255,7 @@ p {
     box-shadow: var(--shadow-sm);
 }
 
-/* Safety net: an olive primary button on a dark olive section would vanish, so it inverts to white */
+/* Safety net: an navy primary button on a deep navy section would vanish, so it inverts to white */
 .hero-main .btn-primary,
 .page-hero .btn-primary,
 .cta-banner .btn-primary,
@@ -2880,8 +2887,8 @@ section {
 }
 
 @keyframes ctaPulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(179, 38, 45, 0.45); }
-    50%      { box-shadow: 0 0 0 12px rgba(179, 38, 45, 0); }
+    0%, 100% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0.45); }
+    50%      { box-shadow: 0 0 0 12px rgba(var(--accent-rgb), 0); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2932,6 +2939,7 @@ section {
 
 .back-to-top:hover {
     background: var(--accent);
+    color: var(--on-accent);
 }
 
 .back-to-top:focus-visible {
@@ -2988,6 +2996,7 @@ section {
 
 .quick-card:hover .quick-icon {
     background: var(--accent);
+    color: var(--on-accent);
 }
 
 .quick-text {
@@ -3018,7 +3027,7 @@ section {
 
 .quick-card:hover .quick-arrow {
     transform: translateX(5px);
-    color: var(--accent);
+    color: var(--accent-ink);
 }
 
 @media (max-width: 1100px) {
@@ -3035,7 +3044,7 @@ section {
    Footer
    ======================================== */
 footer {
-    background: var(--ink);
+    background: var(--primary-darker);
     color: var(--white);
     padding: 72px 0 24px;
     border-top: 4px solid var(--accent-color);
@@ -3058,10 +3067,9 @@ footer {
 }
 
 .footer-logo img {
-    width: 64px;
+    width: 69px;
     height: 64px;
-    border-radius: 50%;
-    object-fit: cover;
+    object-fit: contain;
     flex-shrink: 0;
 }
 
@@ -3153,7 +3161,7 @@ footer {
 
 .social-links a:hover {
     background: var(--accent-color);
-    color: var(--white);
+    color: var(--on-accent);
 }
 
 .footer-bottom {
@@ -3422,7 +3430,7 @@ section:not([class]) + section:not([class]) {
     gap: 8px;
     padding: 12px 22px;
     background: var(--accent);
-    color: var(--white);
+    color: var(--on-accent);
     font-size: 13px;
     font-weight: 700;
     letter-spacing: .06em;
@@ -3454,7 +3462,7 @@ section:not([class]) + section:not([class]) {
     text-decoration: none;
 }
 
-.notice-item i { font-size: 6px; color: var(--accent); }
+.notice-item i { font-size: 6px; color: var(--accent-ink); }
 a.notice-item:hover { color: var(--primary-dark); }
 
 @keyframes notice-scroll {
@@ -3479,7 +3487,7 @@ a.notice-item:hover { color: var(--primary-dark); }
     inset: 0;
     background:
         radial-gradient(circle at 12% 18%, rgba(255, 255, 255, 0.08), transparent 45%),
-        radial-gradient(circle at 88% 85%, rgba(181, 194, 123, 0.20), transparent 50%);
+        radial-gradient(circle at 88% 85%, rgba(var(--accent-rgb), 0.20), transparent 50%);
     pointer-events: none;
 }
 
@@ -4044,7 +4052,7 @@ body.lightbox-open { overflow: hidden; }
     justify-content: center;
     gap: 12px;
     padding: 56px 16px 24px;
-    background: rgba(22, 25, 18, 0.94);
+    background: rgba(4, 18, 36, 0.94);
 }
 
 .lightbox[hidden] { display: none; }
@@ -4096,7 +4104,7 @@ body.lightbox-open { overflow: hidden; }
 }
 
 .lightbox-close:hover,
-.lightbox-arrow:hover { background: var(--accent); }
+.lightbox-arrow:hover { background: var(--accent); color: var(--on-accent); }
 
 .lightbox-close { position: absolute; top: 14px; right: 14px; }
 
@@ -4159,7 +4167,7 @@ body.lightbox-open { overflow: hidden; }
     justify-content: center;
     border-radius: 50%;
     background: var(--accent);
-    color: var(--white);
+    color: var(--on-accent);
     font-size: 24px;
     padding-left: 4px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
@@ -4198,7 +4206,7 @@ body.lightbox-open { overflow: hidden; }
 .hours-list li:last-child { border-bottom: 0; }
 .hours-day { display: flex; align-items: center; gap: 10px; font-weight: 600; }
 .hours-day i { color: var(--primary-color); width: 18px; text-align: center; }
-.hours-closed { color: var(--accent); font-weight: 600; }
+.hours-closed { color: var(--error); font-weight: 600; }
 
 /* Spam trap field on public forms: hidden from people (and screen readers), seen by bots */
 .form-hp { position: absolute !important; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
@@ -4252,7 +4260,7 @@ body.lightbox-open { overflow: hidden; }
         margin-bottom: 14px;
     }
 
-    .footer-brand .footer-logo img { width: 72px; height: 72px; }
+    .footer-brand .footer-logo img { width: 78px; height: 72px; }
     .footer-brand .footer-logo strong { font-size: 19px; }
     .footer-brand > p { font-size: 14px; line-height: 1.75; max-width: 440px; margin: 0 auto; }
     .footer-brand .social-links { justify-content: center; }
@@ -4317,7 +4325,7 @@ body.lightbox-open { overflow: hidden; }
         align-items: center;
         justify-content: center;
         border-radius: 50%;
-        background: rgba(181, 194, 123, 0.14);
+        background: rgba(var(--accent-rgb), 0.14);
         font-size: 14px;
     }
 
@@ -4343,7 +4351,7 @@ body.lightbox-open { overflow: hidden; }
         font-size: 14.5px;
     }
 
-    .footer-action.is-primary { background: var(--accent); border-color: var(--accent); }
+    .footer-action.is-primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
     .footer-action:only-child { grid-column: 1 / -1; }
 
     .footer-bottom {
