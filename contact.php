@@ -20,51 +20,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && ($guard_problem = formGuardError()) 
 } elseif ($_SERVER['REQUEST_METHOD'] == 'POST' && !$contact_post_ok()) {
     $error_message = "Please fill in your name, a valid email address and your message.";
 } elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $name = mysqli_real_escape_string($conn, trim($_POST['name']));
-    $email = mysqli_real_escape_string($conn, trim($_POST['email']));
-    $phone = mysqli_real_escape_string($conn, trim($_POST['phone'] ?? ''));
-    $subject = mysqli_real_escape_string($conn, trim($_POST['subject'] ?? ''));
-    $message = mysqli_real_escape_string($conn, trim($_POST['message']));
-
-    $insert_query = "INSERT INTO contacts (name, email, phone, subject, message, status, created_at)
-                     VALUES ('$name', '$email', '$phone', '$subject', '$message', 'unread', NOW())";
-
-    if (mysqli_query($conn, $insert_query)) {
-        // Branded emails: the original form values (not the SQL-escaped copies) are shown
-        require_once __DIR__ . '/includes/email_helper.php';
-        $f_name = trim($_POST['name'] ?? '');
-        $f_email = trim($_POST['email'] ?? '');
-        $f_phone = trim($_POST['phone'] ?? '');
-        $f_subject = trim($_POST['subject'] ?? '');
-        $f_message = trim($_POST['message'] ?? '');
-
-        // Notification to the school
-        $message_admin = brandEmail('New contact message', '<p style="margin:0 0 6px;">Someone has sent a message through the website contact form.</p>'
-            . emailInfoTable([
-                'Name' => $f_name,
-                'Email' => $f_email,
-                'Phone' => $f_phone,
-                'Subject' => $f_subject,
-                'Message' => $f_message,
-                'Received' => date('d M Y, h:i A'),
-            ])
-            . emailNote('<strong>Quick action:</strong> reply to <a href="mailto:' . htmlspecialchars($f_email) . '" style="color:' . EMAIL_OLIVE . ';">' . htmlspecialchars($f_email) . '</a> or call ' . htmlspecialchars($f_phone) . '. The message is also saved under Contact Messages in the admin panel.', 'action'));
-        mail(ADMIN_EMAIL, 'New Contact Message - ' . getSiteName(), $message_admin, emailHeaders($f_email));
-
-        // Confirmation to the sender
-        $message_sender = brandEmail('Thank you for contacting us', '<p style="margin:0 0 12px;">Dear ' . htmlspecialchars($f_name) . ',</p>'
-            . emailNote('<strong>&#10003; We have received your message.</strong>')
-            . '<p style="margin:0 0 12px;">Your message about &ldquo;<strong>' . htmlspecialchars($f_subject) . '</strong>&rdquo; has reached our team. We will get back to you within <strong>24&ndash;48 hours</strong>.</p>'
-            . '<p style="margin:0 0 12px;">Need help sooner? Call us on <strong>' . htmlspecialchars(getSitePhone()) . '</strong> during office hours (' . htmlspecialchars(getOfficeHours()) . ').</p>'
-            . '<p style="margin:22px 0 0;">Best regards,<br><strong>' . htmlspecialchars(getSiteName()) . '</strong></p>'
-            . '<p style="margin:18px 0 0;font-size:12.5px;color:' . EMAIL_MUTED . ';">This is an automatic confirmation; replies go to the school office.</p>');
-        mail($f_email, 'Thank You for Contacting ' . getSiteName(), $message_sender, emailHeaders(hasSiteEmail() ? getSiteEmail() : ''));
-
+    require_once __DIR__ . '/includes/contact_handler.php';
+    $saved = saveContactMessage([
+        'name' => formText('name', 100),
+        'email' => formText('email', 150),
+        'phone' => formText('phone', 30),
+        'subject' => formText('subject', 200),
+        'message' => formText('message', 5000),
+    ]);
+    if ($saved) {
         $form_sent = true;
-
-        formDone("Thank you for contacting us! A confirmation email has been sent to your email address. We will get back to you soon.", 'form-status');
+        formDone("Thank you for contacting us! We have received your message and will get back to you soon.", 'form-status');
     } else {
-        $error_message = "Error sending message. Please try again.";
+        $error_message = "Sorry, your message could not be sent. Please try again in a few minutes.";
     }
 }
 ?>
@@ -78,30 +46,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && ($guard_problem = formGuardError()) 
     <div class="container">
         <h2 class="sr-only">Contact details</h2>
         <div class="card-grid">
-            <div class="card" style="text-align: center;">
-                <div class="card-icon" style="margin: 0 auto 20px;">
-                    <i class="fas fa-map-marker-alt"></i>
-                </div>
+            <div class="card contact-info-card">
+                <div class="card-icon"><i class="fas fa-map-marker-alt"></i></div>
                 <h3>Visit Us</h3>
-                <p><?php echo htmlspecialchars(getSiteName()); ?><br><?php echo nl2br(htmlspecialchars(getSiteAddress())); ?></p>
+                <?php if (hasSiteAddress()): ?>
+                    <p><?php echo htmlspecialchars(getSiteName()); ?><br><?php echo nl2br(htmlspecialchars(getSiteAddress())); ?></p>
+                <?php else: ?>
+                    <p class="is-placeholder">Campus address will be announced soon.</p>
+                <?php endif; ?>
             </div>
 
-            <div class="card" style="text-align: center;">
-                <div class="card-icon" style="margin: 0 auto 20px;">
-                    <i class="fas fa-phone"></i>
-                </div>
+            <div class="card contact-info-card">
+                <div class="card-icon"><i class="fas fa-phone"></i></div>
                 <h3>Call Us</h3>
-                <p><a href="tel:<?php echo htmlspecialchars(preg_replace('/[^0-9+]/', '', getSitePhone())); ?>"><?php echo htmlspecialchars(getSitePhone()); ?></a><br>
-                Mon - Sat: 8:00 AM - 5:00 PM</p>
+                <?php if (hasSitePhone()): ?>
+                    <p><a href="<?php echo htmlspecialchars(telHref(primaryPhone())); ?>"><?php echo htmlspecialchars(getSitePhone()); ?></a><?php if (hasOfficeHours()): ?><br><?php echo htmlspecialchars(getOfficeHours()); ?><?php endif; ?></p>
+                <?php else: ?>
+                    <p class="is-placeholder">Phone number coming soon. Please use the form below.</p>
+                <?php endif; ?>
             </div>
 
-            <div class="card" style="text-align: center;">
-                <div class="card-icon" style="margin: 0 auto 20px;">
-                    <i class="fas fa-envelope"></i>
-                </div>
+            <div class="card contact-info-card">
+                <div class="card-icon"><i class="fas fa-envelope"></i></div>
                 <h3>Email Us</h3>
-                <p><a href="mailto:<?php echo htmlspecialchars(getSiteEmail()); ?>"><?php echo htmlspecialchars(getSiteEmail()); ?></a><br>
-                We reply within 24 hours</p>
+                <?php if (hasSiteEmail()): ?>
+                    <p><a href="mailto:<?php echo htmlspecialchars(getSiteEmail()); ?>"><?php echo htmlspecialchars(getSiteEmail()); ?></a></p>
+                <?php else: ?>
+                    <p class="is-placeholder">Email address coming soon. Please use the form below.</p>
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -124,9 +96,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && ($guard_problem = formGuardError()) 
                 <?php endif; ?>
 
                 <?php if ($error_message): ?>
-                    <div class="alert alert-error">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <span><?php echo $error_message; ?></span>
+                    <div class="alert alert-error" role="alert">
+                        <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+                        <span><?php echo htmlspecialchars($error_message); ?></span>
                     </div>
                 <?php endif; ?>
 

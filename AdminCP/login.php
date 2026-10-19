@@ -211,7 +211,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div class="login-header">
             <img src="../<?php echo htmlspecialchars(getLogoSmallPath()); ?>" alt="<?php echo htmlspecialchars(getSiteName()); ?> crest" class="login-logo">
             <h1>Admin Login</h1>
-            <p><?php echo htmlspecialchars(getSiteName()); ?><br><small><?php echo htmlspecialchars(trim((string) strtok(getSiteAddress(), "\n"))); ?></small></p>
+            <p><?php echo htmlspecialchars(getSiteName()); ?><br><small><?php echo htmlspecialchars(content('site_tagline')); ?></small></p>
         </div>
 
         <?php if ($error_message): ?>

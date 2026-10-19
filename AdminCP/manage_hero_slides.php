@@ -147,7 +147,7 @@ $slides = mysqli_query($conn, "SELECT * FROM hero_carousel ORDER BY display_orde
             </div>
         <?php endif; ?>
 
-        <p style="color: var(--text-light); margin-bottom: 20px;">These photos change automatically at the very top of the homepage. Each slide can have its own headline and text; the buttons are edited in Page Content. Best photo size: 1920 x 800 px, with the left side kept calm and dark so the text stays readable.</p>
+        <p style="color: var(--text-light); margin-bottom: 20px;">These photos fade into each other behind the homepage headline. The headline, text and buttons are the same on every photo and are edited in Page Content -> Home: Hero &amp; About. Best photo size: 1920 x 800 px; a navy shade is added on the left so the text stays readable.</p>
 
         <!-- Add/Edit Form -->
         <div class="card" style="margin-bottom: 30px;">
@@ -158,15 +158,15 @@ $slides = mysqli_query($conn, "SELECT * FROM hero_carousel ORDER BY display_orde
                 <?php endif; ?>
 
                 <div class="form-group">
-                    <label>Headline (optional)</label>
-                    <input type="text" name="title" maxlength="200" value="<?php echo $edit_slide ? htmlspecialchars($edit_slide['title']) : ''; ?>" placeholder="e.g., Learning Through Activity">
-                    <small style="color: var(--text-light); font-size: 12px;">Shown over this slide. Leave empty to use the main homepage headline (Page Content).</small>
+                    <label>Photo description (optional)</label>
+                    <input type="text" name="title" maxlength="200" value="<?php echo $edit_slide ? htmlspecialchars($edit_slide['title']) : ''; ?>" placeholder="e.g., Students during a classroom activity">
+                    <small style="color: var(--text-light); font-size: 12px;">Read aloud by screen readers instead of being shown on the photo. Describe what the photo shows.</small>
                 </div>
 
                 <div class="form-group">
-                    <label>Text (optional)</label>
+                    <label>Note (optional, not shown on the website)</label>
                     <textarea name="subtitle" rows="2" maxlength="300" placeholder="One or two short sentences under the headline"><?php echo $edit_slide ? htmlspecialchars($edit_slide['subtitle']) : ''; ?></textarea>
-                    <small style="color: var(--text-light); font-size: 12px;">Leave empty to use the main homepage text (Page Content).</small>
+                    <small style="color: var(--text-light); font-size: 12px;">For your own reference only.</small>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">

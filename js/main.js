@@ -12,52 +12,80 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Header: mobile drawer + dropdowns
+// Header: drawer menu below 1280px, dropdowns everywhere
 document.addEventListener('DOMContentLoaded', function() {
     const toggle = document.getElementById('nav-toggle');
     const nav = document.getElementById('site-nav');
     const backdrop = document.getElementById('nav-backdrop');
     if (!toggle || !nav) return;
 
-    const DRAWER_MAX = 900;
+    const DRAWER_MAX = 1279;
+    const isDrawer = () => window.innerWidth <= DRAWER_MAX;
+    const groups = Array.from(nav.querySelectorAll('.nav-dropdown'));
+    const focusables = () => Array.from(nav.querySelectorAll('a, button')).filter(el => el.offsetParent !== null);
 
-    function setOpen(open) {
+    function setGroup(group, open) {
+        group.classList.toggle('is-open', open);
+        const trigger = group.querySelector('.nav-dropdown-trigger');
+        if (trigger) trigger.setAttribute('aria-expanded', String(open));
+    }
+
+    function setOpen(open, returnFocus) {
         nav.classList.toggle('is-open', open);
         toggle.classList.toggle('is-open', open);
         if (backdrop) backdrop.classList.toggle('is-open', open);
         toggle.setAttribute('aria-expanded', String(open));
+        toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
         document.body.style.overflow = open ? 'hidden' : '';
-        if (!open) nav.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('is-open'));
+        if (open) {
+            // open the current page's group, then move focus into the drawer
+            groups.forEach(g => setGroup(g, g.classList.contains('is-active')));
+            setTimeout(() => { const first = focusables()[0]; if (first) first.focus(); }, 60);
+        } else {
+            groups.forEach(g => setGroup(g, false));
+            if (returnFocus) toggle.focus();
+        }
     }
 
     toggle.addEventListener('click', () => setOpen(!nav.classList.contains('is-open')));
-    if (backdrop) backdrop.addEventListener('click', () => setOpen(false));
+    if (backdrop) backdrop.addEventListener('click', () => setOpen(false, true));
 
-    // Dropdown groups expand inline inside the drawer; on desktop they open on hover/focus (CSS)
-    nav.querySelectorAll('.nav-dropdown-trigger').forEach(trigger => {
-        const group = trigger.closest('.nav-dropdown');
-        function toggleGroup() {
-            if (window.innerWidth > DRAWER_MAX) return;
+    // Dropdown buttons: expand inline in the drawer; on desktop they also open on hover/focus (CSS)
+    groups.forEach(group => {
+        const trigger = group.querySelector('.nav-dropdown-trigger');
+        if (!trigger) return;
+        trigger.addEventListener('click', () => {
             const open = !group.classList.contains('is-open');
-            group.classList.toggle('is-open', open);
-            trigger.setAttribute('aria-expanded', String(open));
-        }
-        trigger.addEventListener('click', toggleGroup);
-        trigger.addEventListener('keydown', e => {
-            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleGroup(); }
+            if (!isDrawer()) groups.forEach(g => { if (g !== group) setGroup(g, false); });
+            setGroup(group, open);
+        });
+        group.addEventListener('mouseleave', () => { if (!isDrawer()) setGroup(group, false); });
+        group.addEventListener('focusout', e => {
+            if (!isDrawer() && !group.contains(e.relatedTarget)) setGroup(group, false);
         });
     });
 
-    // Close the drawer after choosing a link, on Escape, or when resizing up to desktop
-    nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setOpen(false)));
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') setOpen(false); });
-    window.addEventListener('resize', () => { if (window.innerWidth > DRAWER_MAX) setOpen(false); });
+    // Close after choosing a link, on Escape, on a click elsewhere, or when resizing up to desktop
+    nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { if (isDrawer()) setOpen(false); }));
+    document.addEventListener('keydown', e => {
+        if (e.key !== 'Escape') return;
+        if (nav.classList.contains('is-open')) { setOpen(false, true); return; }
+        const openGroup = groups.find(g => g.classList.contains('is-open'));
+        if (openGroup) { setGroup(openGroup, false); openGroup.querySelector('.nav-dropdown-trigger').focus(); }
+    });
+    document.addEventListener('click', e => {
+        if (!isDrawer()) groups.forEach(g => { if (!g.contains(e.target)) setGroup(g, false); });
+    });
+    window.addEventListener('resize', () => { if (!isDrawer() && nav.classList.contains('is-open')) setOpen(false); });
 
-    // Open the current page's group inside the drawer
-    if (window.innerWidth <= DRAWER_MAX) {
-        const active = nav.querySelector('.nav-dropdown.is-active');
-        if (active) active.classList.add('is-open');
-    }
+    // Keep keyboard focus inside the open drawer (its links + the close button)
+    document.addEventListener('keydown', e => {
+        if (e.key !== 'Tab' || !nav.classList.contains('is-open')) return;
+        const items = focusables().concat(toggle);
+        const i = items.indexOf(document.activeElement);
+        if (e.shiftKey && i <= 0) { e.preventDefault(); items[items.length - 1].focus(); }
+        else if (!e.shiftKey && (i === items.length - 1 || i === -1)) { e.preventDefault(); items[0].focus(); }
+    });
 });
 
 // Home hero slider: automatic crossfade with captions, progress line, dots, arrows and swipe.
@@ -204,6 +232,13 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         const directional = [
             ['.about-media', 'reveal-left'],
             ['.about-copy', 'reveal-right'],
+            ['.home-about-media', 'reveal-left'],
+            ['.home-about-copy', 'reveal-right'],
+            ['.admissions-copy', 'reveal-left'],
+            ['.home-admissions .form-card', 'reveal-right'],
+            ['.contact-details', 'reveal-left'],
+            ['.home-contact .form-card', 'reveal-right'],
+            ['.events-panel', 'reveal-right'],
             ['.admissions-intro', 'reveal-left'],
             ['.admissions-details', 'reveal-right'],
             ['.cta-band-inner', 'reveal-zoom'],
@@ -223,7 +258,9 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         const staggered = [
             '.quick-grid > *', '.level-grid > *', '.why-grid > *', '.life-photo-grid > *', '.update-grid > *',
             '.card-grid > *', '.grid-auto > *', '.campus-life-grid > *', '.about-points > *', '.about-values li',
-            '.admissions-steps li', '.admissions-docs li', '.stats-grid > *'
+            '.admissions-steps li', '.admissions-docs li', '.stats-grid > *',
+            '.program-grid > *', '.why-grid > *', '.facility-grid > *', '.life-grid > *', '.news-list > .news-card',
+            '.mosaic > *', '.contact-list li'
         ];
         staggered.forEach(selector => {
             document.querySelectorAll(selector).forEach(el => {
@@ -235,7 +272,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         });
 
         const targets = Array.from(document.querySelectorAll('.reveal'));
-        const counters = Array.from(document.querySelectorAll('.stat-item h3'));
+        const counters = Array.from(document.querySelectorAll('.stat-value'));
 
         function finish(el) {
             // Once shown, hand the element back to its normal CSS so hover effects and transitions are untouched
@@ -339,62 +376,86 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Form Validation
+// Form validation: each message is linked to its field (aria-invalid + aria-describedby),
+// the first problem gets focus, and the rules match the server-side checks.
 function validateForm(formId) {
     const form = document.getElementById(formId);
     if (!form) return false;
 
-    let isValid = true;
     let firstInvalid = null;
 
-    // Clear any error text left over from a previous failed attempt
-    form.querySelectorAll('.field-error').forEach(el => el.remove());
+    function clear(input) {
+        input.removeAttribute('aria-invalid');
+        const err = input.id ? document.getElementById(input.id + '-error') : null;
+        if (err) err.remove();
+        const rest = (input.getAttribute('aria-describedby') || '').split(' ').filter(id => id && id !== input.id + '-error');
+        if (rest.length) input.setAttribute('aria-describedby', rest.join(' '));
+        else input.removeAttribute('aria-describedby');
+    }
 
     function markInvalid(input, msg) {
-        input.style.borderColor = '#dc3545';
-        const err = document.createElement('div');
+        if (input.getAttribute('aria-invalid') === 'true') return;   // one message per field
+        if (!input.id) input.id = formId + '-' + input.name;
+        input.setAttribute('aria-invalid', 'true');
+        const err = document.createElement('p');
         err.className = 'field-error';
-        err.style.cssText = 'color:#dc3545;font-size:13px;margin-top:6px;';
-        err.textContent = msg;
+        err.id = input.id + '-error';
+        err.innerHTML = '<i class="fas fa-circle-exclamation" aria-hidden="true"></i> ';
+        err.appendChild(document.createTextNode(msg));
         input.insertAdjacentElement('afterend', err);
+        input.setAttribute('aria-describedby', ((input.getAttribute('aria-describedby') || '') + ' ' + err.id).trim());
         if (!firstInvalid) firstInvalid = input;
-        isValid = false;
     }
 
-    const inputs = form.querySelectorAll('input[required], select[required], textarea[required]');
-    inputs.forEach(input => {
-        if (!input.value.trim()) {
-            markInvalid(input, 'This field is required.');
-        } else {
-            input.style.borderColor = '#e0e0e0';
+    const fields = Array.from(form.querySelectorAll('input:not([type="hidden"]):not([type="file"]), select, textarea'))
+        .filter(el => !el.closest('.form-hp'));
+    fields.forEach(clear);
+
+    fields.forEach(input => {
+        const value = input.value.trim();
+        if (input.required && !value) {
+            const label = input.id ? form.querySelector('label[for="' + input.id + '"]') : null;
+            const name = label ? label.textContent.replace(/\*|\(optional\)/g, '').trim().toLowerCase() : '';
+            markInvalid(input, name
+                ? (input.tagName === 'SELECT' ? 'Please choose a ' : 'Please enter the ') + name + '.'
+                : 'This field is required.');
+            return;
+        }
+        if (!value) return;
+        if (input.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+            markInvalid(input, 'Please enter a valid email address, for example name@example.com.');
+        }
+        if (input.type === 'tel' && !/^\+?[0-9]{10,13}$/.test(value.replace(/[\s()-]+/g, ''))) {
+            markInvalid(input, 'Please enter a valid phone number, for example 03001234567.');
         }
     });
 
-    // Email validation
-    const emailInputs = form.querySelectorAll('input[type="email"]');
-    emailInputs.forEach(input => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (input.value && !emailRegex.test(input.value)) {
-            markInvalid(input, 'Enter a valid email address.');
-        }
-    });
-
-    // Phone validation
-    const phoneInputs = form.querySelectorAll('input[type="tel"]');
-    phoneInputs.forEach(input => {
-        const phoneRegex = /^[0-9]{11}$/;
-        if (input.value && !phoneRegex.test(input.value.replace(/[-\s]/g, ''))) {
-            markInvalid(input, 'Enter an 11-digit phone number (e.g. 03001234567).');
-        }
-    });
-
-    if (!isValid && firstInvalid) {
+    if (firstInvalid) {
         firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        firstInvalid.focus();
+        firstInvalid.focus({ preventScroll: true });
+        return false;
     }
-
-    return isValid;
+    return true;
 }
+
+// Forms marked data-validate check themselves on submit; an error disappears as soon as the field is edited
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('form[data-validate]').forEach(form => {
+        if (!form.id) return;
+        form.addEventListener('submit', e => {
+            if (!validateForm(form.id)) { e.preventDefault(); return; }
+            const button = form.querySelector('button[type="submit"]');
+            if (button) { button.disabled = true; button.setAttribute('aria-busy', 'true'); }
+        });
+        form.addEventListener('input', e => {
+            const input = e.target;
+            if (input.getAttribute('aria-invalid') !== 'true') return;
+            input.removeAttribute('aria-invalid');
+            const err = document.getElementById(input.id + '-error');
+            if (err) err.remove();
+        });
+    });
+});
 
 // Photo gallery (gallery.php): category filters, an accessible lightbox and click-to-play videos
 function initGallery() {

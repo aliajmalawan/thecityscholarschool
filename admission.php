@@ -102,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $error_message === '') {
                 . '<li>We verify your documents and details.</li>'
                 . '<li>We call or email you within 2&ndash;3 working days &mdash; please keep your phone nearby.</li>'
                 . '</ol>'
-                . '<p style="margin:0 0 12px;">Questions? Call us on <strong>' . htmlspecialchars(getSitePhone()) . '</strong> (' . htmlspecialchars(getOfficeHours()) . ').</p>'
+                . (hasSitePhone() ? '<p style="margin:0 0 12px;">Questions? Call us on <strong>' . htmlspecialchars(getSitePhone()) . '</strong>' . (hasOfficeHours() ? ' (' . htmlspecialchars(getOfficeHours()) . ')' : '') . '.</p>' : '')
                 . '<p style="margin:22px 0 0;">Best regards,<br>Admission Office<br><strong>' . htmlspecialchars(getSiteName()) . '</strong></p>'
                 . '<p style="margin:18px 0 0;font-size:12.5px;color:' . EMAIL_MUTED . ';">This is an automatic confirmation; replies go to the school office.</p>');
             mail($f('email'), 'Application Received - ' . getSiteName(), $message_student, emailHeaders(hasSiteEmail() ? getSiteEmail() : ''));
@@ -311,8 +311,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $error_message === '') {
             <p><?php echo htmlspecialchars(content('adm_cta_text')); ?></p>
             <div class="btn-group" style="justify-content: center;">
                 <a href="contact" class="btn btn-secondary">Contact Us</a>
-                <?php $admission_phone = trim(explode(',', getSitePhone())[0]); ?>
-                <a href="tel:<?php echo htmlspecialchars(str_replace([' ', '-'], '', $admission_phone)); ?>" class="btn btn-outline"><i class="fas fa-phone"></i> Call Now</a>
+                <?php if (hasSitePhone()): ?>
+                <a href="<?php echo htmlspecialchars(telHref(primaryPhone())); ?>" class="btn btn-outline"><i class="fas fa-phone"></i> Call Now</a>
+                <?php endif; ?>
             </div>
         </div>
     </div>

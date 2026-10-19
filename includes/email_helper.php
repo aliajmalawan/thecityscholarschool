@@ -56,7 +56,7 @@ function brandEmail($heading, $content_html) {
         . '<table role="presentation" cellpadding="0" cellspacing="0"><tr>'
         . '<td style="padding-right:14px;vertical-align:middle;"><img src="' . $logo . '" width="52" height="52" alt="' . $site . ' logo" style="display:block;object-fit:contain;"></td>'
         . '<td style="vertical-align:middle;"><div style="font-size:18px;font-weight:700;color:#FFFFFF;line-height:1.3;">' . $site . '</div>'
-        . '<div style="font-size:13px;color:#C9D6E8;">' . htmlspecialchars(trim((string) strtok(getSiteAddress(), "\n"))) .'</div></td>'
+        . '<div style="font-size:13px;color:#C9D6E8;">' . htmlspecialchars(hasSiteAddress() ? trim((string) strtok(getSiteAddress(), "\n")) : content('site_tagline')) .'</div></td>'
         . '</tr></table></td></tr>'
         // Gold accent line
         . '<tr><td style="height:4px;background:' . EMAIL_MAROON . ';font-size:0;line-height:0;">&nbsp;</td></tr>'
@@ -68,7 +68,7 @@ function brandEmail($heading, $content_html) {
         // Footer
         . '<tr><td style="background:#082B50;padding:20px 28px;font-size:12.5px;line-height:1.7;color:#B7C3D3;text-align:center;">'
         . '<div style="font-weight:700;color:#FFFFFF;font-size:14px;">' . $site . '</div>'
-        . '<div>' . $address . '</div>'
+        . ($address !== '' ? '<div>' . $address . '</div>' : '')
         . ($contact_line !== '' ? '<div>' . $contact_line . '</div>' : '')
         . ($hours !== '' ? '<div>Office hours: ' . $hours . '</div>' : '')
         . '<div style="margin-top:8px;"><a href="' . htmlspecialchars($base) . '/" style="color:#F8B923;text-decoration:none;">' . htmlspecialchars(preg_replace('#^https?://#', '', $base)) . '</a> &nbsp;&middot;&nbsp; &copy; ' . $year . '</div>'

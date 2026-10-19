@@ -14,10 +14,10 @@ $message = '';
 // description is a single paragraph or a one-item-per-line checklist.
 $sections = [
     'why_choose_us' => ['label' => 'Why Choose Us (Homepage)', 'mode' => 'icon', 'desc_mode' => 'paragraph'],
-    'digital_features' => ['label' => 'Digital School Features (Homepage)', 'mode' => 'icon', 'desc_mode' => 'paragraph'],
-    'learner_attributes' => ['label' => 'Learner Attributes (Homepage)', 'mode' => 'icon', 'desc_mode' => 'paragraph'],
-    'assessment_features' => ['label' => 'Assessment Highlights (Homepage)', 'mode' => 'icon', 'desc_mode' => 'paragraph'],
-    'facilities' => ['label' => 'Facilities (Homepage)', 'mode' => 'icon', 'desc_mode' => 'paragraph'],
+    'digital_features' => ['label' => 'Digital School Features (not shown at the moment)', 'mode' => 'icon', 'desc_mode' => 'paragraph'],
+    'learner_attributes' => ['label' => 'Learner Attributes (not shown at the moment)', 'mode' => 'icon', 'desc_mode' => 'paragraph'],
+    'assessment_features' => ['label' => 'Assessment Highlights (not shown at the moment)', 'mode' => 'icon', 'desc_mode' => 'paragraph'],
+    'facilities' => ['label' => 'Facilities (Homepage: switch on only what the school has)', 'mode' => 'icon', 'desc_mode' => 'paragraph'],
     'core_values' => ['label' => 'Core Values (About Page)', 'mode' => 'icon', 'desc_mode' => 'paragraph'],
     'faculty_highlights' => ['label' => 'Why Our Faculty Stands Out (Faculty Page)', 'mode' => 'icon', 'desc_mode' => 'paragraph'],
     'admission_requirements' => ['label' => 'Admission Requirements (Courses Page)', 'mode' => 'icon', 'desc_mode' => 'checklist'],

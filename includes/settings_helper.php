@@ -56,7 +56,7 @@ function getSiteName() {
  * Get site email
  */
 function getSiteEmail() {
-    return getSetting('site_email', 'aliajmalawan@gmail.com');
+    return getSetting('site_email', '');
 }
 
 /**
@@ -70,14 +70,14 @@ function getSitePhone() {
  * Get site address
  */
 function getSiteAddress() {
-    return getSetting('site_address', 'Pakistan');
+    return getSetting('site_address', '');
 }
 
 /**
  * Get office hours
  */
 function getOfficeHours() {
-    return getSetting('office_hours', 'Mon - Sat: 8:00 AM - 5:00 PM');
+    return getSetting('office_hours', '');
 }
 
 /**
@@ -103,6 +103,33 @@ function getSocialMedia() {
 function hasSiteEmail() {
     $email = trim(getSiteEmail());
     return $email !== '' && !preg_match('/@example\.com$/i', $email);
+}
+
+/** True when a phone number, address or office hours have been entered in Settings */
+function hasSitePhone() {
+    return trim(getSitePhone()) !== '';
+}
+
+function hasSiteAddress() {
+    return trim(getSiteAddress()) !== '';
+}
+
+function hasOfficeHours() {
+    return trim(getOfficeHours()) !== '';
+}
+
+/** First phone number from Settings ("0300..., 0301..." -> "0300...") and its tel: form */
+function primaryPhone() {
+    return trim(explode(',', getSitePhone())[0]);
+}
+
+function telHref($number) {
+    return 'tel:' . preg_replace('/[^0-9+]/', '', $number);
+}
+
+/** The address on one line: "Street\nCity" -> "Street, City" */
+function siteAddressOneLine() {
+    return implode(', ', array_filter(array_map(fn($line) => trim($line, " \t,"), preg_split('/\r\n|\r|\n/', getSiteAddress()))));
 }
 
 /**

@@ -174,24 +174,25 @@ loadSettings();
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Site Email *</label>
-                        <input type="email" name="site_email" required value="<?php echo htmlspecialchars(getSetting('site_email', 'info@fort.edu.pk')); ?>">
+                        <label>Site Email</label>
+                        <input type="email" name="site_email" value="<?php echo htmlspecialchars(getSetting('site_email', '')); ?>">
                     </div>
 
                     <div class="form-group">
-                        <label>Site Phone *</label>
-                        <input type="text" name="site_phone" required value="<?php echo htmlspecialchars(getSetting('site_phone', '')); ?>">
+                        <label>Site Phone</label>
+                        <input type="text" name="site_phone" value="<?php echo htmlspecialchars(getSetting('site_phone', '')); ?>">
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label>Site Address *</label>
-                    <textarea name="site_address" required rows="3"><?php echo htmlspecialchars(getSetting('site_address', 'Pakistan')); ?></textarea>
+                    <label>Site Address</label>
+                    <textarea name="site_address" rows="3"><?php echo htmlspecialchars(getSetting('site_address', '')); ?></textarea>
                 </div>
 
                 <div class="form-group">
                     <label>Office Hours</label>
-                    <input type="text" name="office_hours" value="<?php echo htmlspecialchars(getSetting('office_hours', 'Mon - Sat: 8:00 AM - 5:00 PM')); ?>" placeholder="e.g., Mon - Sat: 8:00 AM - 5:00 PM">
+                    <input type="text" name="office_hours" value="<?php echo htmlspecialchars(getSetting('office_hours', '')); ?>" placeholder="e.g., Mon - Sat: 8:00 AM - 5:00 PM">
+                    <small style="display:block;margin-top:6px;color:var(--text-light);">Email, phone, address and hours appear on the website only once filled in; until then visitors see a short "coming soon" note.</small>
                 </div>
             </div>
 

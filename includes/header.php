@@ -104,18 +104,51 @@ $current_url = $site_base_url . '/' . ($page_slug === 'index' ? '' : $page_slug)
     <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
 </head>
 <body>
-    <!-- Header: two tiers (contact/apply strip on top, dark centred menu below), sticky on every page -->
+    <a class="skip-link" href="#main">Skip to content</a>
+    <!-- Header: optional navy utility strip (contact details / social links, only what is filled in under Settings)
+         above a white bar with the crest, the main menu and the gold Apply button. Sticky on every page. -->
     <?php
     $nav_page = basename($_SERVER['SCRIPT_NAME']);
     $nav_active = static function (array $pages) use ($nav_page) {
         return in_array($nav_page, $pages, true);
     };
-    $topbar_phone = trim(explode(',', getSitePhone())[0]);
+    // Class + aria-current for a top-level link
+    $nav_attr = static function (array $pages) use ($nav_active) {
+        return $nav_active($pages) ? ' class="is-active" aria-current="page"' : '';
+    };
     $social_links = array_filter(getSocialMedia());
+    $social_icons = ['facebook' => 'fa-facebook-f', 'instagram' => 'fa-instagram', 'youtube' => 'fa-youtube', 'twitter' => 'fa-x-twitter'];
+    $has_utility = hasSitePhone() || hasSiteEmail() || hasOfficeHours() || !empty($social_links);
     ?>
     <header class="site-header" id="site-header">
-        <div class="edu-topbar">
-            <div class="container edu-topbar-inner">
+        <?php if ($has_utility): ?>
+        <div class="utility-bar">
+            <div class="container utility-inner">
+                <ul class="utility-info">
+                    <?php if (hasSitePhone()): ?>
+                    <li><a href="<?php echo htmlspecialchars(telHref(primaryPhone())); ?>"><i class="fas fa-phone" aria-hidden="true"></i> <?php echo htmlspecialchars(primaryPhone()); ?></a></li>
+                    <?php endif; ?>
+                    <?php if (hasSiteEmail()): ?>
+                    <li><a href="mailto:<?php echo htmlspecialchars(getSiteEmail()); ?>"><i class="fas fa-envelope" aria-hidden="true"></i> <?php echo htmlspecialchars(getSiteEmail()); ?></a></li>
+                    <?php endif; ?>
+                    <?php if (hasOfficeHours()): ?>
+                    <li class="utility-hours"><i class="fas fa-clock" aria-hidden="true"></i> <?php echo htmlspecialchars(getOfficeHours()); ?></li>
+                    <?php endif; ?>
+                </ul>
+                <?php if (!empty($social_links)): ?>
+                <nav class="utility-social" aria-label="Social media">
+                    <?php foreach ($social_icons as $key => $icon):
+                        if (empty($social_links[$key])) continue; ?>
+                        <a href="<?php echo htmlspecialchars($social_links[$key]); ?>" target="_blank" rel="noopener" aria-label="<?php echo ucfirst($key); ?> (opens in a new tab)"><i class="fab <?php echo $icon; ?>" aria-hidden="true"></i></a>
+                    <?php endforeach; ?>
+                </nav>
+                <?php endif; ?>
+            </div>
+        </div>
+        <?php endif; ?>
+
+        <div class="main-bar">
+            <div class="container main-bar-inner">
                 <a class="brand" href="./" aria-label="<?php echo htmlspecialchars(getSiteName()); ?> - Home">
                     <img src="<?php echo getLogoSmallPath(); ?>" alt="" class="brand-logo" width="60" height="56" onerror="this.style.display='none'">
                     <span class="brand-text">
@@ -124,46 +157,48 @@ $current_url = $site_base_url . '/' . ($page_slug === 'index' ? '' : $page_slug)
                     </span>
                 </a>
 
-                <div class="edu-topbar-info-group">
-                    <?php if ($topbar_phone !== ''): ?>
-                    <a class="edu-topbar-info" href="tel:<?php echo htmlspecialchars(preg_replace('/[^+0-9]/', '', $topbar_phone)); ?>">
-                        <span class="edu-topbar-info-icon"><i class="fas fa-phone"></i></span>
-                        <span><small>Call Us</small><strong><?php echo htmlspecialchars($topbar_phone); ?></strong></span>
-                    </a>
-                    <?php else: ?>
-                    <a class="edu-topbar-info" href="contact">
-                        <span class="edu-topbar-info-icon"><i class="fas fa-location-dot"></i></span>
-                        <span><small>Visit Us</small><strong><?php echo htmlspecialchars(trim(preg_split('/\r\n|\r|\n/', getSiteAddress())[0])); ?></strong></span>
-                    </a>
-                    <?php endif; ?>
-                    <?php if (hasSiteEmail()): ?>
-                    <a class="edu-topbar-info" href="mailto:<?php echo htmlspecialchars(getSiteEmail()); ?>">
-                        <span class="edu-topbar-info-icon"><i class="fas fa-envelope"></i></span>
-                        <span><small>Email Us</small><strong><?php echo htmlspecialchars(getSiteEmail()); ?></strong></span>
-                    </a>
-                    <?php else: ?>
-                    <a class="edu-topbar-info" href="contact">
-                        <span class="edu-topbar-info-icon"><i class="fas fa-clock"></i></span>
-                        <span><small>Office Hours</small><strong><?php echo htmlspecialchars(getOfficeHours()); ?></strong></span>
-                    </a>
-                    <?php endif; ?>
-                </div>
+                <div class="nav-backdrop" id="nav-backdrop"></div>
 
-                <div class="edu-topbar-actions">
-                    <?php if (!empty($social_links)): ?>
-                    <nav class="edu-topbar-social" aria-label="Social media">
-                        <?php
-                        $social_icons = ['facebook' => 'fa-facebook-f', 'instagram' => 'fa-instagram', 'youtube' => 'fa-youtube', 'twitter' => 'fa-x-twitter'];
-                        foreach ($social_icons as $key => $icon):
-                            if (empty($social_links[$key])) continue; ?>
-                            <a href="<?php echo htmlspecialchars($social_links[$key]); ?>" target="_blank" rel="noopener" aria-label="<?php echo ucfirst($key); ?>"><i class="fab <?php echo $icon; ?>"></i></a>
-                        <?php endforeach; ?>
-                    </nav>
-                    <?php endif; ?>
+                <nav class="site-nav" id="site-nav" aria-label="Primary navigation">
+                    <div class="nav-drawer-head">
+                        <img src="<?php echo getLogoSmallPath(); ?>" alt="" width="43" height="40">
+                        <strong><?php echo htmlspecialchars(getSiteName()); ?></strong>
+                    </div>
 
-                    <a class="edu-apply-btn" href="admission"><i class="fas fa-pen-to-square"></i> <?php echo htmlspecialchars(content('apply_button_label')); ?></a>
+                    <a href="./"<?php echo $nav_attr(['index.php']); ?>>Home</a>
+                    <a href="about"<?php echo $nav_attr(['about.php']); ?>>About Us</a>
 
-                    <button type="button" class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="site-nav">
+                    <div class="nav-dropdown<?php echo $nav_active(['courses.php', 'faculty.php', 'examination.php', 'downloads.php']) ? ' is-active' : ''; ?>">
+                        <button type="button" class="nav-dropdown-trigger" aria-haspopup="true" aria-expanded="false">Academics <i class="fas fa-chevron-down nav-caret" aria-hidden="true"></i></button>
+                        <div class="nav-dropdown-panel">
+                            <a href="courses"<?php echo $nav_attr(['courses.php']); ?>><i class="fas fa-book-open" aria-hidden="true"></i> Courses &amp; Programs</a>
+                            <a href="faculty"<?php echo $nav_attr(['faculty.php']); ?>><i class="fas fa-chalkboard-user" aria-hidden="true"></i> Faculty</a>
+                            <a href="examination"<?php echo $nav_attr(['examination.php']); ?>><i class="fas fa-file-lines" aria-hidden="true"></i> Examination</a>
+                            <a href="downloads"<?php echo $nav_attr(['downloads.php']); ?>><i class="fas fa-download" aria-hidden="true"></i> Downloads</a>
+                        </div>
+                    </div>
+
+                    <a href="admission"<?php echo $nav_attr(['admission.php']); ?>>Admissions</a>
+
+                    <div class="nav-dropdown<?php echo $nav_active(['campuses.php', 'alumni.php']) ? ' is-active' : ''; ?>">
+                        <button type="button" class="nav-dropdown-trigger" aria-haspopup="true" aria-expanded="false">Campus Life <i class="fas fa-chevron-down nav-caret" aria-hidden="true"></i></button>
+                        <div class="nav-dropdown-panel">
+                            <a href="campuses"<?php echo $nav_attr(['campuses.php']); ?>><i class="fas fa-school" aria-hidden="true"></i> Our Campuses</a>
+                            <a href="alumni"<?php echo $nav_attr(['alumni.php']); ?>><i class="fas fa-user-graduate" aria-hidden="true"></i> Alumni</a>
+                        </div>
+                    </div>
+
+                    <a href="gallery"<?php echo $nav_attr(['gallery.php']); ?>>Gallery</a>
+                    <a href="events"<?php echo $nav_attr(['events.php']); ?>>News &amp; Events</a>
+                    <a href="contact"<?php echo $nav_attr(['contact.php']); ?>>Contact Us</a>
+
+                    <a class="btn btn-secondary nav-drawer-apply" href="admission"><i class="fas fa-pen-to-square" aria-hidden="true"></i> <?php echo htmlspecialchars(content('apply_button_label')); ?></a>
+                </nav>
+
+                <div class="main-bar-actions">
+                    <a class="apply-btn" href="admission"><?php echo htmlspecialchars(content('apply_button_label')); ?> <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+
+                    <button type="button" class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav">
                         <span class="nav-toggle-bar"></span>
                         <span class="nav-toggle-bar"></span>
                         <span class="nav-toggle-bar"></span>
@@ -171,41 +206,5 @@ $current_url = $site_base_url . '/' . ($page_slug === 'index' ? '' : $page_slug)
                 </div>
             </div>
         </div>
-
-        <div class="nav-backdrop" id="nav-backdrop"></div>
-
-        <nav class="edu-navbar" aria-label="Primary navigation">
-            <div class="container edu-navbar-inner">
-                <div class="site-nav" id="site-nav">
-                    <a href="./"<?php echo $nav_active(['index.php']) ? ' class="is-active" aria-current="page"' : ''; ?>>Home</a>
-                    <a href="about"<?php echo $nav_active(['about.php']) ? ' class="is-active" aria-current="page"' : ''; ?>>About Us</a>
-
-                    <div class="nav-dropdown<?php echo $nav_active(['courses.php', 'faculty.php', 'examination.php', 'downloads.php']) ? ' is-active' : ''; ?>">
-                        <span class="nav-dropdown-trigger" tabindex="0" role="button" aria-haspopup="true" aria-expanded="false">Academics <i class="fas fa-chevron-down nav-caret"></i></span>
-                        <div class="nav-dropdown-panel">
-                            <a href="courses"<?php echo $nav_active(['courses.php']) ? ' class="is-active"' : ''; ?>>Courses &amp; Programs</a>
-                            <a href="faculty"<?php echo $nav_active(['faculty.php']) ? ' class="is-active"' : ''; ?>>Faculty</a>
-                            <a href="examination"<?php echo $nav_active(['examination.php']) ? ' class="is-active"' : ''; ?>>Examination</a>
-                            <a href="downloads"<?php echo $nav_active(['downloads.php']) ? ' class="is-active"' : ''; ?>>Downloads</a>
-                        </div>
-                    </div>
-
-                    <a href="admission"<?php echo $nav_active(['admission.php']) ? ' class="is-active" aria-current="page"' : ''; ?>>Admissions</a>
-
-                    <div class="nav-dropdown<?php echo $nav_active(['gallery.php', 'campuses.php', 'alumni.php']) ? ' is-active' : ''; ?>">
-                        <span class="nav-dropdown-trigger" tabindex="0" role="button" aria-haspopup="true" aria-expanded="false">Campus Life <i class="fas fa-chevron-down nav-caret"></i></span>
-                        <div class="nav-dropdown-panel">
-                            <a href="gallery"<?php echo $nav_active(['gallery.php']) ? ' class="is-active"' : ''; ?>>Photo Gallery</a>
-                            <a href="campuses"<?php echo $nav_active(['campuses.php']) ? ' class="is-active"' : ''; ?>>Our Campuses</a>
-                            <a href="alumni"<?php echo $nav_active(['alumni.php']) ? ' class="is-active"' : ''; ?>>Alumni</a>
-                        </div>
-                    </div>
-
-                    <a href="events"<?php echo $nav_active(['events.php']) ? ' class="is-active" aria-current="page"' : ''; ?>>News &amp; Events</a>
-                    <a href="contact"<?php echo $nav_active(['contact.php']) ? ' class="is-active" aria-current="page"' : ''; ?>>Contact Us</a>
-
-                    <a class="btn btn-secondary header-apply-btn" href="admission"><?php echo htmlspecialchars(content('apply_button_label')); ?></a>
-                </div>
-            </div>
-        </nav>
     </header>
+    <main id="main">
