@@ -75,7 +75,6 @@ $recent_contacts = mysqli_query($conn, "SELECT * FROM contacts ORDER BY created_
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
     <title>Admin Dashboard - <?php echo htmlspecialchars(getSiteName()); ?></title>
-    <link rel="icon" type="image/png" href="../<?php echo htmlspecialchars(getLogoPath()); ?>">
     <link rel="stylesheet" href="../css/style.css?v=<?php echo assetVersion('css/style.css'); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="assets/admin.css?v=<?php echo assetVersion('AdminCP/assets/admin.css'); ?>">

@@ -452,4 +452,167 @@ function webpBackground($path) {
     $type = preg_match('/\.png$/i', $path) ? 'image/png' : 'image/jpeg';
     return 'image-set(url(\'' . htmlspecialchars($webp) . '\') type("image/webp"), url(\'' . htmlspecialchars($path) . '\') type("' . $type . '"))';
 }
-?>
+
+/* ---------------------------------------------------------------------------
+ * School logo and favicon (AdminCP -> Logo & Favicon)
+ * ------------------------------------------------------------------------- */
+
+/** Open any supported image (JPEG, PNG, WebP, GIF) as a GD image with transparency kept. */
+function openImageForBranding($path) {
+    $info = @getimagesize($path);
+    if (!$info) {
+        return false;
+    }
+    switch ($info[2]) {
+        case IMAGETYPE_PNG:  $im = @imagecreatefrompng($path); break;
+        case IMAGETYPE_JPEG: $im = @imagecreatefromjpeg($path); break;
+        case IMAGETYPE_WEBP: $im = function_exists('imagecreatefromwebp') ? @imagecreatefromwebp($path) : false; break;
+        case IMAGETYPE_GIF:  $im = @imagecreatefromgif($path); break;
+        default: $im = false;
+    }
+    if ($im) {
+        imagealphablending($im, true);
+        imagesavealpha($im, true);
+    }
+    return $im;
+}
+
+/**
+ * $src fitted inside a $box x $box square (never stretched), centred, with $pad pixels
+ * of transparent space around it; $background as [r, g, b] fills the square instead
+ * (used for the iPhone icon, which shows transparency as black).
+ */
+function brandingSquare($src, $box, $pad = 0, $background = null) {
+    $w = imagesx($src);
+    $h = imagesy($src);
+    $canvas = imagecreatetruecolor($box, $box);
+    imagealphablending($canvas, false);
+    $fill = $background ? imagecolorallocate($canvas, $background[0], $background[1], $background[2]) : imagecolorallocatealpha($canvas, 0, 0, 0, 127);
+    imagefilledrectangle($canvas, 0, 0, $box, $box, $fill);
+    imagealphablending($canvas, true);
+    imagesavealpha($canvas, true);
+    $inner = $box - 2 * $pad;
+    $scale = min($inner / $w, $inner / $h);
+    $dw = max(1, (int) round($w * $scale));
+    $dh = max(1, (int) round($h * $scale));
+    imagecopyresampled($canvas, $src, (int) (($box - $dw) / 2), (int) (($box - $dh) / 2), 0, 0, $dw, $dh, $w, $h);
+    return $canvas;
+}
+
+/** Path of the small header/footer copy that saveBrandLogo() makes next to a logo: logo.png -> logo-sm.png */
+function brandLogoSmallPath($logo) {
+    return preg_replace('/(\.[a-z0-9]+)$/i', '-sm$1', (string) $logo);
+}
+
+/**
+ * Save an uploaded school logo (PNG, JPG or WebP, up to 8 MB). The logo keeps its own
+ * format (so PNG transparency stays), is capped at 800px, and a 200px copy is made for
+ * the header, footer and emails. Returns the relative path, null when nothing was
+ * uploaded, or false when the file is not a usable image.
+ */
+function saveBrandLogo($file) {
+    if (!isset($file) || ($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+        return null;
+    }
+    if ($file['error'] !== UPLOAD_ERR_OK || $file['size'] > 8 * 1024 * 1024) {
+        return false;
+    }
+    $info = @getimagesize($file['tmp_name']);
+    if (!$info || !in_array($info[2], [IMAGETYPE_PNG, IMAGETYPE_JPEG, IMAGETYPE_WEBP], true)) {
+        return false;
+    }
+    $root = dirname(__DIR__) . '/';
+    $dir = $root . 'uploads/site/';
+    if (!is_dir($dir)) {
+        mkdir($dir, 0775, true);
+    }
+    $name = compressUploadedImageKeepFormat($file['tmp_name'], $dir, 'logo_' . time() . '_' . substr(uniqid(), -5), 800, 90);
+    if (!$name) {
+        return false;
+    }
+    $path = 'uploads/site/' . $name;
+
+    // 200px-wide copy in the same format for places that show the logo small
+    $src = openImageForBranding($root . $path);
+    if ($src) {
+        $w = imagesx($src);
+        $h = imagesy($src);
+        if ($w > 200) {
+            $sw = 200;
+            $sh = max(1, (int) round($h * 200 / $w));
+            $small = imagecreatetruecolor($sw, $sh);
+            imagealphablending($small, false);
+            imagefilledrectangle($small, 0, 0, $sw, $sh, imagecolorallocatealpha($small, 0, 0, 0, 127));
+            imagealphablending($small, true);
+            imagesavealpha($small, true);
+            imagecopyresampled($small, $src, 0, 0, 0, 0, $sw, $sh, $w, $h);
+            $small_full = $root . brandLogoSmallPath($path);
+            switch ($info[2]) {
+                case IMAGETYPE_PNG:  imagepng($small, $small_full, 9); break;
+                case IMAGETYPE_WEBP: imagewebp($small, $small_full, 90); break;
+                default:             imagejpeg($small, $small_full, 90);
+            }
+            imagedestroy($small);
+        }
+        imagedestroy($src);
+    }
+    return $path;
+}
+
+/**
+ * Build a complete favicon set from one image: favicon-32.png (browser tab),
+ * apple-touch-icon.png (iPhone home screen, white background), icon-192.png
+ * (Android) and favicon.ico (16/32/48 px). Saved in a new folder under
+ * uploads/site/; returns that folder's relative path, or false.
+ */
+function generateFaviconSet($sourcePath) {
+    $src = openImageForBranding($sourcePath);
+    if (!$src) {
+        return false;
+    }
+    $root = dirname(__DIR__) . '/';
+    $rel = 'uploads/site/favicon_' . time() . '_' . substr(uniqid(), -5);
+    if (!mkdir($root . $rel, 0775, true)) {
+        imagedestroy($src);
+        return false;
+    }
+    $ok = true;
+    foreach ([['favicon-32.png', 32, 0, null], ['icon-192.png', 192, 6, null], ['apple-touch-icon.png', 180, 12, [255, 255, 255]]] as [$file, $size, $pad, $bg]) {
+        $im = brandingSquare($src, $size, $pad, $bg);
+        $ok = imagepng($im, $root . $rel . '/' . $file, 9) && $ok;
+        imagedestroy($im);
+    }
+
+    // favicon.ico holding PNG images (understood by every current browser)
+    $entries = [];
+    foreach ([16, 32, 48] as $size) {
+        $im = brandingSquare($src, $size);
+        ob_start();
+        imagepng($im, null, 9);
+        $entries[$size] = ob_get_clean();
+        imagedestroy($im);
+    }
+    $ico = pack('vvv', 0, 1, count($entries));
+    $offset = 6 + 16 * count($entries);
+    $data = '';
+    foreach ($entries as $size => $png) {
+        $ico .= pack('CCCCvvVV', $size, $size, 0, 0, 1, 32, strlen($png), $offset);
+        $offset += strlen($png);
+        $data .= $png;
+    }
+    $ok = file_put_contents($root . $rel . '/favicon.ico', $ico . $data) !== false && $ok;
+    imagedestroy($src);
+    return $ok ? $rel : false;
+}
+
+/** Remove a favicon folder made by generateFaviconSet() (only folders it could have made). */
+function deleteFaviconSet($rel) {
+    if (!preg_match('#^uploads/site/favicon_[0-9]+_[a-z0-9]+$#i', (string) $rel)) {
+        return;
+    }
+    $dir = dirname(__DIR__) . '/' . $rel;
+    foreach (['favicon-32.png', 'icon-192.png', 'apple-touch-icon.png', 'favicon.ico'] as $file) {
+        @unlink($dir . '/' . $file);
+    }
+    @rmdir($dir);
+}

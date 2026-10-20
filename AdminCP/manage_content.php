@@ -46,28 +46,6 @@ function savePageImage($file, $key) {
     return $name ? 'uploads/site/' . $name : false;
 }
 
-/** Save an uploaded logo (PNG/JPG/WebP up to 8 MB, resized and compressed in its own format); returns the relative path or false/null. */
-function saveLogoUpload($file) {
-    if (!isset($file) || $file['error'] !== UPLOAD_ERR_OK) {
-        return null;
-    }
-    $info = @getimagesize($file['tmp_name']);
-    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-    if ($info === false || !in_array($ext, ['jpg', 'jpeg', 'png', 'webp'], true) || $file['size'] > 8 * 1024 * 1024) {
-        return false;
-    }
-    $dir = '../uploads/site/';
-    if (!is_dir($dir)) {
-        mkdir($dir, 0775, true);
-    }
-    // keeps the logo's own format (PNG transparency stays) but caps the size and re-encodes it
-    $name = compressUploadedImageKeepFormat($file['tmp_name'], $dir, 'logo_' . time() . '_' . substr(uniqid(), -5), 800, 90);
-    if ($name) {
-        $GLOBALS['upload_notes'][] = describeCompressionSavings($file['tmp_name'], $dir . $name);
-    }
-    return $name ? 'uploads/site/' . $name : false;
-}
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!hash_equals($_SESSION['content_csrf'], (string) ($_POST['csrf'] ?? ''))) {
         $message = 'Your session expired. Please reload the page and try again.';
@@ -89,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     mysqli_query($conn, "UPDATE themes SET logo_path = '" . mysqli_real_escape_string($conn, $field['default']) . "' WHERE is_active = 1");
                     $saved++;
                 } else {
-                    $path = saveLogoUpload($_FILES['file__' . $key] ?? null);
+                    $path = saveBrandLogo($_FILES['file__' . $key] ?? null);
                     if ($path === false) {
                         $problems[] = 'Logo: use a PNG, JPG or WebP image up to 8 MB.';
                     } elseif ($path !== null) {

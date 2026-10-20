@@ -11,6 +11,7 @@ $admin_nav_links = [
     ['dashboard.php', 'fa-home', 'Dashboard'],
     ['analytics.php', 'fa-chart-line', 'Website Analytics'],
     ['manage_content.php', 'fa-pen-ruler', 'Page Content'],
+    ['manage_branding.php', 'fa-palette', 'Logo & Favicon'],
     ['manage_hero_slides.php', 'fa-images', 'Home Slider'],
     ['manage_courses.php', 'fa-book', 'Courses'],
     ['manage_campuses.php', 'fa-school', 'Campuses'],

@@ -108,9 +108,7 @@ $current_url = $site_base_url . '/' . ($page_slug === 'index' ? '' : $page_slug)
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
 
     <!-- Favicon -->
-    <link rel="icon" href="favicon.ico" sizes="any">
-    <link rel="icon" type="image/png" sizes="32x32" href="images/icons/favicon-32.png">
-    <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
+    <?php echo faviconLinks(); // AdminCP -> Logo & Favicon, or the default crest icons ?>
 </head>
 <body>
     <a class="skip-link" href="#main">Skip to content</a>

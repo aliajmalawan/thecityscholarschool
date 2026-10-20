@@ -29,7 +29,7 @@ function pageFields($slug, $eyebrow, $title, $subtitle, $seoTitle, $seoDesc) {
 
 $registry = [
     'global' => ['label' => 'Site-wide', 'icon' => 'fa-globe', 'fields' => [
-        cf('site_logo', 'School logo', 'logo', 'images/city-scholars-crest.png', 'Square, round or crest logo (PNG/JPG/WebP, up to 8 MB; resized and compressed automatically). Used in the header, footer, favicon area and share previews.'),
+        cf('site_logo', 'School logo', 'logo', 'images/city-scholars-crest.png', 'Square, round or crest logo (PNG/JPG/WebP, up to 8 MB; resized and compressed automatically). Used in the header, footer, emails and share previews. The browser-tab icon is changed under Logo & Favicon.'),
         cf('site_tagline', 'Tagline under the school name', 'text', 'Excellence in Education', 'Small line below the name in the header and footer.'),
         cf('seo_title_suffix', 'Home page title suffix', 'text', 'Excellence in Education', 'Home page browser title becomes "School name | this text".'),
         cf('apply_button_label', 'Header "Apply" button text', 'text', 'Apply Now'),

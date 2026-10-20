@@ -116,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
     <title>Admin Login - <?php echo htmlspecialchars(getSiteName()); ?></title>
     <meta name="robots" content="noindex, nofollow">
-    <link rel="icon" type="image/png" href="../<?php echo htmlspecialchars(getLogoPath()); ?>">
+    <?php echo faviconLinks('../'); ?>
     <link rel="stylesheet" href="../css/style.css?v=<?php echo assetVersion('css/style.css'); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>

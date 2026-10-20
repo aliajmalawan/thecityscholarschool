@@ -83,14 +83,34 @@ function getLogoPath() {
     return $theme['logo_path'] ?? 'images/city-scholars-crest.png';
 }
 
-// Small logo for header/footer/admin (the 200px copy of the default crest); any custom logo is used as is
+// Small logo for header/footer/admin: the 200px copy of the default crest, or the
+// "-sm" copy made when a logo is uploaded in AdminCP -> Logo & Favicon
 function getLogoSmallPath() {
     $logo = getLogoPath();
-    $small = 'images/city-scholars-crest-sm.png';
-    if ($logo === 'images/city-scholars-crest.png' && file_exists(__DIR__ . '/../' . $small)) {
-        return $small;
+    $small = $logo === 'images/city-scholars-crest.png' ? 'images/city-scholars-crest-sm.png' : brandLogoSmallPath($logo);
+    return file_exists(__DIR__ . '/../' . $small) ? $small : $logo;
+}
+
+/**
+ * <link> tags for the browser-tab icon, iPhone and Android icons: the set made in
+ * AdminCP -> Logo & Favicon when there is one, otherwise the default crest icons.
+ * $prefix is '../' on admin pages. A ?v= stamp makes browsers fetch a new icon.
+ */
+function faviconLinks($prefix = '') {
+    $root = __DIR__ . '/../';
+    $dir = trim((string) getSetting('site_favicon_dir', ''));
+    if ($dir !== '' && is_file($root . $dir . '/favicon-32.png')) {
+        $files = ['ico' => "$dir/favicon.ico", 'png' => "$dir/favicon-32.png", 'apple' => "$dir/apple-touch-icon.png", 'android' => "$dir/icon-192.png"];
+    } else {
+        $files = ['ico' => 'favicon.ico', 'png' => 'images/icons/favicon-32.png', 'apple' => 'images/icons/apple-touch-icon.png', 'android' => 'images/icons/icon-192.png'];
     }
-    return $logo;
+    $href = function ($path) use ($root, $prefix) {
+        return htmlspecialchars($prefix . $path . (is_file($root . $path) ? '?v=' . filemtime($root . $path) : ''));
+    };
+    return '<link rel="icon" href="' . $href($files['ico']) . '" sizes="any">' . "\n    "
+        . '<link rel="icon" type="image/png" sizes="32x32" href="' . $href($files['png']) . '">' . "\n    "
+        . '<link rel="icon" type="image/png" sizes="192x192" href="' . $href($files['android']) . '">' . "\n    "
+        . '<link rel="apple-touch-icon" href="' . $href($files['apple']) . '">';
 }
 
 // Cache-busting version for CSS/JS links: the file's last-modified time, so browsers

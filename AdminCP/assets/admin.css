@@ -376,3 +376,29 @@ body {
     margin: 6px 0 12px;
     border: 3px solid var(--border-color, #D8E0EA);
 }
+
+/* Logo & Favicon page (manage_branding.php) */
+.brand-preview { display: flex; flex-wrap: wrap; gap: 18px; margin-bottom: 24px; }
+.brand-preview figure { margin: 0; }
+.brand-preview figcaption { margin-top: 8px; font-size: 12.5px; color: #5B6A80; text-align: center; }
+.brand-preview-box { width: 180px; height: 150px; display: grid; place-items: center; padding: 16px; border: 1px solid #D8E0EA; border-radius: 14px; }
+.brand-preview-box.is-light { background: #fff; }
+.brand-preview-box.is-dark { background: #061F3A; border-color: #061F3A; }
+.brand-preview-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.brand-preview-header { display: flex; align-items: center; gap: 12px; height: 150px; padding: 0 22px; border: 1px solid #D8E0EA; border-radius: 14px; background: #fff; }
+.brand-preview-header img { width: 60px; height: 56px; object-fit: contain; }
+.brand-preview-header strong { display: block; font-family: var(--font-display, inherit); font-size: 16px; color: #082B50; }
+.brand-preview-header small { display: block; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: #8A5D00; }
+.brand-tab { display: flex; align-items: center; gap: 10px; width: 260px; height: 40px; margin-top: 55px; padding: 0 14px; border-radius: 10px 10px 0 0; background: #dee3ea; font-size: 13px; color: #253449; }
+.brand-tab span { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.brand-tab i { font-size: 12px; color: #5B6A80; }
+.brand-icon-sizes { width: auto; display: flex; align-items: center; gap: 22px; padding: 16px 26px; }
+.brand-icon-sizes img { object-fit: contain; }
+.brand-app-icon { border-radius: 14px; box-shadow: 0 4px 12px rgba(8, 43, 80, .18); }
+.brand-field input[type=file] { display: block; width: 100%; padding: 10px; border: 1px dashed #b9c6d6; border-radius: 10px; background: #F2F5F9; }
+.brand-reset { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; padding-top: 18px; border-top: 1px solid #eef0e6; }
+.brand-note { display: flex; gap: 8px; margin: 16px 0 0; font-size: 13px; color: #5B6A80; }
+@media (max-width: 600px) {
+    .brand-preview-box, .brand-preview-header, .brand-tab { width: 100%; }
+    .brand-preview figure { flex: 1 1 100%; }
+}

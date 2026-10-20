@@ -75,6 +75,10 @@ ob_start(function ($html) {
         '$1<input type="hidden" name="csrf_token" value="' . $token . '">',
         $html
     );
+    // the school's favicon on every admin page (pages without their own icon link)
+    if (stripos($html, 'rel="icon"') === false) {
+        $html = preg_replace('~</head>~i', '    ' . faviconLinks('../') . "\n</head>", $html, 1);
+    }
     $params = implode('|', ADMIN_ACTION_PARAMS);
     return preg_replace_callback(
         '~\bhref=(["\'])([^"\']*\?[^"\']*\b(?:' . $params . ')=[^"\']*)\1~i',
