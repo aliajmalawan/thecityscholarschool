@@ -4,7 +4,7 @@ $page_title = 'Home';
 $meta_description = content('seo_home_description');
 
 // ---------------------------------------------------------------------------
-// Forms on this page: the admission inquiry and the contact form. Both are saved
+// Form on this page: the admission inquiry. It is saved
 // to Contact Messages (AdminCP) through the same code as the Contact page; a
 // thank-you message only appears after the message was actually stored.
 // ---------------------------------------------------------------------------
@@ -15,7 +15,6 @@ $form_flash = formFlash();
 $form_flash_for = $_SESSION['form_flash_for'] ?? '';
 unset($_SESSION['form_flash_for']);
 $inquiry_error = '';
-$contact_error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $which_form = $_POST['form_name'] ?? '';
@@ -49,29 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             $inquiry_error = 'Sorry, your inquiry could not be sent right now. Please try again in a few minutes.';
         }
-    } elseif ($which_form === 'contact') {
-        $contact_error = $guard_problem ?: formValidate([
-            'c_name' => ['Your name', 'required'],
-            'c_email' => ['Email', 'required', 'email'],
-            'c_phone' => ['phone number', 'phone'],
-            'c_message' => ['Message', 'required'],
-        ]);
-        if ($contact_error === '') {
-            require_once __DIR__ . '/includes/contact_handler.php';
-            $saved = saveContactMessage([
-                'name' => formText('c_name', 100),
-                'email' => formText('c_email', 150),
-                'phone' => formText('c_phone', 30),
-                'subject' => 'General Question',
-                'message' => formText('c_message', 5000),
-            ], 'Someone has sent a message through the homepage contact form.');
-            if ($saved) {
-                $form_sent = true;
-                $_SESSION['form_flash_for'] = 'contact';
-                formDone('Thank you for your message! We have received it and will get back to you soon.', 'contact');
-            }
-            $contact_error = 'Sorry, your message could not be sent right now. Please try again in a few minutes.';
-        }
+
     }
 }
 
@@ -330,7 +307,7 @@ foreach ([1 => 'fa-seedling', 2 => 'fa-book-reader', 3 => 'fa-lightbulb', 4 => '
             <h2 id="home-band-title"><?php echo htmlspecialchars($band_heading); ?></h2>
             <p><?php echo htmlspecialchars(content('home_band_text')); ?></p>
             <div class="btn-group">
-                <a href="#contact" class="btn btn-secondary"><i class="fas fa-location-dot" aria-hidden="true"></i> Visit Our Campus</a>
+                <a href="contact" class="btn btn-secondary"><i class="fas fa-location-dot" aria-hidden="true"></i> Visit Our Campus</a>
                 <?php if (hasSitePhone()): ?>
                 <a href="<?php echo htmlspecialchars(telHref(primaryPhone())); ?>" class="btn btn-outline"><i class="fas fa-phone" aria-hidden="true"></i> Call <?php echo htmlspecialchars(primaryPhone()); ?></a>
                 <?php endif; ?>
@@ -629,79 +606,5 @@ while ($res && ($row = mysqli_fetch_assoc($res))) { $gallery_photos[] = $row; }
     </div>
 </section>
 <?php endif; ?>
-
-<!-- =====================================================================
-     Contact: details from Settings (or a short "coming soon" note), map when an
-     embed has been saved in Settings, and the contact form
-     ===================================================================== -->
-<?php
-$contact_sent = $form_flash !== '' && $form_flash_for === 'contact';
-$map_src = mapEmbedSrc();
-?>
-<section class="home-contact" id="contact">
-    <div class="container">
-        <div class="contact-shell">
-            <div class="contact-details">
-                <span class="eyebrow"><?php echo htmlspecialchars(content('home_contact_eyebrow')); ?></span>
-                <h2 class="section-title"><?php echo htmlspecialchars(content('home_contact_heading')); ?></h2>
-                <p class="lead"><?php echo htmlspecialchars(content('home_contact_text')); ?></p>
-
-                <?php contactDetailsList('is-stacked'); ?>
-
-                <div class="btn-group contact-actions">
-                    <?php if (hasSitePhone()): ?>
-                    <a href="<?php echo htmlspecialchars(telHref(primaryPhone())); ?>" class="btn btn-primary btn-sm"><i class="fas fa-phone" aria-hidden="true"></i> Call Now</a>
-                    <?php endif; ?>
-                    <?php if (directionsUrl() !== ''): ?>
-                    <a href="<?php echo htmlspecialchars(directionsUrl()); ?>" class="btn btn-outline-dark btn-sm" target="_blank" rel="noopener"><i class="fas fa-diamond-turn-right" aria-hidden="true"></i> Get Directions<span class="sr-only"> (opens Google Maps in a new tab)</span></a>
-                    <?php endif; ?>
-                </div>
-                <?php socialIcons(); ?>
-
-                <?php if ($map_src !== ''): ?>
-                <div class="contact-map">
-                    <iframe src="<?php echo htmlspecialchars($map_src); ?>" title="Map showing the location of <?php echo htmlspecialchars(getSiteName()); ?>" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
-                </div>
-                <?php endif; ?>
-            </div>
-
-            <div class="form-card">
-                <h3>Send Us a Message</h3>
-                <p class="form-card-text">We usually reply within a few working days.</p>
-
-                <?php if ($contact_sent): ?>
-                    <div class="alert alert-success" role="status"><i class="fas fa-circle-check" aria-hidden="true"></i> <?php echo htmlspecialchars($form_flash); ?></div>
-                <?php elseif ($contact_error !== ''): ?>
-                    <div class="alert alert-error" role="alert"><i class="fas fa-circle-exclamation" aria-hidden="true"></i> <?php echo htmlspecialchars($contact_error); ?></div>
-                <?php endif; ?>
-
-                <form method="POST" action="./#contact" id="homeContactForm" data-validate novalidate>
-                    <?php echo formGuardFields(); ?>
-                    <input type="hidden" name="form_name" value="contact">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="c_name">Your name <span class="req" aria-hidden="true">*</span></label>
-                            <input type="text" id="c_name" name="c_name" required maxlength="100" autocomplete="name" value="<?php echo old('c_name'); ?>">
-                        </div>
-                        <div class="form-group">
-                            <label for="c_email">Email <span class="req" aria-hidden="true">*</span></label>
-                            <input type="email" id="c_email" name="c_email" required maxlength="150" autocomplete="email" value="<?php echo old('c_email'); ?>">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="c_phone">Phone number <span class="optional">(optional)</span></label>
-                        <input type="tel" id="c_phone" name="c_phone" maxlength="30" autocomplete="tel" inputmode="tel" placeholder="03001234567" value="<?php echo old('c_phone'); ?>">
-                    </div>
-                    <div class="form-group">
-                        <label for="c_message">Message <span class="req" aria-hidden="true">*</span></label>
-                        <textarea id="c_message" name="c_message" rows="5" required maxlength="5000"><?php echo old('c_message'); ?></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-paper-plane" aria-hidden="true"></i> Send Message</button>
-                    <p class="form-note"><span aria-hidden="true">*</span> Required fields</p>
-                </form>
-            </div>
-        </div>
-    </div>
-</section>
 
 <?php include 'includes/footer.php'; ?>

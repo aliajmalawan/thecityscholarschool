@@ -1317,21 +1317,6 @@ p {
     gap: 24px;
 }
 
-.level-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 700;
-    font-size: var(--fs-body-sm);
-    color: var(--primary-dark);
-    transition: color var(--transition), gap var(--transition);
-}
-
-.level-link:hover {
-    color: var(--accent-ink);
-    gap: 12px;
-}
-
 @media (max-width: 1100px) {
     .card-grid.level-grid { grid-template-columns: repeat(2, 1fr); }
 }
@@ -1471,89 +1456,6 @@ p {
     flex-direction: column;
     padding: 0;
     overflow: hidden;
-}
-
-.update-media {
-    display: block;
-    aspect-ratio: 16 / 10;
-    overflow: hidden;
-    background: var(--primary-soft);
-}
-
-.update-media img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform .5s ease;
-}
-
-.update-card:hover .update-media img {
-    transform: scale(1.04);
-}
-
-.update-placeholder {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 44px;
-    color: var(--primary-color);
-    opacity: .55;
-}
-
-.update-body {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    padding: 24px 26px 26px;
-}
-
-.update-meta {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    margin-bottom: 14px;
-}
-
-.update-category {
-    padding: 4px 12px;
-    border-radius: var(--radius-pill);
-    font-size: var(--fs-xs);
-    font-weight: 700;
-    letter-spacing: .06em;
-    text-transform: uppercase;
-}
-
-.update-category.is-news { background: var(--primary-soft); color: var(--primary-dark); }
-.update-category.is-event { background: var(--accent-color); color: var(--on-accent); }
-
-.update-date {
-    font-size: var(--fs-sm);
-    color: var(--text-light);
-}
-
-.update-body h3 {
-    font-size: var(--fs-lg);
-    line-height: 1.4;
-    margin-bottom: 8px;
-}
-
-.update-body h3 a:hover {
-    color: var(--primary-color);
-}
-
-.update-body p {
-    flex: 1;
-    font-size: var(--fs-body);
-    line-height: 1.7;
-    color: var(--text-light);
-    margin-bottom: 18px;
-}
-
-.update-body .level-link {
-    margin-top: auto;
 }
 
 @media (max-width: 960px) {
@@ -4566,12 +4468,6 @@ body.lightbox-open { overflow: hidden; }
     border: 0;
 }
 
-.home-contact .form-card {
-    border: 1px solid var(--border);
-    border-top: 5px solid var(--accent);
-    box-shadow: var(--shadow-lg);
-}
-
 @media (max-width: 960px) {
     .contact-shell { grid-template-columns: 1fr; }
 }
@@ -6177,40 +6073,27 @@ body.lightbox-open { overflow: hidden; }
     .why-intro .btn-group .btn { flex: 1 1 100%; }
 }
 
-/* ---- Contact: one detail per row instead of cramped tiles ---- */
-.contact-list.is-stacked {
-    grid-template-columns: 1fr;
-    gap: 0;
-    margin-bottom: 22px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    background: var(--white);
-}
-
-.contact-list.is-stacked li {
-    align-items: center;
-    padding: 16px 18px;
-    border: 0;
-    border-bottom: 1px solid var(--border);
-    border-radius: 0;
-    background: transparent;
-}
-
-.contact-list.is-stacked li:last-child { border-bottom: 0; }
-
-.contact-list.is-stacked .contact-icon {
-    width: 40px;
-    height: 40px;
-    background: var(--soft-sage);
-    color: var(--primary);
-}
-
-.contact-actions { margin-bottom: 20px; }
-
-.home-contact .contact-map { margin-top: 20px; }
-
 /* the "Why choose us" heading column is a little wider so the title breaks into two lines */
 @media (min-width: 961px) {
     .why-split { grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr); }
+}
+
+/* Campus life photo cards: an incomplete last row sits centred (e.g. 3 + 2) */
+.life-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.life-grid > .life-card {
+    flex: 0 1 calc((100% - 48px) / 3);
+    min-width: min(100%, 300px);
+}
+
+@media (max-width: 1000px) {
+    .life-grid > .life-card { flex-basis: calc((100% - 24px) / 2); }
+}
+
+@media (max-width: 640px) {
+    .life-grid > .life-card { flex-basis: 100%; }
 }

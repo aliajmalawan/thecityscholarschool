@@ -236,8 +236,6 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             ['.home-about-copy', 'reveal-right'],
             ['.admissions-copy', 'reveal-left'],
             ['.home-admissions .form-card', 'reveal-right'],
-            ['.contact-details', 'reveal-left'],
-            ['.home-contact .form-card', 'reveal-right'],
             ['.events-panel', 'reveal-right'],
             ['.admissions-intro', 'reveal-left'],
             ['.admissions-details', 'reveal-right'],

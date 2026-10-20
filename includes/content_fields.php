@@ -69,7 +69,7 @@ $registry = [
         cf('home_quick_3_link', 'Quick link 3: link', 'url', 'about'),
         cf('home_quick_4_title', 'Quick link 4: title', 'text', 'Visit Us'),
         cf('home_quick_4_text', 'Quick link 4: text', 'text', 'Address, map and directions'),
-        cf('home_quick_4_link', 'Quick link 4: link', 'url', '#contact'),
+        cf('home_quick_4_link', 'Quick link 4: link', 'url', 'contact'),
         cf('home_academics_eyebrow', 'Academics: small label', 'text', 'Academic Programs'),
         cf('home_academics_heading', 'Academics: heading', 'text', 'Learning at Every Stage'),
         cf('home_academics_subtitle', 'Academics: subtitle', 'text', "A clear path from a child's first years at school to secondary education"),
@@ -97,9 +97,6 @@ $registry = [
         cf('home_gallery_eyebrow', 'Gallery: small label', 'text', 'Photo Gallery'),
         cf('home_gallery_heading', 'Gallery: heading', 'text', 'Moments From Our School'),
         cf('home_gallery_subtitle', 'Gallery: subtitle', 'text', 'A glimpse of everyday learning and special occasions'),
-        cf('home_contact_eyebrow', 'Contact: small label', 'text', 'Get In Touch'),
-        cf('home_contact_heading', 'Contact: heading', 'text', "We'd Love to Hear From You"),
-        cf('home_contact_text', 'Contact: text', 'textarea', 'Have a question about the school, admissions or anything else? Send us a message and our office will get back to you.'),
     ]],
 
     'home_admissions' => ['label' => 'Home: Admissions', 'icon' => 'fa-user-plus', 'fields' => [
