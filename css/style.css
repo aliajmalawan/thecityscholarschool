@@ -315,7 +315,7 @@ p {
     display: flex;
     align-items: center;
     gap: 12px;
-    flex-shrink: 0;
+    flex: 0 1 auto;
     min-width: 0;
 }
 
@@ -2195,7 +2195,7 @@ section {
     padding: 12px 14px;
     border: 1.5px solid var(--border-color);
     border-radius: var(--radius-md);
-    font-size: var(--fs-body);
+    font-size: var(--fs-md);   /* 16px: anything smaller makes iPhones zoom in on tap */
     line-height: 1.5;
     transition: border-color var(--transition), box-shadow var(--transition), background-color var(--transition);
     font-family: inherit;
@@ -5966,4 +5966,85 @@ body.lightbox-open { overflow: hidden; }
 }
 @media (min-width: 601px) and (max-width: 960px) {
     .why-grid:has(> :nth-child(4):last-child) { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ==========================================================================
+   Responsive refinements (checked at 320-1440px)
+   ========================================================================== */
+
+/* Small laptops: the full menu needs slightly tighter spacing between 1280 and 1440px */
+@media (min-width: 1280px) and (max-width: 1439.98px) {
+    .main-bar-inner { gap: 14px; }
+    .site-nav > a,
+    .nav-dropdown-trigger { padding-inline: 8px; font-size: var(--fs-body-sm); }
+    .site-nav > a::after,
+    .nav-dropdown-trigger::after { left: 8px; right: 8px; }
+    .brand-text strong { font-size: 16px; }
+    .apply-btn { padding: 11px 18px; }
+}
+
+/* Phones: the school name wraps onto two lines rather than pushing the buttons off screen */
+@media (max-width: 600px) {
+    .brand-text strong { line-height: 1.2; }
+}
+
+@media (max-width: 360px) {
+    .container { padding-inline: 14px; }
+    .brand-logo,
+    .site-header.is-scrolled .brand-logo { width: 40px; height: 37px; }
+    .brand-text strong { font-size: 13.5px; }
+}
+
+/* Touch targets: at least 44px tall where people tap */
+.breadcrumb a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    margin-block: -12px;
+}
+
+.text-link {
+    padding-block: 10px;
+    margin-block: -10px;
+}
+
+.gallery-filter { min-height: 44px; }
+
+.hero-dot::after { inset: -17px -7px; }
+
+/* Long words (e-mail addresses, file names) wrap instead of widening a card */
+.contact-list,
+.footer-contact-list,
+.download-body,
+.campus-contact {
+    overflow-wrap: anywhere;
+}
+
+/* Tables scroll inside their card on narrow screens; show that they can */
+@media (max-width: 760px) {
+    .table-scroll {
+        background:
+            linear-gradient(90deg, var(--white) 30%, rgba(255, 255, 255, 0)) left / 24px 100% no-repeat local,
+            linear-gradient(270deg, var(--white) 30%, rgba(255, 255, 255, 0)) right / 24px 100% no-repeat local,
+            radial-gradient(farthest-side at 0 50%, rgba(var(--ink-rgb), 0.15), transparent) left / 10px 100% no-repeat scroll,
+            radial-gradient(farthest-side at 100% 50%, rgba(var(--ink-rgb), 0.15), transparent) right / 10px 100% no-repeat scroll;
+    }
+}
+
+/* the logo link is a comfortable tap target on the narrowest phones too */
+.brand { padding-block: 4px; }
+
+/* Program cards: 4 across, then 2 by 2 (never 3 + 1), then one column */
+.program-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 1100px) { .program-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px)  { .program-grid { grid-template-columns: 1fr; } }
+
+/* Gallery filters wrap onto a second line on phones instead of hiding chips off screen */
+@media (max-width: 768px) {
+    .gallery-filters { flex-wrap: wrap; justify-content: center; overflow-x: visible; padding-bottom: 0; }
+}
+
+/* Campus Life intro: the link cards sit in one column beside the text on small laptops */
+@media (min-width: 901px) and (max-width: 1200px) {
+    .intro-split .link-grid { grid-template-columns: 1fr; }
 }
