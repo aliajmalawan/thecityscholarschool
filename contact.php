@@ -38,171 +38,119 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && ($guard_problem = formGuardError()) 
 ?>
 <?php include 'includes/header.php'; ?>
 
-<!-- Page Header -->
-<?php renderPageBanner('contact'); ?>
+<?php
+$subjects = ['Admission Inquiry', 'Course Information', 'Fee Inquiry', 'General Question', 'Feedback', 'Complaint', 'Other'];
+$hours_lines = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', content('contact_hours')))));
+$map_src = mapEmbedSrc();
+$faqs = [];
+$faqs_result = mysqli_query($conn, "SELECT DISTINCT * FROM faqs WHERE status = 'active' ORDER BY display_order ASC, id ASC");
+while ($faqs_result && ($faq = mysqli_fetch_assoc($faqs_result))) { $faqs[] = $faq; }
+?>
 
-<!-- Contact Info Cards -->
-<section class="bg-light">
+<?php renderPageBanner('contact', false, 'fa-envelope'); ?>
+
+<!-- Details + form -->
+<section class="page-intro">
     <div class="container">
-        <h2 class="sr-only">Contact details</h2>
-        <div class="card-grid">
-            <div class="card contact-info-card">
-                <div class="card-icon"><i class="fas fa-map-marker-alt"></i></div>
-                <h3>Visit Us</h3>
-                <?php if (hasSiteAddress()): ?>
-                    <p><?php echo htmlspecialchars(getSiteName()); ?><br><?php echo nl2br(htmlspecialchars(getSiteAddress())); ?></p>
-                <?php else: ?>
-                    <p class="is-placeholder">Campus address will be announced soon.</p>
-                <?php endif; ?>
-            </div>
+        <div class="contact-shell">
+            <div class="contact-details">
+                <span class="eyebrow">Contact Details</span>
+                <h2 class="section-title">Get in Touch</h2>
+                <p class="lead">Whether you are a parent, a student or a visitor, we are happy to help. Send us a message and our office will reply as soon as possible.</p>
+                <?php contactDetailsList(); ?>
+                <?php socialIcons(); ?>
 
-            <div class="card contact-info-card">
-                <div class="card-icon"><i class="fas fa-phone"></i></div>
-                <h3>Call Us</h3>
-                <?php if (hasSitePhone()): ?>
-                    <p><a href="<?php echo htmlspecialchars(telHref(primaryPhone())); ?>"><?php echo htmlspecialchars(getSitePhone()); ?></a><?php if (hasOfficeHours()): ?><br><?php echo htmlspecialchars(getOfficeHours()); ?><?php endif; ?></p>
-                <?php else: ?>
-                    <p class="is-placeholder">Phone number coming soon. Please use the form below.</p>
-                <?php endif; ?>
-            </div>
-
-            <div class="card contact-info-card">
-                <div class="card-icon"><i class="fas fa-envelope"></i></div>
-                <h3>Email Us</h3>
-                <?php if (hasSiteEmail()): ?>
-                    <p><a href="mailto:<?php echo htmlspecialchars(getSiteEmail()); ?>"><?php echo htmlspecialchars(getSiteEmail()); ?></a></p>
-                <?php else: ?>
-                    <p class="is-placeholder">Email address coming soon. Please use the form below.</p>
-                <?php endif; ?>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Contact Form & Map -->
-<section>
-    <div class="container">
-        <div class="grid-2 reveal" style="align-items: start;">
-            <!-- Contact Form -->
-            <div>
-                <span class="eyebrow"><?php echo htmlspecialchars(content('contact_form_eyebrow')); ?></span>
-                <h2 style="color: var(--ink); margin-bottom: 20px;"><?php echo htmlspecialchars(content('contact_form_heading')); ?></h2>
-
-                <?php if ($success_message): ?>
-                    <div class="alert alert-success" id="form-status" role="status">
-                        <i class="fas fa-check-circle"></i>
-                        <span><?php echo htmlspecialchars($success_message); ?></span>
-                    </div>
-                <?php endif; ?>
-
-                <?php if ($error_message): ?>
-                    <div class="alert alert-error" role="alert">
-                        <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
-                        <span><?php echo htmlspecialchars($error_message); ?></span>
-                    </div>
-                <?php endif; ?>
-
-                <form method="POST" id="contactForm" onsubmit="return validateForm('contactForm')">
-                    <?php echo formGuardFields(); ?>
-                    <div class="grid-2" style="gap: 20px; align-items: start;">
-                        <div class="form-group">
-                            <label for="name">Your Name *</label>
-                            <input type="text" id="name" name="name" required placeholder="Enter your name" value="<?php echo old('name'); ?>">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="email">Email Address *</label>
-                            <input type="email" id="email" name="email" required placeholder="your.email@example.com" value="<?php echo old('email'); ?>">
-                        </div>
-                    </div>
-
-                    <div class="grid-2" style="gap: 20px; align-items: start;">
-                        <div class="form-group">
-                            <label for="phone">Phone Number *</label>
-                            <input type="tel" id="phone" name="phone" required placeholder="03001234567" value="<?php echo old('phone'); ?>">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="subject">Subject *</label>
-                            <select id="subject" name="subject" required>
-                                <option value="">-- Select Subject --</option>
-                                <option value="Admission Inquiry"<?php echo old('subject') === 'Admission Inquiry' ? ' selected' : ''; ?>>Admission Inquiry</option>
-                                <option value="Course Information"<?php echo old('subject') === 'Course Information' ? ' selected' : ''; ?>>Course Information</option>
-                                <option value="Fee Inquiry"<?php echo old('subject') === 'Fee Inquiry' ? ' selected' : ''; ?>>Fee Inquiry</option>
-                                <option value="General Question"<?php echo old('subject') === 'General Question' ? ' selected' : ''; ?>>General Question</option>
-                                <option value="Feedback"<?php echo old('subject') === 'Feedback' ? ' selected' : ''; ?>>Feedback</option>
-                                <option value="Complaint"<?php echo old('subject') === 'Complaint' ? ' selected' : ''; ?>>Complaint</option>
-                                <option value="Other"<?php echo old('subject') === 'Other' ? ' selected' : ''; ?>>Other</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="message">Your Message *</label>
-                        <textarea id="message" name="message" required placeholder="Write your message here..."><?php echo old('message'); ?></textarea>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">
-                        <i class="fas fa-paper-plane"></i> Send Message
-                    </button>
-                </form>
-            </div>
-
-            <!-- Google Map & Additional Info -->
-            <div>
-                <span class="eyebrow"><?php echo htmlspecialchars(content('contact_map_eyebrow')); ?></span>
-                <h2 style="color: var(--ink); margin-bottom: 20px;"><?php echo htmlspecialchars(content('contact_map_heading')); ?></h2>
-
-                <!-- Google Map -->
-                <div style="border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 30px; height: 400px; border: 2px solid var(--border-color); box-shadow: var(--shadow-sm);">
-                    <iframe src="https://maps.google.com/maps?width=600&height=400&hl=en&q=<?php echo rawurlencode(content('contact_map_query')); ?>&t=&z=14&ie=UTF8&iwloc=B&output=embed" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-                </div>
-
-                <!-- Working Hours -->
-                <div class="card">
-                    <h3 style="color: var(--primary-color); margin-bottom: 20px;"><i class="fas fa-clock"></i> Working Hours</h3>
+                <?php if (!empty($hours_lines)): ?>
+                <div class="aside-card hours-card">
+                    <h3 class="aside-title"><i class="fas fa-clock" aria-hidden="true"></i> Working Hours</h3>
                     <ul class="hours-list">
-                        <?php
-                        // One "Day | Time" per line, edited under Page Content > Contact page
-                        foreach (array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', content('contact_hours')))) as $hours_line):
+                        <?php foreach ($hours_lines as $hours_line):
                             [$hours_day, $hours_time] = array_pad(array_map('trim', explode('|', $hours_line, 2)), 2, '');
                             $hours_closed = strcasecmp($hours_time, 'Closed') === 0;
                         ?>
-                        <li>
-                            <span class="hours-day"><i class="fas <?php echo $hours_closed ? 'fa-calendar-times' : 'fa-calendar-day'; ?>"></i> <?php echo htmlspecialchars($hours_day); ?></span>
-                            <span class="<?php echo $hours_closed ? 'hours-closed' : ''; ?>"><?php echo htmlspecialchars($hours_time); ?></span>
-                        </li>
+                        <li><span class="hours-day"><?php echo htmlspecialchars($hours_day); ?></span><span class="<?php echo $hours_closed ? 'hours-closed' : ''; ?>"><?php echo htmlspecialchars($hours_time); ?></span></li>
                         <?php endforeach; ?>
                     </ul>
                 </div>
+                <?php endif; ?>
+            </div>
+
+            <div class="form-card" id="form-status">
+                <span class="eyebrow"><?php echo htmlspecialchars(content('contact_form_eyebrow')); ?></span>
+                <h2 class="form-card-title"><?php echo htmlspecialchars(content('contact_form_heading')); ?></h2>
+                <p class="form-card-text">Fields marked <span class="req" aria-hidden="true">*</span><span class="sr-only">with an asterisk</span> are required.</p>
+
+                <?php if ($success_message): ?>
+                    <div class="alert alert-success" role="status"><i class="fas fa-circle-check" aria-hidden="true"></i> <span><?php echo htmlspecialchars($success_message); ?></span></div>
+                <?php endif; ?>
+                <?php if ($error_message): ?>
+                    <div class="alert alert-error" role="alert"><i class="fas fa-circle-exclamation" aria-hidden="true"></i> <span><?php echo htmlspecialchars($error_message); ?></span></div>
+                <?php endif; ?>
+
+                <form method="POST" action="contact#form-status" id="contactForm" data-validate novalidate>
+                    <?php echo formGuardFields(); ?>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name">Your name <span class="req" aria-hidden="true">*</span></label>
+                            <input type="text" id="name" name="name" required maxlength="100" autocomplete="name" value="<?php echo old('name'); ?>">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email <span class="req" aria-hidden="true">*</span></label>
+                            <input type="email" id="email" name="email" required maxlength="150" autocomplete="email" value="<?php echo old('email'); ?>">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phone">Phone number <span class="optional">(optional)</span></label>
+                            <input type="tel" id="phone" name="phone" maxlength="30" autocomplete="tel" inputmode="tel" placeholder="03001234567" value="<?php echo old('phone'); ?>">
+                        </div>
+                        <div class="form-group">
+                            <label for="subject">Subject <span class="req" aria-hidden="true">*</span></label>
+                            <select id="subject" name="subject" required>
+                                <option value="">Choose a subject</option>
+                                <?php foreach ($subjects as $subject): ?>
+                                <option value="<?php echo htmlspecialchars($subject); ?>"<?php echo old('subject') === htmlspecialchars($subject, ENT_QUOTES) ? ' selected' : ''; ?>><?php echo htmlspecialchars($subject); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message <span class="req" aria-hidden="true">*</span></label>
+                        <textarea id="message" name="message" rows="5" required maxlength="5000"><?php echo old('message'); ?></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-paper-plane" aria-hidden="true"></i> Send Message</button>
+                </form>
             </div>
         </div>
     </div>
 </section>
 
-<!-- FAQ Section -->
+<?php if ($map_src !== ''): ?>
+<!-- Map: only once an embed code has been saved in Settings -->
 <section class="bg-light">
     <div class="container">
-        <div class="section-header reveal">
-            <span class="eyebrow"><?php echo htmlspecialchars(content('contact_faq_eyebrow')); ?></span>
-            <h2><?php echo htmlspecialchars(content('contact_faq_heading')); ?></h2>
-            <p><?php echo htmlspecialchars(content('contact_faq_subtitle')); ?></p>
-        </div>
-
-        <div class="faq-list">
-            <?php
-            $faqs_result = mysqli_query($conn, "SELECT DISTINCT * FROM faqs WHERE status = 'active' ORDER BY display_order ASC, id ASC");
-            if ($faqs_result) {
-                while ($faq = mysqli_fetch_assoc($faqs_result)) {
-                    echo '<div class="faq-item">';
-                    echo '<button type="button" class="faq-question"><span>' . htmlspecialchars($faq['question']) . '</span><i class="fas fa-chevron-down"></i></button>';
-                    echo '<div class="faq-answer"><p>' . nl2br(htmlspecialchars($faq['answer'])) . '</p></div>';
-                    echo '</div>';
-                }
-            }
-            ?>
+        <?php sectionHeader(content('contact_map_eyebrow'), content('contact_map_heading')); ?>
+        <div class="contact-map is-wide">
+            <iframe src="<?php echo htmlspecialchars($map_src); ?>" title="Map showing the location of <?php echo htmlspecialchars(getSiteName()); ?>" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
         </div>
     </div>
 </section>
+<?php endif; ?>
+
+<?php if (!empty($faqs)): ?>
+<section class="<?php echo $map_src !== '' ? '' : 'bg-light'; ?>">
+    <div class="container">
+        <?php sectionHeader(content('contact_faq_eyebrow'), content('contact_faq_heading'), content('contact_faq_subtitle')); ?>
+        <div class="faq-list">
+            <?php foreach ($faqs as $i => $faq): ?>
+            <div class="faq-item">
+                <button type="button" class="faq-question" aria-expanded="false" aria-controls="faq-answer-<?php echo $i; ?>" id="faq-q-<?php echo $i; ?>"><span><?php echo htmlspecialchars($faq['question']); ?></span><i class="fas fa-chevron-down" aria-hidden="true"></i></button>
+                <div class="faq-answer" id="faq-answer-<?php echo $i; ?>" role="region" aria-labelledby="faq-q-<?php echo $i; ?>"><p><?php echo nl2br(htmlspecialchars($faq['answer'])); ?></p></div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</section>
+<?php endif; ?>
 
 <?php include 'includes/footer.php'; ?>

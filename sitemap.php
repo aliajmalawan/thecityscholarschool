@@ -28,6 +28,7 @@ $pages = [
     'admission'   => ['0.9', 'monthly', [['fee_items', 'updated_at']]],
     'courses'     => ['0.9', 'monthly', [['courses', 'updated_at']]],
     'faculty'     => ['0.7', 'monthly', [['faculty', 'updated_at']]],
+    'campus-life' => ['0.7', 'monthly', [['gallery', 'updated_at'], ['events', 'updated_at']]],
     'campuses'    => ['0.6', 'monthly', [['campuses', 'updated_at']]],
     'gallery'     => ['0.7', 'weekly',  [['gallery', 'updated_at']]],
     'events'      => ['0.8', 'weekly',  [['news', 'updated_at'], ['events', 'updated_at']]],

@@ -34,6 +34,7 @@
                         <li><a href="./">Home</a></li>
                         <li><a href="about">About Us</a></li>
                         <li><a href="admission">Admissions</a></li>
+                        <li><a href="campus-life">Campus Life</a></li>
                         <li><a href="gallery">Gallery</a></li>
                         <li><a href="events">News &amp; Events</a></li>
                         <li><a href="contact">Contact Us</a></li>
@@ -43,7 +44,7 @@
                 <nav class="footer-col" aria-labelledby="footer-academics">
                     <h2 class="footer-heading" id="footer-academics">Academics</h2>
                     <ul class="footer-links">
-                        <li><a href="courses">Courses &amp; Programs</a></li>
+                        <li><a href="courses">Academic Programs</a></li>
                         <li><a href="faculty">Our Faculty</a></li>
                         <li><a href="examination">Examination</a></li>
                         <li><a href="downloads">Downloads</a></li>

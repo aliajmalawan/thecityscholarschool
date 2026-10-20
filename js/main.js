@@ -370,8 +370,15 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!question) return;
         question.addEventListener('click', function() {
             const isOpen = item.classList.contains('is-open');
-            faqItems.forEach(i => i.classList.remove('is-open'));
-            if (!isOpen) item.classList.add('is-open');
+            faqItems.forEach(i => {
+                i.classList.remove('is-open');
+                const q = i.querySelector('.faq-question');
+                if (q) q.setAttribute('aria-expanded', 'false');
+            });
+            if (!isOpen) {
+                item.classList.add('is-open');
+                question.setAttribute('aria-expanded', 'true');
+            }
         });
     });
 });

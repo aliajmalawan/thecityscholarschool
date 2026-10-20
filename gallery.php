@@ -32,10 +32,10 @@ $photo_counts = array_count_values(array_column($photos, 'category'));
 <?php include 'includes/header.php'; ?>
 
 <!-- Page Header -->
-<?php renderPageBanner('gallery'); ?>
+<?php renderPageBanner('gallery', false, 'fa-images'); ?>
 
 <!-- Photos -->
-<section class="bg-light" id="photos">
+<section class="page-intro bg-light" id="photos">
     <div class="container">
         <?php if (!empty($photos) && count(array_intersect_key($categories, $photo_counts)) > 1): ?>
         <div class="gallery-filters" role="toolbar" aria-label="Filter photos by category">
@@ -77,14 +77,14 @@ $photo_counts = array_count_values(array_column($photos, 'category'));
 <!-- Videos: a thumbnail and play button first; the YouTube player only loads when pressed -->
 <section id="videos">
     <div class="container">
-        <div class="section-header reveal">
+        <div class="section-header">
             <span class="eyebrow"><?php echo htmlspecialchars(content('gallery_videos_eyebrow')); ?></span>
             <h2><?php echo htmlspecialchars(content('gallery_videos_heading')); ?></h2>
             <p><?php echo htmlspecialchars(content('gallery_videos_subtitle')); ?></p>
         </div>
         <div class="video-grid">
             <?php foreach ($videos as $video): $vid = htmlspecialchars($video['youtube_id']); ?>
-            <article class="video-card reveal">
+            <article class="video-card">
                 <button type="button" class="video-frame" data-youtube="<?php echo $vid; ?>" aria-label="Play video: <?php echo htmlspecialchars($video['title']); ?>">
                     <img src="https://i.ytimg.com/vi/<?php echo $vid; ?>/hqdefault.jpg" alt="" width="480" height="360" loading="lazy" decoding="async">
                     <span class="video-play" aria-hidden="true"><i class="fas fa-play"></i></span>
@@ -99,5 +99,7 @@ $photo_counts = array_count_values(array_column($photos, 'category'));
     </div>
 </section>
 <?php endif; ?>
+
+<?php ctaPanel('Explore More of Campus Life', 'Facilities, events and activities at ' . getSiteName() . '.', [['Campus Life', 'campus-life', 'gold', 'fa-people-group'], ['News & Events', 'events', 'outline']]); ?>
 
 <?php include 'includes/footer.php'; ?>

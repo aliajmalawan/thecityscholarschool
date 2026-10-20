@@ -7,6 +7,11 @@ $meta_description = content('seo_admission_description');
 $success_message = formFlash();   // set after a successful submission, see formDone()
 $error_message = '';
 
+// Program list: active courses (AdminCP -> Courses), or the school levels while none are published
+$count_result = mysqli_query($conn, "SELECT COUNT(*) AS c FROM courses WHERE status = 'active'");
+$has_active_courses = $count_result && (int) mysqli_fetch_assoc($count_result)['c'] > 0;
+$level_programs = array_values(array_filter(array_map(fn($n) => content("academics_{$n}_title"), [1, 2, 3, 4])));
+
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $error_message = formGuardError() ?: formValidate([
@@ -20,14 +25,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         'previous_education' => ['Previous education', 'required'],
     ]);
     if ($error_message === '') {
-        // The chosen program must be one of the active courses offered in the list
-        $course_check = mysqli_prepare($conn, "SELECT COUNT(*) FROM courses WHERE id = ? AND status = 'active'");
-        $posted_course = intval($_POST['course_id']);
-        mysqli_stmt_bind_param($course_check, 'i', $posted_course);
-        mysqli_stmt_execute($course_check);
-        mysqli_stmt_bind_result($course_check, $course_exists);
-        mysqli_stmt_fetch($course_check);
-        mysqli_stmt_close($course_check);
+        // The chosen program must be one of the options in the list: an active course,
+        // or (while no courses are published) one of the school levels
+        if ($has_active_courses) {
+            $course_check = mysqli_prepare($conn, "SELECT COUNT(*) FROM courses WHERE id = ? AND status = 'active'");
+            $posted_course = intval($_POST['course_id']);
+            mysqli_stmt_bind_param($course_check, 'i', $posted_course);
+            mysqli_stmt_execute($course_check);
+            mysqli_stmt_bind_result($course_check, $course_exists);
+            mysqli_stmt_fetch($course_check);
+            mysqli_stmt_close($course_check);
+        } else {
+            $course_exists = in_array(trim((string) $_POST['course_id']), $level_programs, true);
+        }
         if (!$course_exists) {
             $error_message = 'Please choose a program from the list.';
         }
@@ -66,9 +76,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $error_message === '') {
     $insert_query = "INSERT INTO admissions (student_name, father_name, cnic_bform, phone, email, address, course_id, previous_education, documents, message, status, created_at)
                      VALUES ('$student_name', '$father_name', '$cnic_bform', '$phone', '$email', '$address', '$course_id', '$previous_education', '$document_path', '$message', 'pending', NOW())";
 
+    // PHP 8 reports database errors as exceptions: treat them like any failed save
+    try {
+        $saved = $doc_error === '' && mysqli_query($conn, $insert_query);
+    } catch (mysqli_sql_exception $e) {
+        error_log('Admission form save failed: ' . $e->getMessage());
+        $saved = false;
+    }
+
     if ($doc_error !== '') {
         $error_message = $doc_error;
-    } elseif (mysqli_query($conn, $insert_query)) {
+    } elseif ($saved) {
         // Branded emails: the original form values (not the SQL-escaped copies) are shown
         require_once __DIR__ . '/includes/email_helper.php';
         $f = function ($key) { return trim($_POST[$key] ?? ''); };
@@ -110,213 +128,192 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $error_message === '') {
 
         $form_sent = true;
 
-        formDone("Your admission application has been submitted successfully! A confirmation email has been sent to your email address. We will contact you soon.", 'form-status');
+        formDone('Thank you! Your admission application has been received. Our admissions office will contact you soon'
+            . ($f('email') !== '' ? ', and a confirmation has been sent to your email address.' : '.'), 'form-status');
     } else {
-        $error_message = "Error submitting application. Please try again.";
+        $error_message = 'Sorry, your application could not be submitted right now. Please try again in a few minutes.';
     }
 }
 ?>
 <?php include 'includes/header.php'; ?>
 
-<!-- Page Header -->
-<?php renderPageBanner('admission'); ?>
+<?php
+$adm_steps = [];
+foreach (getFeatureCards('admission_process') as $step) {
+    $adm_steps[$step['title']] = $step['description'];   // the DB can hold duplicate rows, so key by title
+}
+$adm_docs = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', content('home_adm_docs')))));
+$fee_rows = [];
+$fee_result = mysqli_query($conn, "SELECT DISTINCT * FROM fee_items WHERE status = 'active' ORDER BY display_order ASC, id ASC");
+while ($fee_result && ($row = mysqli_fetch_assoc($fee_result))) {
+    $fee_rows[] = $row;
+}
+$program_options = [];
+$courses_result = mysqli_query($conn, "SELECT DISTINCT id, name FROM courses WHERE status = 'active' ORDER BY display_order ASC, id ASC");
+while ($courses_result && ($course = mysqli_fetch_assoc($courses_result))) {
+    $program_options[$course['id']] = $course['name'];
+}
+$chosen_course = old('course_id') !== '' ? old('course_id') : (string) ($_GET['course'] ?? '');
+?>
 
-<!-- Admission Form -->
-<section class="bg-light">
+<?php renderPageBanner('admission', false, 'fa-pen-to-square'); ?>
+
+<!-- Application form + how to apply -->
+<section class="page-intro bg-light">
     <div class="container">
-        <?php if ($success_message): ?>
-            <div class="alert alert-success" id="form-status" role="status" style="max-width: 800px; margin-left: auto; margin-right: auto;">
-                <i class="fas fa-check-circle"></i>
-                <span><?php echo htmlspecialchars($success_message); ?></span>
-            </div>
-        <?php endif; ?>
+        <div class="apply-layout">
+            <div class="form-card" id="form-status">
+                <span class="eyebrow"><?php echo htmlspecialchars(content('adm_form_eyebrow')); ?></span>
+                <h2 class="form-card-title"><?php echo htmlspecialchars(content('adm_form_heading')); ?></h2>
+                <p class="form-card-text">Please fill in the details below. Fields marked <span class="req" aria-hidden="true">*</span><span class="sr-only">with an asterisk</span> are required.</p>
 
-        <?php if ($error_message): ?>
-            <div class="alert alert-error" style="max-width: 800px; margin-left: auto; margin-right: auto;">
-                <i class="fas fa-exclamation-triangle"></i>
-                <span><?php echo $error_message; ?></span>
-            </div>
-        <?php endif; ?>
+                <?php if ($success_message): ?>
+                    <div class="alert alert-success" role="status"><i class="fas fa-circle-check" aria-hidden="true"></i> <span><?php echo htmlspecialchars($success_message); ?></span></div>
+                <?php endif; ?>
+                <?php if ($error_message): ?>
+                    <div class="alert alert-error" role="alert"><i class="fas fa-circle-exclamation" aria-hidden="true"></i> <span><?php echo htmlspecialchars($error_message); ?></span></div>
+                <?php endif; ?>
 
-        <div style="max-width: 800px; margin: 0 auto;">
-            <div class="card" style="padding: 40px;">
-                <div class="text-center mb-30">
-                    <span class="eyebrow"><?php echo htmlspecialchars(content('adm_form_eyebrow')); ?></span>
-                    <h2 style="color: var(--ink);"><?php echo htmlspecialchars(content('adm_form_heading')); ?></h2>
-                </div>
-
-                <form method="POST" enctype="multipart/form-data" id="admissionForm" data-guard onsubmit="return validateForm('admissionForm')">
+                <form method="POST" action="admission#form-status" enctype="multipart/form-data" id="admissionForm" data-validate novalidate>
                     <?php echo formGuardFields(); ?>
-                    <div class="grid-2" style="gap: 20px; align-items: start;">
-                        <div class="form-group">
-                            <label for="student_name">Student Name *</label>
-                            <input type="text" id="student_name" name="student_name" required placeholder="Enter student's full name" value="<?php echo old('student_name'); ?>">
+                    <fieldset class="form-fieldset">
+                        <legend>Student details</legend>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="student_name">Student name <span class="req" aria-hidden="true">*</span></label>
+                                <input type="text" id="student_name" name="student_name" required maxlength="100" value="<?php echo old('student_name'); ?>">
+                            </div>
+                            <div class="form-group">
+                                <label for="cnic_bform">CNIC / B-Form number <span class="req" aria-hidden="true">*</span></label>
+                                <input type="text" id="cnic_bform" name="cnic_bform" required maxlength="15" inputmode="numeric" placeholder="12345-1234567-1" value="<?php echo old('cnic_bform'); ?>">
+                            </div>
                         </div>
-
-                        <div class="form-group">
-                            <label for="father_name">Father/Guardian Name *</label>
-                            <input type="text" id="father_name" name="father_name" required placeholder="Enter father or guardian name" value="<?php echo old('father_name'); ?>">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="course_id">Program / class applying for <span class="req" aria-hidden="true">*</span></label>
+                                <select id="course_id" name="course_id" required>
+                                    <option value="">Choose a program</option>
+                                    <?php if (!empty($program_options)): ?>
+                                        <?php foreach ($program_options as $id => $name): ?>
+                                        <option value="<?php echo intval($id); ?>"<?php echo $chosen_course === (string) $id ? ' selected' : ''; ?>><?php echo htmlspecialchars($name); ?></option>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <?php foreach ($level_programs as $program): ?>
+                                        <option value="<?php echo htmlspecialchars($program); ?>"<?php echo $chosen_course === $program ? ' selected' : ''; ?>><?php echo htmlspecialchars($program); ?></option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="previous_education">Previous school / class <span class="req" aria-hidden="true">*</span></label>
+                                <input type="text" id="previous_education" name="previous_education" required maxlength="255" placeholder="e.g. Class 4, ABC School" value="<?php echo old('previous_education'); ?>">
+                            </div>
                         </div>
-                    </div>
+                    </fieldset>
 
-                    <div class="grid-2" style="gap: 20px; align-items: start;">
-                        <div class="form-group">
-                            <label for="cnic_bform">CNIC / B-Form Number *</label>
-                            <input type="text" id="cnic_bform" name="cnic_bform" required placeholder="e.g., 12345-1234567-1" value="<?php echo old('cnic_bform'); ?>">
+                    <fieldset class="form-fieldset">
+                        <legend>Parent / guardian details</legend>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="father_name">Father / guardian name <span class="req" aria-hidden="true">*</span></label>
+                                <input type="text" id="father_name" name="father_name" required maxlength="100" autocomplete="name" value="<?php echo old('father_name'); ?>">
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone number <span class="req" aria-hidden="true">*</span></label>
+                                <input type="tel" id="phone" name="phone" required maxlength="30" autocomplete="tel" inputmode="tel" placeholder="03001234567" value="<?php echo old('phone'); ?>">
+                            </div>
                         </div>
-
                         <div class="form-group">
-                            <label for="previous_education">Previous Education *</label>
-                            <input type="text" id="previous_education" name="previous_education" required placeholder="e.g., Matric from XYZ School, 85%" value="<?php echo old('previous_education'); ?>">
+                            <label for="email">Email <span class="optional">(optional)</span></label>
+                            <input type="email" id="email" name="email" maxlength="150" autocomplete="email" value="<?php echo old('email'); ?>">
                         </div>
-                    </div>
-
-                    <div class="grid-2" style="gap: 20px; align-items: start;">
                         <div class="form-group">
-                            <label for="phone">Phone Number *</label>
-                            <input type="tel" id="phone" name="phone" required placeholder="03001234567" value="<?php echo old('phone'); ?>">
+                            <label for="address">Home address <span class="req" aria-hidden="true">*</span></label>
+                            <textarea id="address" name="address" rows="2" required autocomplete="street-address"><?php echo old('address'); ?></textarea>
                         </div>
+                    </fieldset>
 
+                    <fieldset class="form-fieldset">
+                        <legend>Documents and notes</legend>
                         <div class="form-group">
-                            <label for="email">Email Address</label>
-                            <input type="email" id="email" name="email" placeholder="your.email@example.com" value="<?php echo old('email'); ?>">
+                            <label for="documents">Upload documents <span class="optional">(optional)</span></label>
+                            <input type="file" id="documents" name="documents" accept=".pdf,.jpg,.jpeg,.png" aria-describedby="documents-hint">
+                            <p class="field-hint" id="documents-hint">PDF, JPG or PNG, up to 5 MB.</p>
                         </div>
-                    </div>
+                        <div class="form-group">
+                            <label for="message">Anything else we should know? <span class="optional">(optional)</span></label>
+                            <textarea id="message" name="message" rows="3"><?php echo old('message'); ?></textarea>
+                        </div>
+                    </fieldset>
 
-                    <div class="form-group">
-                        <label for="address">Residential Address *</label>
-                        <textarea id="address" name="address" required placeholder="Enter complete address"><?php echo old('address'); ?></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="course_id">Select Program/Course *</label>
-                        <select id="course_id" name="course_id" required>
-                            <option value="">-- Choose a Program --</option>
-                            <?php
-                            $courses_query = "SELECT DISTINCT id, name FROM courses WHERE status = 'active' ORDER BY display_order ASC, id ASC";
-                            $courses_result = mysqli_query($conn, $courses_query);
-
-                            if ($courses_result && mysqli_num_rows($courses_result) > 0) {
-                                while ($course = mysqli_fetch_assoc($courses_result)) {
-                                    $chosen_course = old('course_id') !== '' ? old('course_id') : ($_GET['course'] ?? '');
-                                    $selected = ($chosen_course !== '' && $chosen_course == $course['id']) ? 'selected' : '';
-                                    echo '<option value="' . $course['id'] . '" ' . $selected . '>' . htmlspecialchars($course['name']) . '</option>';
-                                }
-                            } else {
-                                // Default options
-                                $default_programs = [
-                                    'Early Years',
-                                    'Primary School',
-                                    'Middle School',
-                                    'Matric - Science Group',
-                                    'Matric - Computer Science Group',
-                                    'Matric - Arts Group'
-                                ];
-                                foreach ($default_programs as $program) {
-                                    echo '<option value="' . $program . '">' . $program . '</option>';
-                                }
-                            }
-                            ?>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="documents">Upload Documents (Optional)</label>
-                        <input type="file" id="documents" name="documents" accept=".pdf,.jpg,.jpeg,.png" style="padding: 10px;">
-                        <small style="color: var(--text-light); display: block; margin-top: 5px;">Supported formats: PDF, JPG, PNG (Max 5MB)</small>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="message">Additional Information</label>
-                        <textarea id="message" name="message" placeholder="Any additional information you'd like to share..."><?php echo old('message'); ?></textarea>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 18px; padding: 15px;">
-                        <i class="fas fa-paper-plane"></i> Submit Application
-                    </button>
+                    <button type="submit" class="btn btn-primary btn-block btn-lg"><i class="fas fa-paper-plane" aria-hidden="true"></i> Submit Application</button>
                 </form>
             </div>
+
+            <aside class="apply-aside">
+                <?php if (!empty($adm_steps)): ?>
+                <div class="aside-card">
+                    <h2 class="aside-title"><?php echo htmlspecialchars(content('adm_process_heading')); ?></h2>
+                    <ol class="admission-steps is-light">
+                        <?php foreach ($adm_steps as $step_title => $step_desc): ?>
+                        <li><strong><?php echo htmlspecialchars($step_title); ?></strong><span><?php echo htmlspecialchars($step_desc); ?></span></li>
+                        <?php endforeach; ?>
+                    </ol>
+                </div>
+                <?php endif; ?>
+
+                <?php if (!empty($adm_docs)): ?>
+                <div class="aside-card">
+                    <h2 class="aside-title">Documents to Bring</h2>
+                    <ul class="check-list">
+                        <?php foreach ($adm_docs as $doc): ?>
+                        <li><i class="fas fa-circle-check" aria-hidden="true"></i> <?php echo htmlspecialchars($doc); ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                    <p class="aside-note"><?php echo htmlspecialchars(content('home_adm_docs_note')); ?></p>
+                </div>
+                <?php endif; ?>
+
+                <div class="aside-card is-dark">
+                    <h2 class="aside-title">Have a Question First?</h2>
+                    <p>Send a short inquiry and our admissions office will get back to you.</p>
+                    <a href="./#inquiry" class="btn btn-secondary btn-sm">Send an Inquiry <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+                </div>
+            </aside>
         </div>
     </div>
 </section>
 
-<!-- Admission Process -->
+<!-- Fees (AdminCP -> Fee Items) -->
 <section>
     <div class="container">
-        <div class="section-header reveal">
-            <span class="eyebrow"><?php echo htmlspecialchars(content('adm_process_eyebrow')); ?></span>
-            <h2><?php echo htmlspecialchars(content('adm_process_heading')); ?></h2>
-            <p><?php echo htmlspecialchars(content('adm_process_subtitle')); ?></p>
-        </div>
-
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: 30px;">
-            <?php foreach (getFeatureCards('admission_process') as $step): ?>
-            <div class="card reveal" style="text-align: center;">
-                <div style="width: 64px; height: 64px; background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); color: white; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 26px; margin: 0 auto 20px; font-weight: 700;"><?php echo intval($step['display_order']); ?></div>
-                <h3 style="margin-bottom: 12px;"><?php echo htmlspecialchars($step['title']); ?></h3>
-                <p><?php echo htmlspecialchars($step['description']); ?></p>
-            </div>
-            <?php endforeach; ?>
-        </div>
-    </div>
-</section>
-
-<!-- Fee Information -->
-<section class="bg-light">
-    <div class="container">
-        <div class="section-header reveal">
-            <span class="eyebrow"><?php echo htmlspecialchars(content('adm_fee_eyebrow')); ?></span>
-            <h2><?php echo htmlspecialchars(content('adm_fee_heading')); ?></h2>
-            <p><?php echo htmlspecialchars(content('adm_fee_subtitle')); ?></p>
-        </div>
-
-        <div class="card fee-card">
-            <div style="text-align: center; margin-bottom: 30px;">
-                <i class="fas fa-money-bill-wave" style="font-size: 60px; color: var(--accent-color);"></i>
-            </div>
-
-            <?php
-            $fee_rows = [];
-            $fee_result = mysqli_query($conn, "SELECT DISTINCT * FROM fee_items WHERE status = 'active' ORDER BY display_order ASC, id ASC");
-            if ($fee_result) {
-                while ($row = mysqli_fetch_assoc($fee_result)) {
-                    $fee_rows[] = $row;
-                }
-            }
-            ?>
-            <ul style="list-style: none; padding: 0;">
-                <?php foreach ($fee_rows as $i => $row): ?>
-                <li style="display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 15px 0; <?php echo $i < count($fee_rows) - 1 ? 'border-bottom: 1px solid var(--border-color);' : ''; ?>">
-                    <span style="display: flex; align-items: center; gap: 12px; font-weight: 600;">
-                        <i class="fas <?php echo htmlspecialchars($row['icon']); ?>" style="color: var(--primary-color); width: 20px; text-align: center;"></i>
-                        <?php echo htmlspecialchars($row['label']); ?>
-                    </span>
+        <?php sectionHeader(content('adm_fee_eyebrow'), content('adm_fee_heading'), content('adm_fee_subtitle')); ?>
+        <?php if (!empty($fee_rows)): ?>
+        <div class="fee-panel">
+            <ul class="fee-list">
+                <?php foreach ($fee_rows as $row): ?>
+                <li>
+                    <span class="fee-label"><i class="fas <?php echo htmlspecialchars($row['icon'] ?: 'fa-receipt'); ?>" aria-hidden="true"></i> <?php echo htmlspecialchars($row['label']); ?></span>
                     <span class="fee-amount"><?php echo htmlspecialchars($row['amount']); ?></span>
                 </li>
                 <?php endforeach; ?>
             </ul>
-
-            <div style="background: var(--bg-light); padding: 20px; border-radius: 10px; margin-top: 30px; text-align: center;">
-                <p style="margin: 0;"><strong>Note:</strong> Flexible payment options available. Scholarships for deserving students.</p>
-            </div>
+            <p class="fee-note"><i class="fas fa-circle-info" aria-hidden="true"></i> <?php echo htmlspecialchars(content('adm_fee_note')); ?></p>
         </div>
+        <?php else: ?>
+            <div class="empty-state">
+                <span class="empty-state-icon"><i class="fas fa-receipt" aria-hidden="true"></i></span>
+                <h3>Fee schedule on request</h3>
+                <p><?php echo htmlspecialchars(content('adm_fee_empty')); ?></p>
+                <a href="contact" class="btn btn-primary btn-sm">Contact Admissions</a>
+            </div>
+        <?php endif; ?>
     </div>
 </section>
 
-<!-- Contact Info -->
-<section>
-    <div class="container">
-        <div class="cta-banner reveal">
-            <h2><?php echo htmlspecialchars(content('adm_cta_heading')); ?></h2>
-            <p><?php echo htmlspecialchars(content('adm_cta_text')); ?></p>
-            <div class="btn-group" style="justify-content: center;">
-                <a href="contact" class="btn btn-secondary">Contact Us</a>
-                <?php if (hasSitePhone()): ?>
-                <a href="<?php echo htmlspecialchars(telHref(primaryPhone())); ?>" class="btn btn-outline"><i class="fas fa-phone"></i> Call Now</a>
-                <?php endif; ?>
-            </div>
-        </div>
-    </div>
-</section>
+<?php ctaPanel(content('adm_cta_heading'), content('adm_cta_text'), array_merge(
+    [['Contact Admissions', 'contact', 'gold', 'fa-envelope'], ['Send an Inquiry', './#inquiry', 'outline']],
+    hasSitePhone() ? [['Call ' . primaryPhone(), telHref(primaryPhone()), 'outline', 'fa-phone']] : []
+)); ?>
 
 <?php include 'includes/footer.php'; ?>

@@ -1,67 +1,48 @@
 <?php
 require_once 'includes/config.php';
-require_once 'includes/settings_helper.php';
-
-// Fetch active downloads
-$downloads = mysqli_query($conn, "SELECT DISTINCT * FROM downloads WHERE status = 'active' ORDER BY display_order ASC, date DESC");
-
 $page_title = content('seo_downloads_title');
 $meta_description = content('seo_downloads_description');
+
+// Files from AdminCP -> Downloads
+$downloads = [];
+$res = mysqli_query($conn, "SELECT DISTINCT * FROM downloads WHERE status = 'active' ORDER BY display_order ASC, date DESC");
+while ($res && ($row = mysqli_fetch_assoc($res))) {
+    $downloads[] = $row;
+}
+$file_icons = ['pdf' => 'fa-file-pdf', 'doc' => 'fa-file-word', 'docx' => 'fa-file-word', 'xls' => 'fa-file-excel', 'xlsx' => 'fa-file-excel',
+               'jpg' => 'fa-file-image', 'jpeg' => 'fa-file-image', 'png' => 'fa-file-image', 'zip' => 'fa-file-zipper'];
 ?>
 <?php include 'includes/header.php'; ?>
 
-    <!-- Page Header -->
-    <?php renderPageBanner('downloads', true, 'fa-download'); ?>
+<?php renderPageBanner('downloads', true, 'fa-download', ['Academics', 'courses']); ?>
 
-    <!-- Downloads Section -->
-    <section class="bg-light">
-        <div class="container">
-            <div class="card" style="padding: 0; overflow: hidden;">
-                <div style="overflow-x: auto;">
-                    <table class="downloads-table" style="width: 100%; border-collapse: collapse;">
-                        <thead>
-                            <tr style="background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); color: white;">
-                                <th style="padding: 18px 15px; text-align: left; width: 120px; font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">Date</th>
-                                <th style="padding: 18px 15px; text-align: left; font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">Description</th>
-                                <th style="padding: 18px 15px; text-align: left; width: 150px; font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">File Type</th>
-                                <th style="padding: 18px 15px; text-align: center; width: 180px; font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            if ($downloads && mysqli_num_rows($downloads) > 0) {
-                                while ($download = mysqli_fetch_assoc($downloads)) {
-                                    $file_ext = strtolower(pathinfo($download['file_name'], PATHINFO_EXTENSION));
-
-                                    // Icon based on file type
-                                    $icon = 'fa-file';
-                                    if ($file_ext == 'pdf') $icon = 'fa-file-pdf';
-                                    elseif (in_array($file_ext, ['doc', 'docx'])) $icon = 'fa-file-word';
-                                    elseif (in_array($file_ext, ['xls', 'xlsx'])) $icon = 'fa-file-excel';
-                                    elseif (in_array($file_ext, ['jpg', 'jpeg', 'png'])) $icon = 'fa-file-image';
-                                    elseif ($file_ext == 'zip') $icon = 'fa-file-zipper';
-
-                                    echo '<tr class="download-row" style="border-bottom: 1px solid var(--border-color); background: var(--surface); transition: background var(--transition);">';
-                                    echo '<td data-label="Date" style="padding: 15px; font-weight: 600; color: var(--text-dark);">' . date('d.m.Y', strtotime($download['date'])) . '</td>';
-                                    echo '<td data-label="Description" style="padding: 15px; color: var(--text-dark);">' . htmlspecialchars($download['description']) . '</td>';
-                                    echo '<td data-label="File Type" style="padding: 15px;"><i class="fas ' . $icon . '" style="color: var(--primary-color); margin-right: 8px;"></i><span style="font-weight: 500;">' . strtoupper($file_ext) . ' File</span></td>';
-                                    echo '<td class="download-action" style="padding: 15px; text-align: center;">';
-                                    echo '<a href="' . htmlspecialchars($download['file_path']) . '" download class="btn btn-primary" style="padding: 10px 22px; font-size: 14px;"><i class="fas fa-download"></i> Download</a>';
-                                    echo '</td>';
-                                    echo '</tr>';
-                                }
-                            } else {
-                                echo '<tr><td colspan="4" style="padding: 40px; text-align: center; color: var(--text-light);">';
-                                echo '<i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.3;"></i><br>';
-                                echo 'No downloads available at the moment';
-                                echo '</td></tr>';
-                            }
-                            ?>
-                        </tbody>
-                    </table>
+<section class="page-intro bg-light">
+    <div class="container">
+        <?php if (!empty($downloads)): ?>
+        <ul class="download-list">
+            <?php foreach ($downloads as $download):
+                $ext = strtolower(pathinfo($download['file_name'] ?: $download['file_path'], PATHINFO_EXTENSION));
+                $size = is_file(__DIR__ . '/' . $download['file_path']) ? filesize(__DIR__ . '/' . $download['file_path']) : 0;
+            ?>
+            <li class="download-item">
+                <span class="download-icon"><i class="fas <?php echo $file_icons[$ext] ?? 'fa-file'; ?>" aria-hidden="true"></i></span>
+                <div class="download-body">
+                    <strong><?php echo htmlspecialchars($download['description']); ?></strong>
+                    <span class="download-meta">
+                        <?php if (!empty($download['date'])): ?><span><i class="far fa-calendar" aria-hidden="true"></i> <?php echo date('d M Y', strtotime($download['date'])); ?></span><?php endif; ?>
+                        <span><?php echo strtoupper($ext ?: 'file'); ?><?php echo $size ? ' · ' . ($size >= 1048576 ? round($size / 1048576, 1) . ' MB' : max(1, round($size / 1024)) . ' KB') : ''; ?></span>
+                    </span>
                 </div>
-            </div>
-        </div>
-    </section>
+                <a href="<?php echo htmlspecialchars($download['file_path']); ?>" download class="btn btn-primary btn-sm"><i class="fas fa-download" aria-hidden="true"></i> Download<span class="sr-only">: <?php echo htmlspecialchars($download['description']); ?></span></a>
+            </li>
+            <?php endforeach; ?>
+        </ul>
+        <?php else: ?>
+            <?php renderEmptyState('fa-folder-open', 'No downloads available yet', 'Forms, notices and other documents will be listed here when they are published.'); ?>
+        <?php endif; ?>
+    </div>
+</section>
 
-    <?php include 'includes/footer.php'; ?>
+<?php admissionsCta('Need a Document That Is Not Listed?', 'Contact our office and we will help you find it.'); ?>
+
+<?php include 'includes/footer.php'; ?>

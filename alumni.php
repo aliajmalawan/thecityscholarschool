@@ -61,11 +61,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_alumni'])) {
     $sql = "INSERT INTO alumni (id, student_name, father_name, current_job, job_department, job_city, course, passing_year, photo, mobile_number, whatsapp_number, review)
             VALUES ($new_alumni_id, '$student_name', '$father_name', '$current_job', '$job_department', '$job_city', '$course', $passing_year, '$photo_path', '$mobile_number', '$whatsapp_number', '$review')";
 
+    try {
+        $saved = $upload_error === '' && mysqli_query($conn, $sql);
+    } catch (mysqli_sql_exception $e) {
+        error_log('Alumni form save failed: ' . $e->getMessage());
+        $saved = false;
+    }
+
     if ($upload_error !== '') {
         $error = $upload_error;
-    } elseif (mysqli_query($conn, $sql)) {
+    } elseif ($saved) {
         $form_sent = true;
-        formDone('Thank you! Your alumni registration has been submitted and is pending approval.');
+        formDone('Thank you! Your alumni registration has been submitted and is pending approval.', 'form-status');
     } else {
         error_log('Alumni form save failed: ' . mysqli_error($conn));
         $error = 'Sorry, your submission could not be saved. Please try again later.';
@@ -81,9 +88,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_review'])) {
 
     $sql = "INSERT INTO alumni_reviews (name, passing_year, review, rating) VALUES ('$name', $passing_year, '$review', $rating)";
 
-    if (mysqli_query($conn, $sql)) {
+    try {
+        $saved = mysqli_query($conn, $sql);
+    } catch (mysqli_sql_exception $e) {
+        error_log('Alumni review save failed: ' . $e->getMessage());
+        $saved = false;
+    }
+    if ($saved) {
         $form_sent = true;
-        formDone('Thank you for your review! It will be displayed after approval.');
+        formDone('Thank you for your review! It will be displayed after approval.', 'form-status');
     } else {
         error_log('Alumni form save failed: ' . mysqli_error($conn));
         $error = 'Sorry, your submission could not be saved. Please try again later.';
@@ -101,217 +114,178 @@ $meta_description = content('seo_alumni_description');
 ?>
 <?php include 'includes/header.php'; ?>
 
-    <!-- Page Header -->
-    <?php renderPageBanner('alumni', true, 'fa-user-graduate'); ?>
+<?php renderPageBanner('alumni', true, 'fa-user-graduate', ['Campus Life', 'campus-life']); ?>
 
+<?php if ($message || $error): ?>
+<div class="container page-alert" id="form-status">
     <?php if ($message): ?>
-        <div class="container" style="margin-top: 30px;">
-            <div class="alert alert-success" role="status">
-                <i class="fas fa-check-circle"></i> <?php echo htmlspecialchars($message); ?>
-            </div>
-        </div>
+        <div class="alert alert-success" role="status"><i class="fas fa-circle-check" aria-hidden="true"></i> <span><?php echo htmlspecialchars($message); ?></span></div>
+    <?php else: ?>
+        <div class="alert alert-error" role="alert"><i class="fas fa-circle-exclamation" aria-hidden="true"></i> <span><?php echo htmlspecialchars($error); ?></span></div>
     <?php endif; ?>
+</div>
+<?php endif; ?>
 
-    <?php if ($error): ?>
-        <div class="container" style="margin-top: 30px;">
-            <div class="alert alert-error">
-                <i class="fas fa-exclamation-triangle"></i> <?php echo $error; ?>
-            </div>
+<!-- Alumni (approved in AdminCP -> Alumni) -->
+<section class="page-intro">
+    <div class="container">
+        <?php sectionHeader(content('alumni_list_eyebrow'), content('alumni_list_heading')); ?>
+        <?php if ($alumni && mysqli_num_rows($alumni) > 0): ?>
+        <div class="alumni-grid">
+            <?php while ($alum = mysqli_fetch_assoc($alumni)):
+                // the alumnus's own photo, or the default picture set in AdminCP -> Page Content -> Alumni page
+                $alum_photo = !empty($alum['photo']) ? $alum['photo'] : content('alumni_default_photo');
+            ?>
+            <article class="alumni-card">
+                <img src="<?php echo htmlspecialchars($alum_photo); ?>" alt="" loading="lazy" width="96" height="96">
+                <h3><?php echo htmlspecialchars($alum['student_name']); ?></h3>
+                <p class="alumni-batch"><?php echo htmlspecialchars(trim($alum['course'] . ' · ' . $alum['passing_year'], ' ·')); ?></p>
+                <?php if (!empty($alum['current_job'])): ?>
+                    <p class="alumni-job"><i class="fas fa-briefcase" aria-hidden="true"></i> <?php echo htmlspecialchars($alum['current_job']); ?><?php echo !empty($alum['job_city']) ? ', ' . htmlspecialchars($alum['job_city']) : ''; ?></p>
+                <?php endif; ?>
+            </article>
+            <?php endwhile; ?>
         </div>
-    <?php endif; ?>
+        <?php else: ?>
+            <?php renderEmptyState('fa-user-graduate', 'Our alumni network is just getting started', 'Former students can register below to be featured here.'); ?>
+        <?php endif; ?>
+    </div>
+</section>
 
-    <!-- Alumni Grid -->
-    <section>
-        <div class="container">
-            <div class="section-header reveal">
-                <span class="eyebrow"><?php echo htmlspecialchars(content('alumni_list_eyebrow')); ?></span>
-                <h2><?php echo htmlspecialchars(content('alumni_list_heading')); ?></h2>
-            </div>
-            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 30px;">
-                <?php
-                if ($alumni && mysqli_num_rows($alumni) > 0) {
-                    while ($alum = mysqli_fetch_assoc($alumni)) {
-                        echo '<div class="card" style="text-align: center;">';
-                        // the alumnus's own photo, or the default picture set in AdminCP -> Page Content -> Alumni page
-                        $alum_photo = !empty($alum['photo']) ? $alum['photo'] : content('alumni_default_photo');
-                        echo '<img src="' . htmlspecialchars($alum_photo) . '" alt="' . htmlspecialchars($alum['student_name']) . '" loading="lazy" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin: 0 auto 15px; display: block;">';
-                        echo '<h3 style="color: var(--primary-color); margin-bottom: 5px;">' . htmlspecialchars($alum['student_name']) . '</h3>';
-                        echo '<p style="color: var(--text-light); margin-bottom: 10px;">' . htmlspecialchars($alum['course']) . ' - ' . $alum['passing_year'] . '</p>';
-                        if ($alum['current_job']) {
-                            echo '<p style="margin-bottom: 10px;"><strong>' . htmlspecialchars($alum['current_job']) . '</strong></p>';
-                            if ($alum['job_city']) {
-                                echo '<p style="color: var(--text-light); font-size: 0.9rem;"><i class="fas fa-map-marker-alt"></i> ' . htmlspecialchars($alum['job_city']) . '</p>';
-                            }
-                        }
-                        echo '</div>';
-                    }
-                } else {
-                    echo '<p style="text-align: center; color: var(--text-light); grid-column: 1 / -1;">No alumni to display yet</p>';
-                }
-                ?>
-            </div>
-        </div>
-    </section>
-
-    <!-- Alumni Reviews -->
-    <section class="bg-light">
-        <div class="container">
-            <div class="section-header reveal">
-                <span class="eyebrow"><?php echo htmlspecialchars(content('alumni_reviews_eyebrow')); ?></span>
-                <h2><?php echo htmlspecialchars(content('alumni_reviews_heading')); ?></h2>
-            </div>
-            <?php if ($reviews && mysqli_num_rows($reviews) > 0): ?>
-            <div class="testimonial-carousel reveal">
-                <div class="testimonial-track">
-                    <?php while ($review = mysqli_fetch_assoc($reviews)): ?>
-                        <div class="testimonial-card">
-                            <div class="testimonial-stars">
-                                <?php
-                                for ($i = 0; $i < $review['rating']; $i++) {
-                                    echo '<i class="fas fa-star"></i>';
-                                }
-                                ?>
-                            </div>
-                            <p class="testimonial-quote">"<?php echo htmlspecialchars($review['review']); ?>"</p>
-                            <div class="testimonial-author">
-                                <div class="testimonial-avatar"><i class="fas fa-user-graduate"></i></div>
-                                <div>
-                                    <strong><?php echo htmlspecialchars($review['name']); ?></strong>
-                                    <?php if ($review['passing_year']): ?>
-                                        <span>Batch <?php echo htmlspecialchars($review['passing_year']); ?></span>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
+<!-- Reviews (approved in AdminCP -> Alumni Reviews) -->
+<section class="bg-light">
+    <div class="container">
+        <?php sectionHeader(content('alumni_reviews_eyebrow'), content('alumni_reviews_heading')); ?>
+        <?php if ($reviews && mysqli_num_rows($reviews) > 0): ?>
+        <div class="testimonial-carousel">
+            <div class="testimonial-track">
+                <?php while ($review = mysqli_fetch_assoc($reviews)): ?>
+                <figure class="testimonial-card">
+                    <div class="testimonial-stars" role="img" aria-label="<?php echo intval($review['rating']); ?> out of 5 stars">
+                        <?php for ($i = 0; $i < intval($review['rating']); $i++) echo '<i class="fas fa-star" aria-hidden="true"></i>'; ?>
+                    </div>
+                    <blockquote class="testimonial-quote">&ldquo;<?php echo htmlspecialchars($review['review']); ?>&rdquo;</blockquote>
+                    <figcaption class="testimonial-author">
+                        <div class="testimonial-avatar"><i class="fas fa-user-graduate" aria-hidden="true"></i></div>
+                        <div>
+                            <strong><?php echo htmlspecialchars($review['name']); ?></strong>
+                            <?php if (!empty($review['passing_year'])): ?><span>Batch <?php echo htmlspecialchars($review['passing_year']); ?></span><?php endif; ?>
                         </div>
-                    <?php endwhile; ?>
-                </div>
-                <button type="button" class="testimonial-nav prev" aria-label="Previous review"><i class="fas fa-chevron-left"></i></button>
-                <button type="button" class="testimonial-nav next" aria-label="Next review"><i class="fas fa-chevron-right"></i></button>
+                    </figcaption>
+                </figure>
+                <?php endwhile; ?>
             </div>
-            <?php else: ?>
-            <p style="text-align: center; color: var(--text-light); padding: 20px;">No reviews yet - be the first to share your experience!</p>
-            <?php endif; ?>
+            <button type="button" class="testimonial-nav prev" aria-label="Previous review"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
+            <button type="button" class="testimonial-nav next" aria-label="Next review"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
         </div>
-    </section>
+        <?php else: ?>
+            <?php renderEmptyState('fa-comment-dots', 'No reviews yet', 'Be the first to share your experience using the form below.'); ?>
+        <?php endif; ?>
+    </div>
+</section>
 
-    <!-- Registration Form -->
-    <section id="registration">
-        <div class="container">
-            <div class="card" style="max-width: 800px; margin: 0 auto;">
-                <div class="text-center mb-30">
-                    <span class="eyebrow"><?php echo htmlspecialchars(content('alumni_form_eyebrow')); ?></span>
-                    <h2 style="color: var(--ink);"><?php echo htmlspecialchars(content('alumni_form_heading')); ?></h2>
-                </div>
-                <form method="POST" enctype="multipart/form-data">
+<!-- The two forms side by side -->
+<section>
+    <div class="container">
+        <div class="alumni-forms">
+            <div class="form-card" id="registration">
+                <span class="eyebrow"><?php echo htmlspecialchars(content('alumni_form_eyebrow')); ?></span>
+                <h2 class="form-card-title"><?php echo htmlspecialchars(content('alumni_form_heading')); ?></h2>
+                <p class="form-card-text">Registrations appear on this page after approval by the school.</p>
+                <form method="POST" enctype="multipart/form-data" id="alumniForm" data-validate novalidate>
                     <?php echo formGuardFields(); ?>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                        <div>
-                            <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: var(--text-dark);">Student Name *</label>
-                            <input type="text" name="student_name" required style="width: 100%; padding: 13px 16px; border: 2px solid var(--border-color); border-radius: var(--radius-sm);" value="<?php echo old('student_name'); ?>">
+                    <input type="hidden" name="submit_alumni" value="1">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="al_student_name">Your name <span class="req" aria-hidden="true">*</span></label>
+                            <input type="text" id="al_student_name" name="student_name" required maxlength="100" value="<?php echo old('student_name'); ?>">
                         </div>
-                        <div>
-                            <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: var(--text-dark);">Father Name *</label>
-                            <input type="text" name="father_name" required style="width: 100%; padding: 13px 16px; border: 2px solid var(--border-color); border-radius: var(--radius-sm);" value="<?php echo old('father_name'); ?>">
-                        </div>
-                    </div>
-
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                        <div>
-                            <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: var(--text-dark);">Course Passed *</label>
-                            <input type="text" name="course" required placeholder="e.g., Matric, Intermediate" style="width: 100%; padding: 13px 16px; border: 2px solid var(--border-color); border-radius: var(--radius-sm);" value="<?php echo old('course'); ?>">
-                        </div>
-                        <div>
-                            <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: var(--text-dark);">Passing Year *</label>
-                            <input type="number" name="passing_year" required min="1990" max="2030" style="width: 100%; padding: 13px 16px; border: 2px solid var(--border-color); border-radius: var(--radius-sm);" value="<?php echo old('passing_year'); ?>">
+                        <div class="form-group">
+                            <label for="al_father_name">Father's name <span class="req" aria-hidden="true">*</span></label>
+                            <input type="text" id="al_father_name" name="father_name" required maxlength="100" value="<?php echo old('father_name'); ?>">
                         </div>
                     </div>
-
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                        <div>
-                            <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: var(--text-dark);">Current Job</label>
-                            <input type="text" name="current_job" placeholder="Job title" style="width: 100%; padding: 13px 16px; border: 2px solid var(--border-color); border-radius: var(--radius-sm);" value="<?php echo old('current_job'); ?>">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="al_course">Class / program completed <span class="req" aria-hidden="true">*</span></label>
+                            <input type="text" id="al_course" name="course" required maxlength="100" placeholder="e.g. Matric" value="<?php echo old('course'); ?>">
                         </div>
-                        <div>
-                            <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: var(--text-dark);">Department</label>
-                            <input type="text" name="job_department" placeholder="Department" style="width: 100%; padding: 13px 16px; border: 2px solid var(--border-color); border-radius: var(--radius-sm);" value="<?php echo old('job_department'); ?>">
-                        </div>
-                        <div>
-                            <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: var(--text-dark);">City</label>
-                            <input type="text" name="job_city" placeholder="City" style="width: 100%; padding: 13px 16px; border: 2px solid var(--border-color); border-radius: var(--radius-sm);" value="<?php echo old('job_city'); ?>">
+                        <div class="form-group">
+                            <label for="al_passing_year">Passing year <span class="req" aria-hidden="true">*</span></label>
+                            <input type="number" id="al_passing_year" name="passing_year" required min="1950" max="<?php echo date('Y') + 1; ?>" value="<?php echo old('passing_year'); ?>">
                         </div>
                     </div>
-
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                        <div>
-                            <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: var(--text-dark);">Mobile Number *</label>
-                            <input type="text" name="mobile_number" required placeholder="03001234567" style="width: 100%; padding: 13px 16px; border: 2px solid var(--border-color); border-radius: var(--radius-sm);" value="<?php echo old('mobile_number'); ?>">
+                    <div class="form-row is-3">
+                        <div class="form-group">
+                            <label for="al_current_job">Current job <span class="optional">(optional)</span></label>
+                            <input type="text" id="al_current_job" name="current_job" maxlength="100" value="<?php echo old('current_job'); ?>">
                         </div>
-                        <div>
-                            <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: var(--text-dark);">WhatsApp Number</label>
-                            <input type="text" name="whatsapp_number" placeholder="03001234567" style="width: 100%; padding: 13px 16px; border: 2px solid var(--border-color); border-radius: var(--radius-sm);" value="<?php echo old('whatsapp_number'); ?>">
+                        <div class="form-group">
+                            <label for="al_job_department">Department <span class="optional">(optional)</span></label>
+                            <input type="text" id="al_job_department" name="job_department" maxlength="100" value="<?php echo old('job_department'); ?>">
+                        </div>
+                        <div class="form-group">
+                            <label for="al_job_city">City <span class="optional">(optional)</span></label>
+                            <input type="text" id="al_job_city" name="job_city" maxlength="100" value="<?php echo old('job_city'); ?>">
                         </div>
                     </div>
-
-                    <div style="margin-bottom: 20px;">
-                        <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: var(--text-dark);">Photo (JPG, PNG)</label>
-                        <input type="file" name="photo" accept="image/*" style="width: 100%; padding: 13px 16px; border: 2px solid var(--border-color); border-radius: var(--radius-sm);">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="al_mobile">Mobile number <span class="req" aria-hidden="true">*</span></label>
+                            <input type="tel" id="al_mobile" name="mobile_number" required maxlength="30" inputmode="tel" placeholder="03001234567" value="<?php echo old('mobile_number'); ?>">
+                        </div>
+                        <div class="form-group">
+                            <label for="al_whatsapp">WhatsApp number <span class="optional">(optional)</span></label>
+                            <input type="tel" id="al_whatsapp" name="whatsapp_number" maxlength="30" inputmode="tel" value="<?php echo old('whatsapp_number'); ?>">
+                        </div>
                     </div>
-
-                    <div style="margin-bottom: 20px;">
-                        <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: var(--text-dark);">Your Review/Feedback * (Compulsory)</label>
-                        <textarea name="review" required rows="5" placeholder="Share your experience with <?php echo htmlspecialchars(getSiteName()); ?>..." style="width: 100%; padding: 13px 16px; border: 2px solid var(--border-color); border-radius: var(--radius-sm);"><?php echo old('review'); ?></textarea>
+                    <div class="form-group">
+                        <label for="al_photo">Photo <span class="optional">(optional)</span></label>
+                        <input type="file" id="al_photo" name="photo" accept="image/*" aria-describedby="al_photo_hint">
+                        <p class="field-hint" id="al_photo_hint">JPG or PNG; it is resized automatically.</p>
                     </div>
+                    <div class="form-group">
+                        <label for="al_review">Your experience at the school <span class="req" aria-hidden="true">*</span></label>
+                        <textarea id="al_review" name="review" required rows="4" maxlength="2000"><?php echo old('review'); ?></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-paper-plane" aria-hidden="true"></i> Submit Registration</button>
+                </form>
+            </div>
 
-                    <button type="submit" name="submit_alumni" class="btn btn-primary" style="width: 100%; padding: 15px; font-size: 1.1rem;">
-                        <i class="fas fa-paper-plane"></i> Submit Registration
-                    </button>
+            <div class="form-card" id="review">
+                <span class="eyebrow"><?php echo htmlspecialchars(content('alumni_review_form_eyebrow')); ?></span>
+                <h2 class="form-card-title"><?php echo htmlspecialchars(content('alumni_review_form_heading')); ?></h2>
+                <p class="form-card-text">Reviews are shown after approval by the school.</p>
+                <form method="POST" id="reviewForm" data-validate novalidate>
+                    <?php echo formGuardFields(); ?>
+                    <input type="hidden" name="submit_review" value="1">
+                    <div class="form-group">
+                        <label for="rv_name">Your name <span class="req" aria-hidden="true">*</span></label>
+                        <input type="text" id="rv_name" name="name" required maxlength="100" value="<?php echo old('name'); ?>">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="rv_passing_year">Passing year <span class="optional">(optional)</span></label>
+                            <input type="number" id="rv_passing_year" name="passing_year" min="1950" max="<?php echo date('Y') + 1; ?>" value="<?php echo old('passing_year'); ?>">
+                        </div>
+                        <div class="form-group">
+                            <label for="rv_rating">Rating <span class="req" aria-hidden="true">*</span></label>
+                            <select id="rv_rating" name="rating" required>
+                                <?php for ($r = 5; $r >= 1; $r--): ?>
+                                <option value="<?php echo $r; ?>"<?php echo old('rating') === (string) $r ? ' selected' : ''; ?>><?php echo $r; ?> star<?php echo $r > 1 ? 's' : ''; ?></option>
+                                <?php endfor; ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="rv_review">Your review <span class="req" aria-hidden="true">*</span></label>
+                        <textarea id="rv_review" name="review" required rows="5" maxlength="2000"><?php echo old('review'); ?></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-star" aria-hidden="true"></i> Submit Review</button>
                 </form>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Submit Review Separately -->
-    <section class="bg-light" id="review">
-        <div class="container">
-            <div class="card" style="max-width: 600px; margin: 0 auto;">
-                <div class="text-center mb-30">
-                    <span class="eyebrow"><?php echo htmlspecialchars(content('alumni_review_form_eyebrow')); ?></span>
-                    <h2 style="color: var(--ink);"><?php echo htmlspecialchars(content('alumni_review_form_heading')); ?></h2>
-                </div>
-                <form method="POST">
-                    <?php echo formGuardFields(); ?>
-                    <div style="margin-bottom: 20px;">
-                        <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: var(--text-dark);">Your Name *</label>
-                        <input type="text" name="name" required style="width: 100%; padding: 13px 16px; border: 2px solid var(--border-color); border-radius: var(--radius-sm);" value="<?php echo old('name'); ?>">
-                    </div>
-
-                    <div style="margin-bottom: 20px;">
-                        <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: var(--text-dark);">Passing Year</label>
-                        <input type="number" name="passing_year" min="1990" max="2030" style="width: 100%; padding: 13px 16px; border: 2px solid var(--border-color); border-radius: var(--radius-sm);" value="<?php echo old('passing_year'); ?>">
-                    </div>
-
-                    <div style="margin-bottom: 20px;">
-                        <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: var(--text-dark);">Rating *</label>
-                        <select name="rating" required style="width: 100%; padding: 13px 16px; border: 2px solid var(--border-color); border-radius: var(--radius-sm);">
-                            <option value="5"<?php echo old('rating') === '5' ? ' selected' : ''; ?>>★★★★★ (5 Stars)</option>
-                            <option value="4"<?php echo old('rating') === '4' ? ' selected' : ''; ?>>★★★★ (4 Stars)</option>
-                            <option value="3"<?php echo old('rating') === '3' ? ' selected' : ''; ?>>★★★ (3 Stars)</option>
-                            <option value="2"<?php echo old('rating') === '2' ? ' selected' : ''; ?>>★★ (2 Stars)</option>
-                            <option value="1"<?php echo old('rating') === '1' ? ' selected' : ''; ?>>★ (1 Star)</option>
-                        </select>
-                    </div>
-
-                    <div style="margin-bottom: 20px;">
-                        <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: var(--text-dark);">Your Review *</label>
-                        <textarea name="review" required rows="4" placeholder="Share your thoughts..." style="width: 100%; padding: 13px 16px; border: 2px solid var(--border-color); border-radius: var(--radius-sm);"><?php echo old('review'); ?></textarea>
-                    </div>
-
-                    <button type="submit" name="submit_review" class="btn btn-primary" style="width: 100%; padding: 15px;">
-                        <i class="fas fa-star"></i> Submit Review
-                    </button>
-                </form>
-            </div>
-        </div>
-    </section>
-
-    <?php include 'includes/footer.php'; ?>
+<?php include 'includes/footer.php'; ?>

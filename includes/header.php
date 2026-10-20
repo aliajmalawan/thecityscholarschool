@@ -171,7 +171,7 @@ $current_url = $site_base_url . '/' . ($page_slug === 'index' ? '' : $page_slug)
                     <div class="nav-dropdown<?php echo $nav_active(['courses.php', 'faculty.php', 'examination.php', 'downloads.php']) ? ' is-active' : ''; ?>">
                         <button type="button" class="nav-dropdown-trigger" aria-haspopup="true" aria-expanded="false">Academics <i class="fas fa-chevron-down nav-caret" aria-hidden="true"></i></button>
                         <div class="nav-dropdown-panel">
-                            <a href="courses"<?php echo $nav_attr(['courses.php']); ?>><i class="fas fa-book-open" aria-hidden="true"></i> Courses &amp; Programs</a>
+                            <a href="courses"<?php echo $nav_attr(['courses.php']); ?>><i class="fas fa-book-open" aria-hidden="true"></i> Academic Programs</a>
                             <a href="faculty"<?php echo $nav_attr(['faculty.php']); ?>><i class="fas fa-chalkboard-user" aria-hidden="true"></i> Faculty</a>
                             <a href="examination"<?php echo $nav_attr(['examination.php']); ?>><i class="fas fa-file-lines" aria-hidden="true"></i> Examination</a>
                             <a href="downloads"<?php echo $nav_attr(['downloads.php']); ?>><i class="fas fa-download" aria-hidden="true"></i> Downloads</a>
@@ -180,9 +180,10 @@ $current_url = $site_base_url . '/' . ($page_slug === 'index' ? '' : $page_slug)
 
                     <a href="admission"<?php echo $nav_attr(['admission.php']); ?>>Admissions</a>
 
-                    <div class="nav-dropdown<?php echo $nav_active(['campuses.php', 'alumni.php']) ? ' is-active' : ''; ?>">
+                    <div class="nav-dropdown<?php echo $nav_active(['campus-life.php', 'campuses.php', 'alumni.php']) ? ' is-active' : ''; ?>">
                         <button type="button" class="nav-dropdown-trigger" aria-haspopup="true" aria-expanded="false">Campus Life <i class="fas fa-chevron-down nav-caret" aria-hidden="true"></i></button>
                         <div class="nav-dropdown-panel">
+                            <a href="campus-life"<?php echo $nav_attr(['campus-life.php']); ?>><i class="fas fa-people-group" aria-hidden="true"></i> Life at School</a>
                             <a href="campuses"<?php echo $nav_attr(['campuses.php']); ?>><i class="fas fa-school" aria-hidden="true"></i> Our Campuses</a>
                             <a href="alumni"<?php echo $nav_attr(['alumni.php']); ?>><i class="fas fa-user-graduate" aria-hidden="true"></i> Alumni</a>
                         </div>

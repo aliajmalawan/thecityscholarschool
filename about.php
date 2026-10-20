@@ -2,111 +2,123 @@
 require_once 'includes/config.php';
 $page_title = content('seo_about_title');
 $meta_description = content('seo_about_description');
+$about = getAboutContent();
+$story = array_values(array_filter([trim($about['description']), trim(getSetting('about_paragraph_2')), trim(getSetting('about_paragraph_3'))]));
 ?>
 <?php include 'includes/header.php'; ?>
 
-<!-- Page Header -->
 <?php renderPageBanner('about'); ?>
 
-<!-- About Content -->
-<section class="bg-light">
+<!-- Our story -->
+<section class="page-intro">
     <div class="container">
-        <div class="grid-2 reveal" style="align-items: stretch;">
-            <div>
-                <?php $about = getAboutContent(); ?>
+        <div class="home-about-grid">
+            <div class="home-about-media">
+                <div class="home-about-photo">
+                    <img src="<?php echo htmlspecialchars(content('about_story_image')); ?>" alt="Students at <?php echo htmlspecialchars(getSiteName()); ?>" loading="lazy">
+                </div>
+                <div class="home-about-badge" aria-hidden="true">
+                    <img src="<?php echo getLogoSmallPath(); ?>" alt="" width="64" height="60">
+                    <span><strong><?php echo htmlspecialchars(getSiteName()); ?></strong><?php echo htmlspecialchars(content('site_tagline')); ?></span>
+                </div>
+            </div>
+            <div class="home-about-copy">
                 <span class="eyebrow"><?php echo htmlspecialchars(content('about_story_eyebrow')); ?></span>
-                <h2 style="color: var(--ink); font-size: 32px; margin-bottom: 20px;"><?php echo htmlspecialchars(content('about_story_heading')); ?></h2>
-                <p style="margin-bottom: 15px; line-height: 1.8;"><?php echo nl2br(htmlspecialchars($about['description'])); ?></p>
-                <p style="margin-bottom: 15px; line-height: 1.8;"><?php echo nl2br(htmlspecialchars(getSetting('about_paragraph_2'))); ?></p>
-                <p style="line-height: 1.8;"><?php echo nl2br(htmlspecialchars(getSetting('about_paragraph_3'))); ?></p>
-            </div>
-            <div style="min-height: 320px;">
-                <img src="<?php echo htmlspecialchars(content('about_story_image')); ?>" alt="Students at <?php echo htmlspecialchars(getSiteName()); ?>" style="width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);">
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Mission & Vision -->
-<section>
-    <div class="container">
-        <div class="card-grid">
-            <div class="card">
-                <div class="card-icon">
-                    <i class="fas fa-bullseye"></i>
-                </div>
-                <h3>Our Mission</h3>
-                <p><?php echo nl2br(htmlspecialchars($about['mission'])); ?></p>
-            </div>
-            <div class="card">
-                <div class="card-icon">
-                    <i class="fas fa-eye"></i>
-                </div>
-                <h3>Our Vision</h3>
-                <p><?php echo nl2br(htmlspecialchars($about['vision'])); ?></p>
+                <h2 class="section-title"><?php echo htmlspecialchars(content('about_story_heading')); ?></h2>
+                <?php if (!empty($story)): ?>
+                    <?php foreach ($story as $i => $paragraph): ?>
+                    <p class="<?php echo $i === 0 ? 'lead' : 'prose'; ?>"><?php echo nl2br(htmlspecialchars($paragraph)); ?></p>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p class="lead is-placeholder">Our story will be shared here soon.</p>
+                <?php endif; ?>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Our Values -->
-<section>
-    <div class="container">
-        <div class="section-header reveal">
-            <span class="eyebrow"><?php echo htmlspecialchars(content('about_values_eyebrow')); ?></span>
-            <h2><?php echo htmlspecialchars(content('about_values_heading')); ?></h2>
-            <p><?php echo htmlspecialchars(content('about_values_subtitle')); ?></p>
-        </div>
-        <div class="card-grid">
-            <?php renderFeatureCardGrid('core_values'); ?>
-        </div>
-    </div>
-</section>
-
-<!-- Leadership: the same messages as the homepage (AdminCP > Leadership); the older single
-     principal's message from Settings is only used when no leadership entries exist -->
-<?php if (!empty(getLeadershipMessages())): ?>
-<?php include 'includes/leadership_section.php'; ?>
-<?php elseif (trim(getSetting('principal_message_quote')) !== ''): ?>
+<!-- Mission & vision -->
+<?php if (trim($about['mission']) !== '' || trim($about['vision']) !== ''): ?>
 <section class="bg-light">
     <div class="container">
-        <div class="section-header reveal">
-            <span class="eyebrow">Leadership</span>
-            <h2>Message from Our Leadership</h2>
-        </div>
-        <?php $principal_photo = getSetting('principal_photo'); ?>
-        <div class="card reveal" style="max-width: 900px; margin: 0 auto; padding: 40px;">
-            <div style="text-align: center; margin-bottom: 30px;">
-                <?php if (!empty($principal_photo)): ?>
-                    <img src="<?php echo htmlspecialchars($principal_photo); ?>" alt="Principal" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; margin: 0 auto 20px; box-shadow: var(--shadow-sm); border: 4px solid var(--surface); outline: 1px solid var(--border-color);">
-                <?php else: ?>
-                    <div style="width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; color: white; font-size: 60px;">
-                        <i class="fas fa-user-tie"></i>
-                    </div>
-                <?php endif; ?>
-                <h3 style="color: var(--primary-color); margin-bottom: 5px;">Principal's Message</h3>
-                <p style="color: var(--text-light);"><?php echo getSiteName(); ?></p>
-            </div>
-            <p style="font-size: 18px; line-height: 1.8; font-style: italic; margin-bottom: 20px;">"<?php echo nl2br(htmlspecialchars(getSetting('principal_message_quote'))); ?>"</p>
-            <p style="line-height: 1.8; margin-bottom: 15px;"><?php echo nl2br(htmlspecialchars(getSetting('principal_message_para_1'))); ?></p>
-            <p style="line-height: 1.8;"><?php echo nl2br(htmlspecialchars(getSetting('principal_message_para_2'))); ?></p>
+        <div class="mv-grid">
+            <?php if (trim($about['mission']) !== ''): ?>
+            <article class="mv-card is-dark">
+                <span class="mv-icon"><i class="fas fa-bullseye" aria-hidden="true"></i></span>
+                <h2>Our Mission</h2>
+                <p><?php echo nl2br(htmlspecialchars($about['mission'])); ?></p>
+            </article>
+            <?php endif; ?>
+            <?php if (trim($about['vision']) !== ''): ?>
+            <article class="mv-card">
+                <span class="mv-icon"><i class="fas fa-eye" aria-hidden="true"></i></span>
+                <h2>Our Vision</h2>
+                <p><?php echo nl2br(htmlspecialchars($about['vision'])); ?></p>
+            </article>
+            <?php endif; ?>
         </div>
     </div>
 </section>
 <?php endif; ?>
 
-<!-- CTA Section -->
-<section>
+<!-- The crest: what each part stands for -->
+<section class="crest-section">
     <div class="container">
-        <div class="cta-banner reveal">
-            <h2><?php echo htmlspecialchars(content('about_cta_heading')); ?></h2>
-            <p><?php echo htmlspecialchars(content('about_cta_text')); ?></p>
-            <div class="btn-group" style="justify-content: center;">
-                <a href="admission" class="btn btn-secondary">Apply for Admission</a>
-                <a href="contact" class="btn btn-outline">Contact Us</a>
+        <div class="crest-grid">
+            <div class="crest-figure">
+                <img src="images/city-scholars-crest.png" alt="The <?php echo htmlspecialchars(getSiteName()); ?> crest" width="640" height="595" loading="lazy">
+            </div>
+            <div>
+                <span class="eyebrow">Our Crest</span>
+                <h2 class="section-title">What Our Crest Stands For</h2>
+                <p class="lead">Every part of our crest reflects something we want each student to carry with them.</p>
+                <ul class="crest-symbols">
+                    <li><span class="crest-symbol-icon"><i class="fas fa-book-open" aria-hidden="true"></i></span><div><strong>The Open Book</strong><span>Knowledge and a lifelong love of learning</span></div></li>
+                    <li><span class="crest-symbol-icon"><i class="fas fa-graduation-cap" aria-hidden="true"></i></span><div><strong>The Graduation Cap</strong><span>Achievement through effort and perseverance</span></div></li>
+                    <li><span class="crest-symbol-icon"><i class="fas fa-fire-flame-curved" aria-hidden="true"></i></span><div><strong>The Torch</strong><span>The light of learning, passed from teacher to student</span></div></li>
+                    <li><span class="crest-symbol-icon"><i class="fas fa-star" aria-hidden="true"></i></span><div><strong>The Star</strong><span>Striving for excellence in all that we do</span></div></li>
+                </ul>
             </div>
         </div>
     </div>
 </section>
+
+<!-- Core values (AdminCP -> Feature Cards -> Core Values) -->
+<?php if (!empty(getFeatureCards('core_values'))): ?>
+<section class="bg-light">
+    <div class="container">
+        <?php sectionHeader(content('about_values_eyebrow'), content('about_values_heading'), content('about_values_subtitle')); ?>
+        <?php renderFeatureCardGrid('core_values'); ?>
+    </div>
+</section>
+<?php endif; ?>
+
+<!-- Leadership messages (AdminCP -> Leadership); the older single principal's message from
+     Settings is only used when no leadership entries exist -->
+<?php if (!empty(getLeadershipMessages())): ?>
+<?php include 'includes/leadership_section.php'; ?>
+<?php elseif (trim(getSetting('principal_message_quote')) !== ''): ?>
+<section>
+    <div class="container">
+        <?php sectionHeader('Leadership', "Principal's Message"); ?>
+        <?php $principal_photo = getSetting('principal_photo'); ?>
+        <article class="principal-card">
+            <div class="principal-photo">
+                <?php if (!empty($principal_photo)): ?>
+                    <img src="<?php echo htmlspecialchars($principal_photo); ?>" alt="Principal of <?php echo htmlspecialchars(getSiteName()); ?>" loading="lazy">
+                <?php else: ?>
+                    <i class="fas fa-user-tie" aria-hidden="true"></i>
+                <?php endif; ?>
+            </div>
+            <blockquote>&ldquo;<?php echo nl2br(htmlspecialchars(getSetting('principal_message_quote'))); ?>&rdquo;</blockquote>
+            <?php foreach (['principal_message_para_1', 'principal_message_para_2'] as $key): if (trim(getSetting($key)) === '') continue; ?>
+                <p><?php echo nl2br(htmlspecialchars(getSetting($key))); ?></p>
+            <?php endforeach; ?>
+        </article>
+    </div>
+</section>
+<?php endif; ?>
+
+<?php admissionsCta(content('about_cta_heading'), content('about_cta_text')); ?>
 
 <?php include 'includes/footer.php'; ?>

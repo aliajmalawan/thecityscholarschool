@@ -262,17 +262,7 @@ function getFeatureCards($section) {
  * the card text (used by grid-4 sections like Learner Attributes).
  */
 function renderFeatureCardGrid($section, $centered = false) {
-    $cards = getFeatureCards($section);
-    $class = 'card reveal' . ($centered ? ' text-center' : '');
-    $icon_style = $centered ? ' style="margin: 0 auto 22px;"' : '';
-
-    foreach ($cards as $card) {
-        echo '<div class="' . $class . '">';
-        echo '<div class="card-icon"' . $icon_style . '><i class="' . htmlspecialchars($card['icon']) . '"></i></div>';
-        echo '<h3>' . htmlspecialchars($card['title']) . '</h3>';
-        echo '<p>' . htmlspecialchars($card['description']) . '</p>';
-        echo '</div>';
-    }
+    iconCardGrid(getFeatureCards($section));
 }
 
 /**
@@ -354,7 +344,11 @@ function content($key) {
     return str_replace('{site_name}', getSiteName(), $value);
 }
 
-function renderPageHero($image, $eyebrow, $title, $subtitle = '', $crumb = '', $compact = false, $icon = '') {
+/**
+ * Inner-page banner: photo, breadcrumb (Home > [parent >] page), small label, title, subtitle.
+ * $parent is an optional [label, link] for pages that sit inside a section, e.g. ['Academics', 'courses'].
+ */
+function renderPageHero($image, $eyebrow, $title, $subtitle = '', $crumb = '', $compact = false, $icon = '', $parent = null) {
     echo '<section class="page-hero' . ($compact ? ' is-compact' : '') . '">';
     // JPEG for every browser, then a WebP version (about a third smaller) for those that support it
     $webp_bg = webpBackground($image);
@@ -367,16 +361,18 @@ function renderPageHero($image, $eyebrow, $title, $subtitle = '', $crumb = '', $
         echo '<script type="application/ld+json">' . json_encode([
             '@context' => 'https://schema.org',
             '@type' => 'BreadcrumbList',
-            'itemListElement' => [
+            'itemListElement' => array_values(array_filter([
                 ['@type' => 'ListItem', 'position' => 1, 'name' => 'Home', 'item' => $base . '/'],
-                ['@type' => 'ListItem', 'position' => 2, 'name' => $crumb, 'item' => $base . '/' . basename($_SERVER['SCRIPT_NAME'], '.php')],
-            ],
+                $parent ? ['@type' => 'ListItem', 'position' => 2, 'name' => $parent[0], 'item' => $base . '/' . $parent[1]] : null,
+                ['@type' => 'ListItem', 'position' => $parent ? 3 : 2, 'name' => $crumb, 'item' => $base . '/' . basename($_SERVER['SCRIPT_NAME'], '.php')],
+            ])),
         ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . '</script>';
         echo '<nav class="breadcrumb" aria-label="Breadcrumb"><a href="./"><i class="fas fa-house" aria-hidden="true"></i> Home</a>'
+            . ($parent ? '<i class="fas fa-chevron-right" aria-hidden="true"></i><a href="' . htmlspecialchars($parent[1]) . '">' . htmlspecialchars($parent[0]) . '</a>' : '')
             . '<i class="fas fa-chevron-right" aria-hidden="true"></i><span aria-current="page">' . htmlspecialchars($crumb) . '</span></nav>';
     }
     if ($eyebrow !== '') {
-        echo '<span class="eyebrow on-dark">' . ($icon !== '' ? '<i class="fas ' . htmlspecialchars($icon) . '"></i> ' : '') . htmlspecialchars($eyebrow) . '</span>';
+        echo '<span class="eyebrow on-dark">' . ($icon !== '' ? '<i class="fas ' . htmlspecialchars($icon) . '" aria-hidden="true"></i> ' : '') . htmlspecialchars($eyebrow) . '</span>';
     }
     echo '<h1>' . htmlspecialchars($title) . '</h1>';
     echo '<span class="page-hero-line" aria-hidden="true"></span>';
@@ -390,7 +386,7 @@ function renderPageHero($image, $eyebrow, $title, $subtitle = '', $crumb = '', $
  * Inner-page hero (photo, breadcrumb, small label, title, subtitle) driven by content().
  * $compact = the slightly shorter variant used on Examination, Alumni and Downloads.
  */
-function renderPageBanner($slug, $compact = false, $icon = '') {
+function renderPageBanner($slug, $compact = false, $icon = '', $parent = null) {
     renderPageHero(
         content("banner_{$slug}_image"),
         content("banner_{$slug}_eyebrow"),
@@ -398,7 +394,8 @@ function renderPageBanner($slug, $compact = false, $icon = '') {
         content("banner_{$slug}_subtitle"),
         content("seo_{$slug}_title"),
         $compact,
-        $icon
+        $icon,
+        $parent
     );
 }
 

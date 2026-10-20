@@ -75,6 +75,9 @@ if (session_status() === PHP_SESSION_NONE) {
 // Include settings helper functions
 require_once __DIR__ . '/settings_helper.php';
 
+// Shared page building blocks (section headers, cards, call-to-action panels)
+require_once __DIR__ . '/components.php';
+
 // Include theme helper functions
 require_once __DIR__ . '/theme_helper.php';
 

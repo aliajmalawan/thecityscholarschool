@@ -1,141 +1,106 @@
 <?php
 require_once 'includes/config.php';
-require_once 'includes/settings_helper.php';
-
-// Fetch active datesheets
-$datesheets = mysqli_query($conn, "SELECT DISTINCT * FROM exam_datesheets WHERE status = 'active' ORDER BY exam_year DESC");
-
-// Fetch active board results
-$matric_results = mysqli_query($conn, "SELECT DISTINCT * FROM board_results WHERE status = 'active' AND board_type = 'Matric' ORDER BY year DESC, display_order ASC");
-$inter_results = mysqli_query($conn, "SELECT DISTINCT * FROM board_results WHERE status = 'active' AND board_type = 'Intermediate' ORDER BY year DESC, display_order ASC");
-
 $page_title = content('seo_examination_title');
 $meta_description = content('seo_examination_description');
+
+// Datesheets with their papers (AdminCP -> Datesheets): one table per datesheet, classes down, dates across
+$datesheets = [];
+$res = mysqli_query($conn, "SELECT DISTINCT * FROM exam_datesheets WHERE status = 'active' ORDER BY exam_year DESC, id DESC");
+while ($res && ($sheet = mysqli_fetch_assoc($res))) {
+    $papers = mysqli_query($conn, "SELECT DISTINCT * FROM datesheet_details WHERE datesheet_id = " . intval($sheet['id']) . " ORDER BY exam_date ASC, class ASC");
+    $dates = [];
+    $classes = [];
+    while ($papers && ($p = mysqli_fetch_assoc($papers))) {
+        $dates[$p['exam_date']] = $p['day_name'];
+        $classes[$p['class']][$p['exam_date']] = $p['subject'];
+    }
+    $sheet['dates'] = $dates;
+    $sheet['classes'] = $classes;
+    $datesheets[] = $sheet;
+}
+
+// Board results (AdminCP -> Board Results), grouped by board type in the order they first appear
+$results_by_type = [];
+$res = mysqli_query($conn, "SELECT DISTINCT * FROM board_results WHERE status = 'active' ORDER BY year DESC, display_order ASC, id DESC");
+while ($res && ($row = mysqli_fetch_assoc($res))) {
+    $results_by_type[trim((string) $row['board_type']) ?: 'Results'][] = $row;
+}
 ?>
 <?php include 'includes/header.php'; ?>
 
-    <!-- Page Header -->
-    <?php renderPageBanner('examination', true, 'fa-file-alt'); ?>
+<?php renderPageBanner('examination', true, 'fa-file-lines', ['Academics', 'courses']); ?>
 
-    <!-- Datesheets Section -->
-    <section>
-        <div class="container">
-            <div class="section-header reveal">
-                <span class="eyebrow"><?php echo htmlspecialchars(content('exam_datesheet_eyebrow')); ?></span>
-                <h2><?php echo htmlspecialchars(content('exam_datesheet_heading')); ?></h2>
-            </div>
-
-            <?php
-            if ($datesheets && mysqli_num_rows($datesheets) > 0) {
-                while ($datesheet = mysqli_fetch_assoc($datesheets)) {
-                    echo '<div class="card" style="margin-bottom: 40px;">';
-                    echo '<h3 style="color: var(--primary-color); margin-bottom: 20px; text-align: center;">' . htmlspecialchars($datesheet['exam_name']) . '</h3>';
-
-                    // Fetch details
-                    $details = mysqli_query($conn, "SELECT DISTINCT * FROM datesheet_details WHERE datesheet_id = {$datesheet['id']} ORDER BY exam_date ASC, class ASC");
-
-                    if ($details && mysqli_num_rows($details) > 0) {
-                        // Group by date
-                        $dates = [];
-                        while ($detail = mysqli_fetch_assoc($details)) {
-                            $dates[$detail['exam_date']][] = $detail;
-                        }
-
-                        echo '<div style="overflow-x: auto;">';
-                        echo '<table style="width: 100%; border-collapse: collapse;">';
-                        echo '<thead><tr style="background: var(--primary-color); color: white;">';
-
-                        // Get unique dates
-                        $date_keys = array_keys($dates);
-                        echo '<th style="padding: 15px; text-align: left; vertical-align: top;">Class</th>';
-                        foreach ($date_keys as $date) {
-                            $day = $dates[$date][0]['day_name'];
-                            echo '<th style="padding: 15px; text-align: center;">' . date('d.m.Y', strtotime($date)) . '<br><small>' . $day . '</small></th>';
-                        }
-
-                        echo '</tr></thead><tbody>';
-
-                        // Get unique classes
-                        $classes = [];
-                        foreach ($dates as $date => $entries) {
-                            foreach ($entries as $entry) {
-                                $classes[$entry['class']][$date] = $entry['subject'];
-                            }
-                        }
-
-                        foreach ($classes as $class => $subjects_by_date) {
-                            echo '<tr style="border-bottom: 1px solid var(--border-color);">';
-                            echo '<td style="padding: 15px; font-weight: bold; background: var(--bg-light);">' . htmlspecialchars($class) . '</td>';
-                            foreach ($date_keys as $date) {
-                                echo '<td style="padding: 15px; text-align: center;">';
-                                echo isset($subjects_by_date[$date]) ? htmlspecialchars($subjects_by_date[$date]) : '-';
-                                echo '</td>';
-                            }
-                            echo '</tr>';
-                        }
-
-                        echo '</tbody></table></div>';
-                    } else {
-                        echo '<p style="text-align: center; color: var(--text-light);">Schedule not available yet</p>';
-                    }
-
-                    echo '</div>';
-                }
-            } else {
-                renderEmptyState('fa-calendar-alt', 'No datesheets yet', 'Exam schedules will appear here as soon as they are announced.');
-            }
-            ?>
-        </div>
-    </section>
-
-    <!-- Board Results Section -->
-    <section class="bg-light">
-        <div class="container">
-            <div class="section-header reveal">
-                <span class="eyebrow"><?php echo htmlspecialchars(content('exam_results_eyebrow')); ?></span>
-                <h2><?php echo htmlspecialchars(content('exam_results_heading')); ?></h2>
-            </div>
-
-            <!-- Intermediate Results -->
-            <div style="margin-bottom: 50px;">
-                <h3 style="color: var(--primary-color); margin-bottom: 25px; border-left: 5px solid var(--primary-color); padding-left: 15px;">Intermediate Results</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 30px;">
-                    <?php
-                    if ($inter_results && mysqli_num_rows($inter_results) > 0) {
-                        while ($result = mysqli_fetch_assoc($inter_results)) {
-                            echo '<div class="card">';
-                            echo '<img src="' . htmlspecialchars($result['image_path']) . '" alt="' . htmlspecialchars($result['title']) . '" loading="lazy" style="width: 100%; height: 250px; object-fit: cover; border-radius: var(--radius-sm); margin-bottom: 15px; cursor: pointer; box-shadow: var(--shadow-xs);" onclick="window.open(\'' . htmlspecialchars($result['image_path'], ENT_QUOTES) . '\', \'_blank\')">';
-                            echo '<h4 style="color: var(--primary-color); margin-bottom: 10px;">' . htmlspecialchars($result['title']) . '</h4>';
-                            echo '<p style="color: var(--text-light);">Year: ' . $result['year'] . '</p>';
-                            echo '</div>';
-                        }
-                    } else {
-                        echo '<div style="grid-column: 1 / -1;">'; renderEmptyState('fa-trophy', 'No Intermediate results yet', 'Results will be posted here once the board announces them.'); echo '</div>';
-                    }
-                    ?>
+<!-- Datesheets -->
+<section class="page-intro">
+    <div class="container">
+        <?php sectionHeader(content('exam_datesheet_eyebrow'), content('exam_datesheet_heading')); ?>
+        <?php if (!empty($datesheets)): ?>
+            <?php foreach ($datesheets as $sheet): ?>
+            <div class="table-card">
+                <div class="table-card-head">
+                    <h3><?php echo htmlspecialchars($sheet['exam_name']); ?></h3>
+                    <?php if (!empty($sheet['exam_year'])): ?><span class="pill"><?php echo htmlspecialchars($sheet['exam_year']); ?></span><?php endif; ?>
                 </div>
-            </div>
-
-            <!-- Matric Results -->
-            <div>
-                <h3 style="color: var(--primary-color); margin-bottom: 25px; border-left: 5px solid var(--primary-color); padding-left: 15px;">Matric Results</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 30px;">
-                    <?php
-                    if ($matric_results && mysqli_num_rows($matric_results) > 0) {
-                        while ($result = mysqli_fetch_assoc($matric_results)) {
-                            echo '<div class="card">';
-                            echo '<img src="' . htmlspecialchars($result['image_path']) . '" alt="' . htmlspecialchars($result['title']) . '" loading="lazy" style="width: 100%; height: 250px; object-fit: cover; border-radius: var(--radius-sm); margin-bottom: 15px; cursor: pointer; box-shadow: var(--shadow-xs);" onclick="window.open(\'' . htmlspecialchars($result['image_path'], ENT_QUOTES) . '\', \'_blank\')">';
-                            echo '<h4 style="color: var(--primary-color); margin-bottom: 10px;">' . htmlspecialchars($result['title']) . '</h4>';
-                            echo '<p style="color: var(--text-light);">Year: ' . $result['year'] . '</p>';
-                            echo '</div>';
-                        }
-                    } else {
-                        echo '<div style="grid-column: 1 / -1;">'; renderEmptyState('fa-trophy', 'No Matric results yet', 'Results will be posted here once the board announces them.'); echo '</div>';
-                    }
-                    ?>
+                <?php if (!empty($sheet['dates'])): ?>
+                <div class="table-scroll" role="region" aria-label="<?php echo htmlspecialchars($sheet['exam_name']); ?> schedule" tabindex="0">
+                    <table class="data-table">
+                        <caption class="sr-only"><?php echo htmlspecialchars($sheet['exam_name']); ?>: papers by class and date</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Class</th>
+                                <?php foreach ($sheet['dates'] as $date => $day): ?>
+                                <th scope="col"><?php echo date('d M Y', strtotime($date)); ?><small><?php echo htmlspecialchars($day); ?></small></th>
+                                <?php endforeach; ?>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($sheet['classes'] as $class => $by_date): ?>
+                            <tr>
+                                <th scope="row"><?php echo htmlspecialchars($class); ?></th>
+                                <?php foreach (array_keys($sheet['dates']) as $date): ?>
+                                <td><?php echo isset($by_date[$date]) ? htmlspecialchars($by_date[$date]) : '<span class="muted" aria-label="No paper">–</span>'; ?></td>
+                                <?php endforeach; ?>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
                 </div>
+                <?php else: ?>
+                    <p class="table-card-empty">The paper-by-paper schedule will be added soon.</p>
+                <?php endif; ?>
             </div>
-        </div>
-    </section>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <?php renderEmptyState('fa-calendar-days', 'No datesheets published yet', 'Exam schedules will appear here as soon as they are announced.'); ?>
+        <?php endif; ?>
+    </div>
+</section>
 
-    <?php include 'includes/footer.php'; ?>
+<!-- Board results -->
+<section class="bg-light">
+    <div class="container">
+        <?php sectionHeader(content('exam_results_eyebrow'), content('exam_results_heading')); ?>
+        <?php if (!empty($results_by_type)): ?>
+            <?php foreach ($results_by_type as $type => $results): ?>
+            <h3 class="group-title"><?php echo htmlspecialchars($type); ?></h3>
+            <div class="result-grid">
+                <?php foreach ($results as $result): ?>
+                <a class="result-card" href="<?php echo htmlspecialchars($result['image_path']); ?>" target="_blank" rel="noopener">
+                    <span class="result-media"><img src="<?php echo htmlspecialchars($result['image_path']); ?>" alt="" loading="lazy"></span>
+                    <span class="result-body">
+                        <strong><?php echo htmlspecialchars($result['title']); ?></strong>
+                        <small><?php echo htmlspecialchars($result['year']); ?> · View full size <i class="fas fa-up-right-from-square" aria-hidden="true"></i><span class="sr-only"> (opens in a new tab)</span></small>
+                    </span>
+                </a>
+                <?php endforeach; ?>
+            </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <?php renderEmptyState('fa-trophy', 'No results published yet', 'Board results will be posted here once they are announced.'); ?>
+        <?php endif; ?>
+    </div>
+</section>
+
+<?php admissionsCta('Questions About Exams?', 'Our office can help with schedules, results and anything else related to examinations.'); ?>
+
+<?php include 'includes/footer.php'; ?>
