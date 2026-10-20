@@ -55,16 +55,25 @@ $current_url = $site_base_url . '/' . ($page_slug === 'index' ? '' : $page_slug)
         $schema_social = array_values(array_filter(getSocialMedia(), function ($url) {
             return !empty($url) && $url[0] !== '#';
         }));
-        // The address setting is free-form text (e.g. "Street, City\nPakistan") -
-        // split it into street/country so the schema fields aren't just one
-        // field with a raw line break jammed inside it.
+        // The address setting is free-form text, one part per line, e.g.
+        // "Near Railway Tower, Bandhi\nShaheed Benazirabad, Sindh 67400\nPakistan":
+        // first line = street, last line = country, lines between = town/region,
+        // and a 5-digit number anywhere in those lines = postal code.
         $address_lines = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', getSiteAddress()))));
         $schema_address = ['@type' => 'PostalAddress'];
         if (!empty($address_lines)) {
             $schema_address['streetAddress'] = $address_lines[0];
         }
-        if (isset($address_lines[1])) {
-            $schema_address['addressCountry'] = $address_lines[1];
+        if (count($address_lines) >= 2) {
+            $schema_address['addressCountry'] = end($address_lines);
+        }
+        if (count($address_lines) >= 3) {
+            $region = implode(', ', array_slice($address_lines, 1, -1));
+            if (preg_match('/\b(\d{5})\b/', $region, $postal)) {
+                $schema_address['postalCode'] = $postal[1];
+                $region = trim(str_replace($postal[1], '', $region), " ,");
+            }
+            $schema_address['addressRegion'] = $region;
         }
         $schema = [
             '@context' => 'https://schema.org',
