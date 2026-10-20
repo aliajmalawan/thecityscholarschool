@@ -57,11 +57,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_alumni'])) {
         $photo_path = 'uploads/alumni/' . $saved_photo['name'];
     }
 
-    $new_alumni_id = nextRowId('alumni');
-    $sql = "INSERT INTO alumni (id, student_name, father_name, current_job, job_department, job_city, course, passing_year, photo, mobile_number, whatsapp_number, review)
-            VALUES ($new_alumni_id, '$student_name', '$father_name', '$current_job', '$job_department', '$job_city', '$course', $passing_year, '$photo_path', '$mobile_number', '$whatsapp_number', '$review')";
-
     try {
+        $new_alumni_id = nextRowId('alumni');
+        $sql = "INSERT INTO alumni (id, student_name, father_name, current_job, job_department, job_city, course, passing_year, photo, mobile_number, whatsapp_number, review)
+                VALUES ($new_alumni_id, '$student_name', '$father_name', '$current_job', '$job_department', '$job_city', '$course', $passing_year, '$photo_path', '$mobile_number', '$whatsapp_number', '$review')";
         $saved = $upload_error === '' && mysqli_query($conn, $sql);
     } catch (mysqli_sql_exception $e) {
         error_log('Alumni form save failed: ' . $e->getMessage());
@@ -103,11 +102,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_review'])) {
     }
 }
 
-// Fetch approved alumni
-$alumni = mysqli_query($conn, "SELECT DISTINCT * FROM alumni WHERE status = 'approved' ORDER BY passing_year DESC LIMIT 12");
-
-// Fetch approved reviews
-$reviews = mysqli_query($conn, "SELECT DISTINCT * FROM alumni_reviews WHERE status = 'approved' ORDER BY created_at DESC LIMIT 6");
+// Approved alumni and reviews. If the database cannot be read, the page still loads
+// (with its empty states and any form message) instead of failing completely.
+try {
+    $alumni = mysqli_query($conn, "SELECT DISTINCT * FROM alumni WHERE status = 'approved' ORDER BY passing_year DESC LIMIT 12");
+} catch (mysqli_sql_exception $e) {
+    error_log('Alumni list could not be loaded: ' . $e->getMessage());
+    $alumni = false;
+}
+try {
+    $reviews = mysqli_query($conn, "SELECT DISTINCT * FROM alumni_reviews WHERE status = 'approved' ORDER BY created_at DESC LIMIT 6");
+} catch (mysqli_sql_exception $e) {
+    error_log('Alumni reviews could not be loaded: ' . $e->getMessage());
+    $reviews = false;
+}
 
 $page_title = content('seo_alumni_title');
 $meta_description = content('seo_alumni_description');
