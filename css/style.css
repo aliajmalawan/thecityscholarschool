@@ -5832,7 +5832,7 @@ body.lightbox-open { overflow: hidden; }
     font-size: 72px;
 }
 
-.campus-feature-body h2 {
+.campus-feature-body h3 {
     margin-bottom: 14px;
     font-size: clamp(24px, 2.6vw, 32px);
 }
@@ -6048,3 +6048,8 @@ body.lightbox-open { overflow: hidden; }
 @media (min-width: 901px) and (max-width: 1200px) {
     .intro-split .link-grid { grid-template-columns: 1fr; }
 }
+
+/* <picture> wrappers (pictureImg()) fill their frame like the image inside */
+.home-about-photo picture,
+.crest-figure picture { display: block; width: 100%; height: 100%; }
+.crest-figure picture { display: grid; place-items: center; }

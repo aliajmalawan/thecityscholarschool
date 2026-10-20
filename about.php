@@ -15,7 +15,7 @@ $story = array_values(array_filter([trim($about['description']), trim(getSetting
         <div class="home-about-grid">
             <div class="home-about-media">
                 <div class="home-about-photo">
-                    <img src="<?php echo htmlspecialchars(content('about_story_image')); ?>" alt="Students at <?php echo htmlspecialchars(getSiteName()); ?>" loading="lazy">
+                    <?php echo pictureImg(content('about_story_image'), 'Students at ' . getSiteName(), ['loading' => 'lazy']); ?>
                 </div>
                 <div class="home-about-badge" aria-hidden="true">
                     <img src="<?php echo getLogoSmallPath(); ?>" alt="" width="64" height="60">
@@ -66,7 +66,7 @@ $story = array_values(array_filter([trim($about['description']), trim(getSetting
     <div class="container">
         <div class="crest-grid">
             <div class="crest-figure">
-                <img src="images/city-scholars-crest.png" alt="The <?php echo htmlspecialchars(getSiteName()); ?> crest" width="640" height="595" loading="lazy">
+                <?php echo pictureImg('images/city-scholars-crest.png', 'The ' . getSiteName() . ' crest', ['loading' => 'lazy']); ?>
             </div>
             <div>
                 <span class="eyebrow">Our Crest</span>

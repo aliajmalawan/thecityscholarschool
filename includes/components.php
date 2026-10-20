@@ -177,6 +177,32 @@ function renderNewsArticle(array $post) {
     echo '</div></article>';
 }
 
+/**
+ * <picture> with a WebP version for browsers that support it and the original as the
+ * fallback. The WebP twin is created once next to the original (only kept when smaller).
+ * $attrs: extra attributes for the <img>, e.g. ['loading' => 'lazy', 'width' => 640].
+ */
+function pictureImg($path, $alt, array $attrs = []) {
+    $root = dirname(__DIR__) . '/';
+    $path = ltrim((string) $path, '/');
+    $webp = preg_replace('/\.(jpe?g|png)$/i', '.webp', $path);
+    if ($webp !== $path && is_file($root . $path) && (!is_file($root . $webp) || filemtime($root . $webp) < filemtime($root . $path))) {
+        createWebpTwin($root . $path);
+    }
+    if (empty($attrs['width']) && is_file($root . $path) && ($size = @getimagesize($root . $path))) {
+        $attrs += ['width' => $size[0], 'height' => $size[1]];
+    }
+    $html = '<picture>';
+    if ($webp !== $path && is_file($root . $webp)) {
+        $html .= '<source type="image/webp" srcset="' . htmlspecialchars($webp) . '">';
+    }
+    $html .= '<img src="' . htmlspecialchars($path) . '" alt="' . htmlspecialchars($alt) . '"';
+    foreach ($attrs + ['decoding' => 'async'] as $name => $value) {
+        $html .= ' ' . $name . '="' . htmlspecialchars((string) $value) . '"';
+    }
+    return $html . '></picture>';
+}
+
 /** Google Maps embed URL taken from the iframe code saved in Settings, or '' when none is set. */
 function mapEmbedSrc() {
     if (preg_match('#src=["\'](https://(?:www\.)?google\.com/maps/embed\?[^"\']+)["\']#i', getSetting('google_maps_embed', ''), $m)) {

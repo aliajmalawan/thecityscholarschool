@@ -217,7 +217,7 @@ $first_sentence = function ($text) {
         <div class="home-about-grid">
             <div class="home-about-media">
                 <div class="home-about-photo">
-                    <img src="<?php echo htmlspecialchars(content('home_about_image')); ?>" alt="A student learning at <?php echo htmlspecialchars(getSiteName()); ?>" loading="lazy">
+                    <?php echo pictureImg(content('home_about_image'), 'A student learning at ' . getSiteName(), ['loading' => 'lazy']); ?>
                 </div>
                 <div class="home-about-badge" aria-hidden="true">
                     <img src="<?php echo getLogoSmallPath(); ?>" alt="" width="64" height="60">
@@ -605,12 +605,7 @@ while ($res && ($row = mysqli_fetch_assoc($res))) { $gallery_photos[] = $row; }
      ===================================================================== -->
 <?php
 $contact_sent = $form_flash !== '' && $form_flash_for === 'contact';
-$map_src = '';
-if (preg_match('#src=["\'](https://(?:www\.)?google\.com/maps/embed\?[^"\']+)["\']#i', getSetting('google_maps_embed', ''), $map_match)) {
-    $map_src = html_entity_decode($map_match[1]);
-}
-$contact_social = array_filter(getSocialMedia());
-$contact_social_icons = ['facebook' => 'fa-facebook-f', 'instagram' => 'fa-instagram', 'youtube' => 'fa-youtube', 'twitter' => 'fa-x-twitter'];
+$map_src = mapEmbedSrc();
 ?>
 <section class="home-contact" id="contact">
     <div class="container">
@@ -620,45 +615,8 @@ $contact_social_icons = ['facebook' => 'fa-facebook-f', 'instagram' => 'fa-insta
                 <h2 class="section-title"><?php echo htmlspecialchars(content('home_contact_heading')); ?></h2>
                 <p class="lead"><?php echo htmlspecialchars(content('home_contact_text')); ?></p>
 
-                <ul class="contact-list">
-                    <li>
-                        <span class="contact-icon"><i class="fas fa-location-dot" aria-hidden="true"></i></span>
-                        <div><strong>Address</strong>
-                            <?php if (hasSiteAddress()): ?><span><?php echo nl2br(htmlspecialchars(getSiteAddress())); ?></span>
-                            <?php else: ?><span class="is-placeholder">To be announced</span><?php endif; ?>
-                        </div>
-                    </li>
-                    <li>
-                        <span class="contact-icon"><i class="fas fa-phone" aria-hidden="true"></i></span>
-                        <div><strong>Phone</strong>
-                            <?php if (hasSitePhone()): ?><a href="<?php echo htmlspecialchars(telHref(primaryPhone())); ?>"><?php echo htmlspecialchars(getSitePhone()); ?></a>
-                            <?php else: ?><span class="is-placeholder">Coming soon</span><?php endif; ?>
-                        </div>
-                    </li>
-                    <li>
-                        <span class="contact-icon"><i class="fas fa-envelope" aria-hidden="true"></i></span>
-                        <div><strong>Email</strong>
-                            <?php if (hasSiteEmail()): ?><a href="mailto:<?php echo htmlspecialchars(getSiteEmail()); ?>"><?php echo htmlspecialchars(getSiteEmail()); ?></a>
-                            <?php else: ?><span class="is-placeholder">Coming soon</span><?php endif; ?>
-                        </div>
-                    </li>
-                    <li>
-                        <span class="contact-icon"><i class="fas fa-clock" aria-hidden="true"></i></span>
-                        <div><strong>Office hours</strong>
-                            <?php if (hasOfficeHours()): ?><span><?php echo htmlspecialchars(getOfficeHours()); ?></span>
-                            <?php else: ?><span class="is-placeholder">To be announced</span><?php endif; ?>
-                        </div>
-                    </li>
-                </ul>
-
-                <?php if (!empty($contact_social)): ?>
-                <div class="contact-social" aria-label="Social media">
-                    <?php foreach ($contact_social_icons as $key => $icon):
-                        if (empty($contact_social[$key])) continue; ?>
-                        <a href="<?php echo htmlspecialchars($contact_social[$key]); ?>" target="_blank" rel="noopener" aria-label="<?php echo ucfirst($key); ?> (opens in a new tab)"><i class="fab <?php echo $icon; ?>" aria-hidden="true"></i></a>
-                    <?php endforeach; ?>
-                </div>
-                <?php endif; ?>
+                <?php contactDetailsList(); ?>
+                <?php socialIcons(); ?>
 
                 <?php if ($map_src !== ''): ?>
                 <div class="contact-map">

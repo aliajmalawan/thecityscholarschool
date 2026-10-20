@@ -18,6 +18,7 @@ $file_icons = ['pdf' => 'fa-file-pdf', 'doc' => 'fa-file-word', 'docx' => 'fa-fi
 
 <section class="page-intro bg-light">
     <div class="container">
+        <h2 class="sr-only">Documents to download</h2>
         <?php if (!empty($downloads)): ?>
         <ul class="download-list">
             <?php foreach ($downloads as $download):

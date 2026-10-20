@@ -16,6 +16,7 @@ while ($campuses_result && ($row = mysqli_fetch_assoc($campuses_result))) {
 
 <section class="page-intro bg-light">
     <div class="container">
+        <h2 class="sr-only">Our campuses</h2>
         <?php if (!empty($campuses_list)): ?>
             <?php foreach ($campuses_list as $index => $c): ?>
             <article class="campus-feature<?php echo $index % 2 === 1 ? ' is-reverse' : ''; ?>">
@@ -28,7 +29,7 @@ while ($campuses_result && ($row = mysqli_fetch_assoc($campuses_result))) {
                 </div>
                 <div class="campus-feature-body">
                     <?php if (!empty($c['tagline'])): ?><span class="eyebrow"><?php echo htmlspecialchars($c['tagline']); ?></span><?php endif; ?>
-                    <h2><?php echo htmlspecialchars($c['name']); ?></h2>
+                    <h3><?php echo htmlspecialchars($c['name']); ?></h3>
                     <?php if (!empty($c['description'])): ?>
                         <p class="prose"><?php echo nl2br(htmlspecialchars($c['description'])); ?></p>
                     <?php endif; ?>

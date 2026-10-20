@@ -100,8 +100,8 @@ function compressUploadedImage($sourcePath, $destinationPath, $maxDimension = 16
     // Safety net: if re-encoding somehow produced a larger file than the
     // original (rare, e.g. a tiny already-optimized image), keep the
     // original instead of the "compressed" version.
-    if ($saved && file_exists($destinationPath) && filesize($destinationPath) > filesize($sourcePath)) {
-        copy($sourcePath, $destinationPath);
+    if ($saved && $scale >= 1 && file_exists($destinationPath) && filesize($destinationPath) > filesize($sourcePath)) {
+        copy($sourcePath, $destinationPath);   // only when nothing was resized, so the size cap still applies
     }
 
     return $saved && file_exists($destinationPath);
@@ -211,9 +211,10 @@ function compressUploadedPhotoAsJpeg($sourcePath, $destDir, $baseFilename, $maxD
     $saved = imagejpeg($canvas, $destinationPath, $jpegQuality);
     imagedestroy($canvas);
 
-    if ($saved && file_exists($destinationPath) && filesize($destinationPath) > filesize($sourcePath)) {
-        // Safety net: re-encoding shouldn't usually grow the file, but if
-        // the source was already a tiny well-optimized JPEG, keep it.
+    // Safety net: if re-encoding grew an already well-optimized JPEG that did not need
+    // resizing, keep the original. Never for other formats: copying a WebP/PNG source
+    // here would store non-JPEG data under a .jpg name (and skip the resize).
+    if ($saved && $type === IMAGETYPE_JPEG && $scale >= 1 && file_exists($destinationPath) && filesize($destinationPath) > filesize($sourcePath)) {
         copy($sourcePath, $destinationPath);
     }
 

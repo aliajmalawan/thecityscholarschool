@@ -146,31 +146,6 @@ function getHeroContent() {
 }
 
 /**
- * Get statistics
- */
-function getStatistics() {
-    global $conn;
-
-    $count = function ($table) use ($conn) {
-        $result = mysqli_query($conn, "SELECT COUNT(DISTINCT id) AS c FROM $table WHERE status = 'active'");
-        $row = $result ? mysqli_fetch_assoc($result) : null;
-        return $row ? (int) $row['c'] : 0;
-    };
-
-    // Faculty and programmes are counted from the real records unless an override is entered in Settings.
-    // Students and years have no table to count from, so they only show once real values are entered.
-    $teachers = getSetting('stats_teachers', '');
-    $courses = getSetting('stats_courses', '');
-
-    return [
-        'students' => getSetting('stats_students', ''),
-        'teachers' => $teachers !== '' ? $teachers : ($count('faculty') ?: ''),
-        'courses' => $courses !== '' ? $courses : ($count('courses') ?: ''),
-        'years' => getSetting('stats_years', '')
-    ];
-}
-
-/**
  * Get about page content
  */
 function getAboutContent() {
@@ -263,41 +238,6 @@ function getFeatureCards($section) {
  */
 function renderFeatureCardGrid($section, $centered = false) {
     iconCardGrid(getFeatureCards($section));
-}
-
-/**
- * Render one News / Event card (image, date, category, title, excerpt, Read More).
- * $type is 'news' or 'event'; $row is the matching DB row. Read More points at the
- * entry's anchor on events.php (there is no separate detail page).
- */
-function renderUpdateCard($type, $row) {
-    $is_event = ($type === 'event');
-    $date = $is_event ? $row['event_date'] : $row['created_at'];
-    $body = $is_event ? ($row['description'] ?? '') : ($row['content'] ?? '');
-    $plain = trim(strip_tags($body));
-    $excerpt = mb_strlen($plain) > 120 ? rtrim(mb_substr($plain, 0, 120)) . '…' : $plain;
-    $anchor = 'events#' . ($is_event ? 'event-' : 'news-') . intval($row['id']);
-
-    echo '<article class="card update-card reveal">';
-    echo '<a href="' . htmlspecialchars($anchor) . '" class="update-media" tabindex="-1" aria-hidden="true">';
-    if (!empty($row['image'])) {
-        echo '<img src="' . htmlspecialchars($row['image']) . '" alt="" loading="lazy">';
-    } else {
-        echo '<span class="update-placeholder"><i class="fas ' . ($is_event ? 'fa-calendar-alt' : 'fa-newspaper') . '"></i></span>';
-    }
-    echo '</a>';
-    echo '<div class="update-body">';
-    echo '<div class="update-meta">';
-    echo '<span class="update-category ' . ($is_event ? 'is-event' : 'is-news') . '">' . ($is_event ? 'Event' : 'News') . '</span>';
-    echo '<span class="update-date"><i class="far fa-calendar"></i> ' . date('M d, Y', strtotime($date)) . '</span>';
-    echo '</div>';
-    echo '<h3><a href="' . htmlspecialchars($anchor) . '">' . htmlspecialchars($row['title']) . '</a></h3>';
-    if ($excerpt !== '') {
-        echo '<p>' . htmlspecialchars($excerpt) . '</p>';
-    }
-    echo '<a href="' . htmlspecialchars($anchor) . '" class="level-link">Read More <i class="fas fa-arrow-right"></i></a>';
-    echo '</div>';
-    echo '</article>';
 }
 
 /* ------------------------------------------------------------------
