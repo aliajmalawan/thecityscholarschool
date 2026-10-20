@@ -37,6 +37,7 @@ $photo_counts = array_count_values(array_column($photos, 'category'));
 <!-- Photos -->
 <section class="page-intro bg-light" id="photos">
     <div class="container">
+        <h2 class="sr-only">Photos</h2>
         <?php if (!empty($photos) && count(array_intersect_key($categories, $photo_counts)) > 1): ?>
         <div class="gallery-filters" role="toolbar" aria-label="Filter photos by category">
             <button type="button" class="gallery-filter is-active" data-filter="all" aria-pressed="true">All <span><?php echo count($photos); ?></span></button>

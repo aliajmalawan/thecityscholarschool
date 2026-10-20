@@ -152,7 +152,7 @@ $hero_point_icons = ['fa-book-open', 'fa-hand-holding-heart', 'fa-star'];
 <!-- Quick links overlapping the bottom of the hero (Page Content -> Home: Sections) -->
 <?php
 $quick_cards = [];
-foreach ([1 => 'fa-user-plus', 2 => 'fa-book-open', 3 => 'fa-images', 4 => 'fa-envelope-open-text'] as $n => $icon) {
+foreach ([1 => 'fa-user-plus', 2 => 'fa-book-open', 3 => 'fa-school', 4 => 'fa-location-dot'] as $n => $icon) {
     $q_title = content("home_quick_{$n}_title");
     if ($q_title !== '') {
         $quick_cards[] = ['icon' => $icon, 'title' => $q_title, 'text' => content("home_quick_{$n}_text"), 'link' => content("home_quick_{$n}_link")];
@@ -318,25 +318,56 @@ foreach ([1 => 'fa-seedling', 2 => 'fa-book-reader', 3 => 'fa-lightbulb', 4 => '
 <?php endif; ?>
 
 <!-- =====================================================================
-     Why choose us (Feature Cards -> Why Choose Us)
+     Photo band: a short promise to families over a school photo (Page Content -> Home: Sections)
+     ===================================================================== -->
+<?php $band_heading = content('home_band_heading'); ?>
+<?php if ($band_heading !== ''): ?>
+<section class="home-band" aria-labelledby="home-band-title">
+    <div class="home-band-media" aria-hidden="true"><?php echo pictureImg(content('home_band_image'), '', ['loading' => 'lazy']); ?></div>
+    <div class="container">
+        <div class="home-band-inner">
+            <span class="eyebrow on-dark"><?php echo htmlspecialchars(content('home_band_eyebrow')); ?></span>
+            <h2 id="home-band-title"><?php echo htmlspecialchars($band_heading); ?></h2>
+            <p><?php echo htmlspecialchars(content('home_band_text')); ?></p>
+            <div class="btn-group">
+                <a href="#contact" class="btn btn-secondary"><i class="fas fa-location-dot" aria-hidden="true"></i> Visit Our Campus</a>
+                <?php if (hasSitePhone()): ?>
+                <a href="<?php echo htmlspecialchars(telHref(primaryPhone())); ?>" class="btn btn-outline"><i class="fas fa-phone" aria-hidden="true"></i> Call <?php echo htmlspecialchars(primaryPhone()); ?></a>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+</section>
+<?php endif; ?>
+
+<!-- =====================================================================
+     Why choose us (Feature Cards -> Why Choose Us): heading on the left, priorities on the right
      ===================================================================== -->
 <?php $why_cards = getFeatureCards('why_choose_us'); ?>
 <?php if (!empty($why_cards)): ?>
 <section class="home-why">
     <div class="container">
-        <div class="section-header">
-            <span class="eyebrow"><?php echo htmlspecialchars(content('home_why_eyebrow')); ?></span>
-            <h2><?php echo htmlspecialchars(content('home_why_heading')); ?></h2>
-            <p><?php echo htmlspecialchars(content('home_why_subtitle')); ?></p>
-        </div>
-        <div class="why-grid">
-            <?php foreach ($why_cards as $card): ?>
-            <article class="why-card">
-                <span class="why-icon"><i class="<?php echo htmlspecialchars($card['icon']); ?>" aria-hidden="true"></i></span>
-                <h3><?php echo htmlspecialchars($card['title']); ?></h3>
-                <p><?php echo htmlspecialchars($card['description']); ?></p>
-            </article>
-            <?php endforeach; ?>
+        <div class="why-split">
+            <div class="why-intro">
+                <span class="eyebrow"><?php echo htmlspecialchars(content('home_why_eyebrow')); ?></span>
+                <h2 class="section-title"><?php echo htmlspecialchars(content('home_why_heading')); ?></h2>
+                <p class="lead"><?php echo htmlspecialchars(content('home_why_subtitle')); ?></p>
+                <div class="btn-group">
+                    <a href="admission" class="btn btn-secondary"><?php echo htmlspecialchars(content('home_adm_btn1_label')); ?> <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+                    <a href="about" class="btn btn-outline-dark">About Our School</a>
+                </div>
+            </div>
+            <div class="why-list">
+                <?php foreach ($why_cards as $card): ?>
+                <article class="why-item">
+                    <span class="why-icon"><i class="<?php echo htmlspecialchars($card['icon']); ?>" aria-hidden="true"></i></span>
+                    <div>
+                        <h3><?php echo htmlspecialchars($card['title']); ?></h3>
+                        <p><?php echo htmlspecialchars($card['description']); ?></p>
+                    </div>
+                </article>
+                <?php endforeach; ?>
+            </div>
         </div>
     </div>
 </section>
@@ -615,7 +646,16 @@ $map_src = mapEmbedSrc();
                 <h2 class="section-title"><?php echo htmlspecialchars(content('home_contact_heading')); ?></h2>
                 <p class="lead"><?php echo htmlspecialchars(content('home_contact_text')); ?></p>
 
-                <?php contactDetailsList(); ?>
+                <?php contactDetailsList('is-stacked'); ?>
+
+                <div class="btn-group contact-actions">
+                    <?php if (hasSitePhone()): ?>
+                    <a href="<?php echo htmlspecialchars(telHref(primaryPhone())); ?>" class="btn btn-primary btn-sm"><i class="fas fa-phone" aria-hidden="true"></i> Call Now</a>
+                    <?php endif; ?>
+                    <?php if (directionsUrl() !== ''): ?>
+                    <a href="<?php echo htmlspecialchars(directionsUrl()); ?>" class="btn btn-outline-dark btn-sm" target="_blank" rel="noopener"><i class="fas fa-diamond-turn-right" aria-hidden="true"></i> Get Directions<span class="sr-only"> (opens Google Maps in a new tab)</span></a>
+                    <?php endif; ?>
+                </div>
                 <?php socialIcons(); ?>
 
                 <?php if ($map_src !== ''): ?>

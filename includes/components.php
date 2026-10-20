@@ -93,14 +93,14 @@ function admissionsCta($heading, $text) {
  * The school's contact details as a list (address, phone, email, office hours).
  * Anything not filled in under Settings shows a short "coming soon" note instead.
  */
-function contactDetailsList() {
+function contactDetailsList($variant = '') {
     $rows = [
         ['fa-location-dot', 'Address', hasSiteAddress() ? nl2br(htmlspecialchars(getSiteAddress())) : '', 'To be announced'],
         ['fa-phone', 'Phone', hasSitePhone() ? '<a href="' . htmlspecialchars(telHref(primaryPhone())) . '">' . htmlspecialchars(getSitePhone()) . '</a>' : '', 'Coming soon'],
         ['fa-envelope', 'Email', hasSiteEmail() ? '<a href="mailto:' . htmlspecialchars(getSiteEmail()) . '">' . htmlspecialchars(getSiteEmail()) . '</a>' : '', 'Coming soon'],
         ['fa-clock', 'Office hours', hasOfficeHours() ? htmlspecialchars(getOfficeHours()) : '', 'To be announced'],
     ];
-    echo '<ul class="contact-list">';
+    echo '<ul class="contact-list' . ($variant !== '' ? ' ' . htmlspecialchars($variant) : '') . '">';
     foreach ($rows as [$icon, $label, $html, $placeholder]) {
         echo '<li><span class="contact-icon"><i class="fas ' . $icon . '" aria-hidden="true"></i></span><div><strong>' . $label . '</strong>';
         echo $html !== '' ? '<span>' . $html . '</span>' : '<span class="is-placeholder">' . $placeholder . '</span>';
@@ -203,10 +203,22 @@ function pictureImg($path, $alt, array $attrs = []) {
     return $html . '></picture>';
 }
 
-/** Google Maps embed URL taken from the iframe code saved in Settings, or '' when none is set. */
+/**
+ * Map for the contact sections: the Google Maps embed saved in Settings when there is
+ * one, otherwise a map searched from the school's address (no API key needed).
+ * '' when neither exists.
+ */
 function mapEmbedSrc() {
     if (preg_match('#src=["\'](https://(?:www\.)?google\.com/maps/embed\?[^"\']+)["\']#i', getSetting('google_maps_embed', ''), $m)) {
         return html_entity_decode($m[1]);
     }
+    if (hasSiteAddress()) {
+        return 'https://maps.google.com/maps?q=' . rawurlencode(siteAddressOneLine()) . '&z=15&output=embed';
+    }
     return '';
+}
+
+/** Google Maps directions to the school's address (opens the app on phones), or ''. */
+function directionsUrl() {
+    return hasSiteAddress() ? 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode(getSiteName() . ', ' . siteAddressOneLine()) : '';
 }
