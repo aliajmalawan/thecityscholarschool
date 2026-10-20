@@ -2,19 +2,19 @@
 /**
  * Branded HTML emails (admission and contact notifications).
  *
- * Every email the website sends uses the same layout as the site: the school logo
- * and name on the olive header, a maroon accent line, the content on a cream
- * background and the school's contact details in a charcoal footer.
+ * Every email the website sends uses the same layout as the site: the school crest
+ * and name on a navy header, a gold accent line, the content on a light blue-grey
+ * background and the school's contact details in a deep-navy footer.
  * Styles are inline and the layout is table-based, because most email apps
  * ignore <style> blocks and modern CSS layout.
  */
 
 // Brand palette (same values as the tokens in css/style.css)
-const EMAIL_OLIVE = '#123F73';      // navy: header band, headings
-const EMAIL_OLIVE_LIGHT = '#123F73';
-const EMAIL_MAROON = '#F8B923';     // gold accent line / action notes
-const EMAIL_CREAM = '#F2F5F9';
-const EMAIL_SAGE = '#E6EDF6';
+const EMAIL_PRIMARY = '#123F73';    // navy: header band, headings
+const EMAIL_PRIMARY_LIGHT = '#123F73';
+const EMAIL_ACCENT = '#F8B923';     // gold accent line / action notes
+const EMAIL_BG = '#F2F5F9';
+const EMAIL_TINT = '#E6EDF6';
 const EMAIL_BORDER = '#D8E0EA';
 const EMAIL_TEXT = '#253449';
 const EMAIL_MUTED = '#4E5D72';
@@ -48,21 +48,21 @@ function brandEmail($heading, $content_html) {
     $contact_line = implode(' &nbsp;&middot;&nbsp; ', $contact_bits);
 
     return '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>' . $heading . '</title></head>'
-        . '<body style="margin:0;padding:0;background:' . EMAIL_CREAM . ';font-family:' . EMAIL_FONT . ';color:' . EMAIL_TEXT . ';">'
-        . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:' . EMAIL_CREAM . ';padding:24px 12px;"><tr><td align="center">'
+        . '<body style="margin:0;padding:0;background:' . EMAIL_BG . ';font-family:' . EMAIL_FONT . ';color:' . EMAIL_TEXT . ';">'
+        . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:' . EMAIL_BG . ';padding:24px 12px;"><tr><td align="center">'
         . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#FFFFFF;border:1px solid ' . EMAIL_BORDER . ';border-radius:12px;overflow:hidden;">'
         // Header: logo + school name
-        . '<tr><td style="background:' . EMAIL_OLIVE . ';padding:22px 28px;">'
+        . '<tr><td style="background:' . EMAIL_PRIMARY . ';padding:22px 28px;">'
         . '<table role="presentation" cellpadding="0" cellspacing="0"><tr>'
         . '<td style="padding-right:14px;vertical-align:middle;"><img src="' . $logo . '" width="52" height="52" alt="' . $site . ' logo" style="display:block;object-fit:contain;"></td>'
         . '<td style="vertical-align:middle;"><div style="font-size:18px;font-weight:700;color:#FFFFFF;line-height:1.3;">' . $site . '</div>'
         . '<div style="font-size:13px;color:#C9D6E8;">' . htmlspecialchars(hasSiteAddress() ? trim((string) strtok(getSiteAddress(), "\n")) : content('site_tagline')) .'</div></td>'
         . '</tr></table></td></tr>'
         // Gold accent line
-        . '<tr><td style="height:4px;background:' . EMAIL_MAROON . ';font-size:0;line-height:0;">&nbsp;</td></tr>'
+        . '<tr><td style="height:4px;background:' . EMAIL_ACCENT . ';font-size:0;line-height:0;">&nbsp;</td></tr>'
         // Body
         . '<tr><td style="padding:30px 28px 26px;font-size:15px;line-height:1.65;color:' . EMAIL_TEXT . ';">'
-        . '<h1 style="margin:0 0 16px;font-size:22px;line-height:1.3;color:' . EMAIL_OLIVE . ';">' . $heading . '</h1>'
+        . '<h1 style="margin:0 0 16px;font-size:22px;line-height:1.3;color:' . EMAIL_PRIMARY . ';">' . $heading . '</h1>'
         . $content_html
         . '</td></tr>'
         // Footer
@@ -81,7 +81,7 @@ function emailInfoTable(array $rows) {
     $html = '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:18px 0;border:1px solid ' . EMAIL_BORDER . ';border-radius:8px;">';
     foreach ($rows as $label => $value) {
         $html .= '<tr>'
-            . '<td style="padding:10px 14px;width:38%;background:' . EMAIL_SAGE . ';border-bottom:1px solid ' . EMAIL_BORDER . ';font-weight:600;font-size:14px;color:' . EMAIL_OLIVE . ';vertical-align:top;">' . htmlspecialchars($label) . '</td>'
+            . '<td style="padding:10px 14px;width:38%;background:' . EMAIL_TINT . ';border-bottom:1px solid ' . EMAIL_BORDER . ';font-weight:600;font-size:14px;color:' . EMAIL_PRIMARY . ';vertical-align:top;">' . htmlspecialchars($label) . '</td>'
             . '<td style="padding:10px 14px;border-bottom:1px solid ' . EMAIL_BORDER . ';font-size:14px;vertical-align:top;">' . nl2br(htmlspecialchars((string) $value)) . '</td>'
             . '</tr>';
     }
@@ -90,8 +90,8 @@ function emailInfoTable(array $rows) {
 
 /** Highlighted note. $tone: 'success' (navy) or 'action' (gold). $html is already-escaped HTML. */
 function emailNote($html, $tone = 'success') {
-    $bar = $tone === 'action' ? EMAIL_MAROON : EMAIL_OLIVE_LIGHT;
-    $bg = $tone === 'action' ? '#FEF6E1' : EMAIL_SAGE;
+    $bar = $tone === 'action' ? EMAIL_ACCENT : EMAIL_PRIMARY_LIGHT;
+    $bg = $tone === 'action' ? '#FEF6E1' : EMAIL_TINT;
     return '<div style="margin:18px 0;padding:14px 16px;background:' . $bg . ';border-left:4px solid ' . $bar . ';border-radius:6px;font-size:14.5px;">' . $html . '</div>';
 }
 

@@ -236,7 +236,7 @@ $slides = mysqli_query($conn, "SELECT * FROM hero_carousel ORDER BY display_orde
                     </tbody>
                 </table>
             <?php else: ?>
-                <p style="text-align: center; padding: 30px; color: var(--text-light);">No slides yet - the homepage shows a plain olive hero (or the fallback photo set in Page Content) until you add at least one here.</p>
+                <p style="text-align: center; padding: 30px; color: var(--text-light);">No slides yet - the homepage shows a plain navy hero (or the fallback photo set in Page Content) until you add at least one here.</p>
             <?php endif; ?>
         </div>
     </div>

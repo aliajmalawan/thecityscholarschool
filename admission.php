@@ -114,7 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $error_message === '') {
             $message_student = brandEmail('Application received', '<p style="margin:0 0 12px;">Dear ' . htmlspecialchars($f('student_name')) . ',</p>'
                 . '<p style="margin:0 0 12px;">Thank you for applying to <strong>' . htmlspecialchars(getSiteName()) . '</strong>.</p>'
                 . emailNote('<strong>&#10003; Your application for ' . htmlspecialchars($course_name) . ' has been received.</strong>')
-                . '<p style="margin:16px 0 6px;font-weight:700;color:' . EMAIL_OLIVE . ';">What happens next</p>'
+                . '<p style="margin:16px 0 6px;font-weight:700;color:' . EMAIL_PRIMARY . ';">What happens next</p>'
                 . '<ol style="margin:0 0 14px;padding-left:20px;">'
                 . '<li>Our admission team reviews your application.</li>'
                 . '<li>We verify your documents and details.</li>'

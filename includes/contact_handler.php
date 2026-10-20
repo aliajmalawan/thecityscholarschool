@@ -39,7 +39,7 @@ function saveContactMessage(array $f, $intro = 'Someone has sent a message throu
     // Notification to the school
     $reply_bits = [];
     if ($f['email'] !== '') {
-        $reply_bits[] = 'reply to <a href="mailto:' . htmlspecialchars($f['email']) . '" style="color:' . EMAIL_OLIVE . ';">' . htmlspecialchars($f['email']) . '</a>';
+        $reply_bits[] = 'reply to <a href="mailto:' . htmlspecialchars($f['email']) . '" style="color:' . EMAIL_PRIMARY . ';">' . htmlspecialchars($f['email']) . '</a>';
     }
     if ($f['phone'] !== '') {
         $reply_bits[] = 'call ' . htmlspecialchars($f['phone']);
