@@ -12,14 +12,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Header: drawer menu below 1280px, dropdowns everywhere
+// Header: drawer menu below 1024px, dropdowns everywhere
 document.addEventListener('DOMContentLoaded', function() {
     const toggle = document.getElementById('nav-toggle');
     const nav = document.getElementById('site-nav');
     const backdrop = document.getElementById('nav-backdrop');
     if (!toggle || !nav) return;
 
-    const DRAWER_MAX = 1279;
+    const DRAWER_MAX = 1023;
     const isDrawer = () => window.innerWidth <= DRAWER_MAX;
     const groups = Array.from(nav.querySelectorAll('.nav-dropdown'));
     const focusables = () => Array.from(nav.querySelectorAll('a, button')).filter(el => el.offsetParent !== null);

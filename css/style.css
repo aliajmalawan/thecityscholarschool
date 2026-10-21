@@ -526,7 +526,7 @@ p {
 }
 
 /* ---- Desktop menu: underline indicator + hover dropdowns ---- */
-@media (min-width: 1280px) {
+@media (min-width: 1024px) {
     .site-nav > a::after,
     .nav-dropdown-trigger::after {
         content: '';
@@ -603,7 +603,7 @@ p {
 }
 
 /* ---- Drawer menu ---- */
-@media (max-width: 1279.98px) {
+@media (max-width: 1023.98px) {
     .nav-toggle { display: flex; }
 
     .site-nav {
@@ -5868,17 +5868,6 @@ body.lightbox-open { overflow: hidden; }
    Responsive refinements (checked at 320-1440px)
    ========================================================================== */
 
-/* Small laptops: the full menu needs slightly tighter spacing between 1280 and 1440px */
-@media (min-width: 1280px) and (max-width: 1439.98px) {
-    .main-bar-inner { gap: 14px; }
-    .site-nav > a,
-    .nav-dropdown-trigger { padding-inline: 8px; font-size: var(--fs-body-sm); }
-    .site-nav > a::after,
-    .nav-dropdown-trigger::after { left: 8px; right: 8px; }
-    .brand-text strong { font-size: 16px; }
-    .apply-btn { padding: 11px 18px; }
-}
-
 /* Phones: the school name wraps onto two lines rather than pushing the buttons off screen */
 @media (max-width: 600px) {
     .brand-text strong { line-height: 1.2; }
@@ -6224,4 +6213,236 @@ body.lightbox-open { overflow: hidden; }
 
 @media (prefers-reduced-motion: reduce) {
     .hero-slider.is-running .hero-dot.is-active > span { animation: none; width: 100%; }
+}
+
+
+/* ==========================================================================
+   Header v2: light brand bar (crest, name, contact, Apply, social)
+   over a navy menu bar with an icon above every link.
+   On desktop only the menu bar stays stuck to the top while scrolling.
+   ========================================================================== */
+.site-header {
+    --brand-bar-h: 84px;
+    background: var(--cream);
+}
+
+.main-bar {
+    background: var(--cream);
+    border-bottom: 0;
+}
+
+.main-bar .container { max-width: var(--container-width); }
+
+.main-bar-inner {
+    justify-content: space-between;
+}
+
+.main-bar-actions { gap: 18px; }
+
+/* phone | email */
+.brand-contact {
+    display: flex;
+    align-items: center;
+}
+
+.brand-contact li + li {
+    margin-left: 16px;
+    padding-left: 16px;
+    border-left: 1px solid var(--border);
+}
+
+.brand-contact a {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--text);
+    font-size: var(--fs-sm);
+    font-weight: 500;
+    white-space: nowrap;
+    transition: color var(--transition);
+}
+
+.brand-contact a:hover { color: var(--primary); }
+.brand-contact i { color: var(--accent-ink); font-size: 12px; }
+
+.apply-btn {
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: var(--radius-sm);
+    font-size: var(--fs-sm);
+    box-shadow: none;
+}
+
+.apply-btn:hover { box-shadow: var(--shadow-accent); }
+
+.brand-social {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.brand-social a {
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: rgba(18, 63, 115, 0.06);
+    color: var(--primary);
+    font-size: 13px;
+    transition: background var(--transition), color var(--transition), border-color var(--transition), transform var(--transition);
+}
+
+.brand-social a:hover {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: var(--white);
+    transform: translateY(-2px);
+}
+
+.brand-social a:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* ---- Navy menu bar (desktop) ---- */
+@media (min-width: 1024px) {
+    .site-header { top: calc(-1 * var(--brand-bar-h)); }
+
+    .main-bar-inner,
+    .site-header.is-scrolled .main-bar-inner {
+        height: var(--brand-bar-h);
+        min-height: 0;
+    }
+
+    .site-header.is-scrolled .brand-logo { width: 60px; height: 56px; }
+
+    .nav-bar {
+        background: var(--primary);
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .site-nav {
+        display: flex;
+        align-items: stretch;
+        justify-content: space-between;
+        gap: 0;
+        width: 100%;
+        min-height: 66px;
+        margin: 0;
+    }
+
+    .site-nav > a,
+    .site-nav > .nav-dropdown {
+        flex: 1 1 0;
+        min-width: 0;
+    }
+
+    .site-nav > .nav-dropdown { display: flex; }
+
+    .site-nav > a,
+    .nav-dropdown-trigger {
+        flex-direction: column;
+        justify-content: center;
+        gap: 7px;
+        width: 100%;
+        padding: 10px 4px;
+        border-radius: 0;
+        color: rgba(255, 255, 255, 0.86);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: .01em;
+    }
+
+    .site-nav > a > span,
+    .nav-dropdown-trigger > span {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .nav-icon {
+        font-size: 17px;
+        line-height: 1;
+        transition: transform 300ms cubic-bezier(.34, 1.56, .64, 1), color var(--transition);
+    }
+
+    .nav-caret { font-size: 9px; opacity: .8; }
+
+    .site-nav > a::after,
+    .nav-dropdown-trigger::after {
+        left: 22%;
+        right: 22%;
+        bottom: 0;
+        border-radius: 3px 3px 0 0;
+        transform-origin: center;
+    }
+
+    .site-nav > a:hover,
+    .site-nav > a.is-active,
+    .nav-dropdown:hover .nav-dropdown-trigger,
+    .nav-dropdown:focus-within .nav-dropdown-trigger,
+    .nav-dropdown.is-open .nav-dropdown-trigger,
+    .nav-dropdown.is-active .nav-dropdown-trigger {
+        color: var(--accent);
+        background: rgba(255, 255, 255, 0.07);
+    }
+
+    .site-nav > a:hover .nav-icon,
+    .site-nav > a.is-active .nav-icon,
+    .nav-dropdown:hover .nav-icon,
+    .nav-dropdown.is-open .nav-icon,
+    .nav-dropdown.is-active .nav-icon {
+        transform: translateY(-2px);
+    }
+
+    .site-nav > a:focus-visible,
+    .nav-dropdown-trigger:focus-visible { outline-offset: -3px; }
+
+    /* dropdowns hang straight from the bar */
+    .nav-dropdown-panel {
+        top: 100%;
+        border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    }
+}
+
+/* Small laptops: no room for the e-mail address next to the Apply button */
+@media (min-width: 1024px) and (max-width: 1199.98px) {
+    .brand-contact li + li { display: none; }
+    .site-nav > a,
+    .nav-dropdown-trigger { font-size: 12.5px; }
+}
+
+/* ---- Drawer (tablets and phones): the menu bar collapses into the side drawer ---- */
+@media (max-width: 1023.98px) {
+    .site-nav > a,
+    .nav-dropdown-trigger {
+        justify-content: flex-start;
+        gap: 14px;
+    }
+
+    .nav-dropdown-trigger > span {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .nav-icon {
+        width: 20px;
+        text-align: center;
+        color: var(--primary);
+        font-size: 16px;
+    }
+
+    .site-nav > a.nav-drawer-apply { gap: 10px; }
+
+    .brand-contact li + li { display: none; }
+}
+
+@media (max-width: 767.98px) {
+    .brand-contact,
+    .brand-social { display: none; }
+    .main-bar-actions { gap: 10px; }
 }
