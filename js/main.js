@@ -98,6 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (slides.length < 2) return;
     const captions = Array.from(hero.querySelectorAll('.hero-caption'));
     const dots = Array.from(hero.querySelectorAll('.hero-dot'));
+    const counter = hero.querySelector('.hero-count-current');
     const INTERVAL = 5000;
     const canHover = window.matchMedia('(hover: hover)').matches;
 
@@ -127,8 +128,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         dots.forEach((dot, i) => {
             dot.classList.toggle('is-active', i === current);
+            dot.classList.toggle('is-done', i < current);
             dot.setAttribute('aria-selected', i === current ? 'true' : 'false');
         });
+        if (counter) counter.textContent = String(current + 1).padStart(2, '0');
         restartProgress();
     }
 

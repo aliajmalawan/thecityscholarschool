@@ -114,15 +114,19 @@ $hero_point_icons = ['fa-book-open', 'fa-hand-holding-heart', 'fa-star'];
 
     <?php if ($slide_count > 1): ?>
     <div class="hero-controls">
-        <button type="button" class="hero-arrow hero-prev" aria-label="Previous photo"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
-        <div class="hero-dots" role="tablist" aria-label="Choose photo">
-            <?php for ($i = 0; $i < $slide_count; $i++): ?>
-            <button type="button" class="hero-dot<?php echo $i === 0 ? ' is-active' : ''; ?>" role="tab" aria-label="Photo <?php echo $i + 1; ?>" aria-selected="<?php echo $i === 0 ? 'true' : 'false'; ?>"></button>
-            <?php endfor; ?>
+        <div class="container hero-controls-inner">
+            <span class="hero-count" aria-hidden="true"><strong class="hero-count-current">01</strong> / <?php echo sprintf('%02d', $slide_count); ?></span>
+            <div class="hero-dots" role="tablist" aria-label="Choose photo">
+                <?php for ($i = 0; $i < $slide_count; $i++): ?>
+                <button type="button" class="hero-dot<?php echo $i === 0 ? ' is-active' : ''; ?>" role="tab" aria-label="Photo <?php echo $i + 1; ?> of <?php echo $slide_count; ?>" aria-selected="<?php echo $i === 0 ? 'true' : 'false'; ?>"><span></span></button>
+                <?php endfor; ?>
+            </div>
+            <div class="hero-arrows">
+                <button type="button" class="hero-arrow hero-prev" aria-label="Previous photo"><i class="fas fa-arrow-left" aria-hidden="true"></i></button>
+                <button type="button" class="hero-arrow hero-next" aria-label="Next photo"><i class="fas fa-arrow-right" aria-hidden="true"></i></button>
+            </div>
         </div>
-        <button type="button" class="hero-arrow hero-next" aria-label="Next photo"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
     </div>
-    <div class="hero-progress" aria-hidden="true"><span></span></div>
     <?php endif; ?>
 </section>
 

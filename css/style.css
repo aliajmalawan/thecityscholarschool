@@ -6097,3 +6097,131 @@ body.lightbox-open { overflow: hidden; }
 @media (max-width: 640px) {
     .life-grid > .life-card { flex-basis: 100%; }
 }
+
+
+/* ==========================================================================
+   Hero v3: two-line headline, controls in one row under the text
+   (counter 01 / 03, segment bars that fill while a photo is shown, arrows)
+   ========================================================================== */
+.home-hero { padding-bottom: 210px; }
+.hero-copy { max-width: 780px; }
+.hero-title { max-width: 760px; }
+
+/* "Inspiring Young Minds." / "Building Bright Futures." on two lines */
+@media (min-width: 769px) {
+    .hero-title { font-size: clamp(40px, 4.4vw, 58px); }
+    .hero-title .text-gold { display: block; text-wrap: wrap; }
+}
+
+.hero-controls {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 100px;
+    z-index: 2;
+    display: block;
+    transform: none;
+}
+
+.hero-controls-inner {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
+
+.hero-count {
+    min-width: 64px;
+    color: rgba(255, 255, 255, 0.6);
+    font-family: var(--font-display);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    letter-spacing: .08em;
+}
+
+.hero-count strong {
+    color: var(--white);
+    font-size: var(--fs-xl);
+    letter-spacing: 0;
+}
+
+.hero-dots { gap: 10px; }
+
+.hero-dot {
+    width: 44px;
+    height: 4px;
+    overflow: visible;
+    border-radius: var(--radius-pill);
+    background: rgba(255, 255, 255, 0.28);
+}
+
+.hero-dot > span {
+    position: absolute;
+    inset: 0;
+    width: 0;
+    border-radius: inherit;
+    background: var(--accent);
+}
+
+.hero-dot.is-done > span { width: 100%; opacity: .55; }
+
+.hero-dot.is-active {
+    width: 44px;
+    background: rgba(255, 255, 255, 0.28);
+}
+
+.hero-slider.is-running .hero-dot.is-active > span {
+    animation: heroProgress var(--hero-interval, 5000ms) linear forwards;
+}
+
+.hero-slider.is-hovered .hero-dot.is-active > span { animation-play-state: paused; }
+
+/* bigger click/touch area than the thin bar */
+.hero-dot::after { inset: -14px -3px; }
+
+.hero-arrows {
+    display: flex;
+    gap: 10px;
+    margin-left: 6px;
+}
+
+.hero-arrow {
+    width: 46px;
+    height: 46px;
+    font-size: var(--fs-body-sm);
+}
+
+/* the old thin progress line along the bottom edge is replaced by the bars */
+.hero-progress { display: none; }
+
+@media (max-width: 1100px) {
+    .hero-title { max-width: 640px; }
+}
+
+@media (max-width: 768px) {
+    .hero-controls {
+        left: 0;
+        right: 0;
+        bottom: 84px;
+        transform: none;
+    }
+
+    .hero-controls-inner { justify-content: center; gap: 16px; }
+    .hero-arrows { display: none; }   /* swipe on phones */
+    .hero-dot { width: 34px; }
+    .hero-dot.is-active { width: 34px; }
+
+    .hero-eyebrow { font-size: var(--fs-xs); padding-right: 14px; }
+
+    /* the three highlights stay on one line */
+    .hero-points { flex-wrap: nowrap; justify-content: space-between; gap: 8px; }
+    .hero-points li { gap: 7px; font-size: var(--fs-sm); white-space: nowrap; }
+    .hero-points i { width: 30px; height: 30px; font-size: 12px; }
+}
+
+@media (max-width: 360px) {
+    .hero-points i { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-slider.is-running .hero-dot.is-active > span { animation: none; width: 100%; }
+}
