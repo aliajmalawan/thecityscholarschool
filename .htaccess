@@ -1,9 +1,30 @@
+# Folders never list their files (e.g. /images/ shows "Forbidden" instead of an index)
+Options -Indexes
+
 # ---------------------------------------------------------------------------
 # Clean URLs: /about serves about.php. Works the same in a sub-folder
 # (localhost/thecityscholarschool/about) and at a domain root (example.com/about).
 # ---------------------------------------------------------------------------
 <IfModule mod_rewrite.c>
     RewriteEngine On
+
+    # One address for the live site: https://thecityscholars.com (no www, never plain http).
+    # Only for the school's domain, so the copy on this computer (localhost) is unaffected;
+    # /.well-known/ stays reachable over http for SSL certificate renewal.
+    RewriteCond %{ENV:REDIRECT_STATUS} ^$
+    RewriteCond %{HTTP_HOST} ^(www\.)?thecityscholars\.com$ [NC]
+    RewriteCond %{REQUEST_URI} !/\.well-known/
+    RewriteCond %{HTTPS} !=on
+    RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+    RewriteRule ^ https://thecityscholars.com%{REQUEST_URI} [R=301,L,NE]
+    RewriteCond %{ENV:REDIRECT_STATUS} ^$
+    RewriteCond %{HTTP_HOST} ^www\.thecityscholars\.com$ [NC]
+    RewriteCond %{REQUEST_URI} !/\.well-known/
+    RewriteRule ^ https://thecityscholars.com%{REQUEST_URI} [R=301,L,NE]
+
+    # Hidden files and folders (.git, .cpanel.yml, .gitignore ...) are never served,
+    # except /.well-known/ which SSL certificate checks need
+    RewriteRule (^|/)\.(?!well-known(/|$)) - [F,L]
 
     # Helper code and database scripts are never served directly
     RewriteRule ^(includes|database)(/|$) - [F,L]
