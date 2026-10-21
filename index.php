@@ -194,7 +194,7 @@ $first_sentence = function ($text) {
         <div class="home-about-grid">
             <div class="home-about-media">
                 <div class="home-about-photo">
-                    <?php echo pictureImg(content('home_about_image'), 'A student learning at ' . getSiteName(), ['loading' => 'lazy']); ?>
+                    <?php echo pictureImg(content('home_about_image'), 'Students at ' . getSiteName(), ['loading' => 'lazy']); ?>
                 </div>
                 <div class="home-about-badge" aria-hidden="true">
                     <img src="<?php echo getLogoSmallPath(); ?>" alt="" width="64" height="60">

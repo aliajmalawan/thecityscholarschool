@@ -5974,7 +5974,7 @@ body.lightbox-open { overflow: hidden; }
     height: 100%;
 }
 
-.home-band-media img { object-fit: cover; object-position: center 35%; }
+.home-band-media img { object-fit: cover; object-position: center 15%; }   /* group photos: keep heads and any banner above them in view */
 
 .home-band::before {
     content: '';
