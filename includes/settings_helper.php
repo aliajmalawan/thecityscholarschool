@@ -378,6 +378,44 @@ function deleteSetting($key) {
 }
 
 /**
+ * First row of an executed prepared statement as an associative array, or null.
+ * mysqli_stmt_get_result() exists only when PHP uses the mysqlnd driver, which many
+ * shared hosts (cPanel/CloudLinux "mysqli" instead of "nd_mysqli") do not enable;
+ * calling it there is a fatal error (HTTP 500). This works with either driver.
+ */
+function stmtFetchAssoc($stmt) {
+    if (function_exists('mysqli_stmt_get_result')) {
+        $result = mysqli_stmt_get_result($stmt);
+        return $result ? (mysqli_fetch_assoc($result) ?: null) : null;
+    }
+    return stmtFetchAssocBound($stmt);
+}
+
+/** stmtFetchAssoc() without mysqlnd: bind every column to a variable and fetch one row. */
+function stmtFetchAssocBound($stmt) {
+    $meta = mysqli_stmt_result_metadata($stmt);
+    if (!$meta) {
+        return null;
+    }
+    $row = [];
+    $refs = [];
+    while ($field = mysqli_fetch_field($meta)) {
+        $row[$field->name] = null;
+        $refs[] = &$row[$field->name];
+    }
+    mysqli_free_result($meta);
+    mysqli_stmt_bind_result($stmt, ...$refs);
+    if (!mysqli_stmt_fetch($stmt)) {
+        return null;
+    }
+    $copy = [];
+    foreach ($row as $name => $value) {
+        $copy[$name] = $value;   // plain values, not references to the bound variables
+    }
+    return $copy;
+}
+
+/**
  * Next free numeric id for a table whose id column has no auto-numbering (the imported tables lost it).
  * Giving every new row its own id keeps editing and deleting that one row reliable.
  */

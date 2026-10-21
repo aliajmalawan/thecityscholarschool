@@ -52,7 +52,7 @@ if (isset($_GET['edit'])) {
     $edit_id = intval($_GET['edit']);
     mysqli_stmt_bind_param($stmt, 'i', $edit_id);
     mysqli_stmt_execute($stmt);
-    $edit_video = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+    $edit_video = stmtFetchAssoc($stmt);
 }
 
 try {

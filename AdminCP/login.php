@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt = mysqli_prepare($conn, "SELECT * FROM admin_users WHERE username = ? AND status = 'active' LIMIT 1");
         mysqli_stmt_bind_param($stmt, 's', $username);
         mysqli_stmt_execute($stmt);
-        $admin = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+        $admin = stmtFetchAssoc($stmt);   // works with or without the mysqlnd driver
 
         if ($admin && password_verify($password, $admin['password'])) {
             // New session id at login, so an id planted before login is worthless (session fixation)
