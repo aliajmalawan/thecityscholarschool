@@ -70,10 +70,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif ($recent_failures() >= LOGIN_MAX_FAILURES) {
         $error_message = 'Too many wrong attempts. Please wait ' . LOGIN_WINDOW_MINUTES . ' minutes and try again.';
     } else {
-        $stmt = mysqli_prepare($conn, "SELECT * FROM admin_users WHERE username = ? AND status = 'active' LIMIT 1");
+        // bind_result works on every server; mysqli_stmt_get_result() needs the mysqlnd
+        // driver, which many cPanel hosts don't enable (it caused HTTP 500 on the live site)
+        $stmt = mysqli_prepare($conn, "SELECT id, username, password, full_name, role FROM admin_users WHERE username = ? AND status = 'active' LIMIT 1");
         mysqli_stmt_bind_param($stmt, 's', $username);
         mysqli_stmt_execute($stmt);
-        $admin = stmtFetchAssoc($stmt);   // works with or without the mysqlnd driver
+        mysqli_stmt_bind_result($stmt, $row_id, $row_username, $row_password, $row_full_name, $row_role);
+        $admin = mysqli_stmt_fetch($stmt)
+            ? ['id' => $row_id, 'username' => $row_username, 'password' => $row_password, 'full_name' => $row_full_name, 'role' => $row_role]
+            : null;
+        mysqli_stmt_close($stmt);
 
         if ($admin && password_verify($password, $admin['password'])) {
             // New session id at login, so an id planted before login is worthless (session fixation)
